@@ -233,70 +233,85 @@ div.imagedesc{
 		</div>
 -->
 <body>
-<div id="top">
-<h1>LABORATORIO DI INGEGNERIA DEI SISTEMI SOFTWARE <font size="5"></font> </h1>
-</div>  
+    <div id="top">
+        <h1>LABORATORIO DI INGEGNERIA DEI SISTEMI SOFTWARE</h1>
+    </div>  
 
-<div class="body"> 
-<h2>Introduction</h2>
- 
- 
-<h2>Requirements</h2>
+    <div class="body"> 
+        <h2>Introduction</h2>
+        <p>Il progetto prevede lo sviluppo di un sistema di gestione per un servizio di incenerimento rifiuti (Waste Incinerator Service - WIS),
+        che coordina il movimento dei rifiuti e delle ceneri tramite un robot operatore (OpRobot).</p>
+        <p>Il sistema sarà organizzato in una Service Area con una serie di elementi chiave per la gestione del processo.</p>
+        
+        <h2>Requirements</h2>
+        <div class="remark">
+            <p>Copy here the EXACT text given by the customer.</p>
+        </div>
 
- 
-<div class="remark">
-Copy here the EXACT text fiven by the customer.
-</div>
+        <h2>Requirement Analysis</h2>
+        <h3>Struttura della Service Area</h3>
+        <ul>
+            <li><strong>WasteStorage:</strong> Contenitore per i rifiuti sotto forma di Roll Packets (RP), ciascuno con un peso stimato di 50 kg.</li>
+            <li><strong>AshStorage:</strong> Contenitore per la raccolta delle ceneri risultanti dal processo di incenerimento, capacità di circa 3-4 RP.</li>
+            <li><strong>Incinerator:</strong> Struttura centrale che brucia un singolo RP alla volta in un intervallo di tempo definito (BTIME).</li>
+            <li><strong>Monitoring Device:</strong> Include un Sonar per monitorare il livello delle ceneri e un LED per segnalare lo stato del sistema.</li>
+        </ul>
+        
+        <h3>Punti di accesso</h3>
+        <ul>
+            <li><strong>WASTEIN:</strong> Ingresso per gli RP nella Service Area.</li>
+            <li><strong>BURNIN:</strong> Punto di trasferimento dei rifiuti nell’Incinerator.</li>
+            <li><strong>BURNOUT:</strong> Uscita delle ceneri dall’Incinerator.</li>
+            <li><strong>ASHOUT:</strong> Punto di scarico delle ceneri nell’AshStorage.</li>
+            <li><strong>HOME:</strong> Posizione di partenza e standby dell’OpRobot.</li>
+        </ul>
 
- 
+        <h2>Problem Analysis</h2>
+        <h3>OpRobot</h3>
+        <ul>
+            <li>Attende in HOME se non ci sono operazioni da svolgere.</li>
+            <li>Verifica le condizioni operative:</li>
+            <ul>
+                <li>Il WasteStorage deve contenere almeno un RP.</li>
+                <li>L’AshStorage non deve essere pieno.</li>
+                <li>L’Incinerator deve essere disponibile.</li>
+            </ul>
+            <li>Preleva un RP dal WasteStorage e lo trasporta alla porta BURNIN.</li>
+            <li>Attende il completamento dell’incenerimento mentre ritorna a HOME.</li>
+            <li>Raccoglie le ceneri dalla porta BURNOUT e le deposita nell’ASHOUT.</li>
+            <li>Ripete il ciclo fino al termine delle operazioni.</li>
+        </ul>
 
-<h2>Requirement analysis</h2>
+        <h3>Incinerator</h3>
+        <ul>
+            <li>Accensione tramite comando wireless (WiFi/Bluetooth).</li>
+            <li>Accettazione di un RP attraverso la porta BURNIN.</li>
+            <li>Bruciatura del RP in BTIME secondi.</li>
+            <li>Emissione di un segnale alla fine del processo per avvisare il sistema.</li>
+            <li>Espulsione delle ceneri tramite la porta BURNOUT.</li>
+        </ul>
 
-WasteIncineratorService
-La service area che contiene WasteStorage e l'AshStorage, e un MonitoringDevice è un sistema di riferimento a coordinate.
-Il WasteStorage
-L'AshStorage
-Il MonitoringDevice
-l'inceneritore è interno alla service area
+        <h2>Test Plan</h2>
+        <p>Per verificare il corretto funzionamento del sistema, sono previsti test sui seguenti aspetti:</p>
+        <ul>
+            <li>Verifica del corretto spostamento dell’OpRobot tra i vari punti della Service Area.</li>
+            <li>Controllo della gestione delle ceneri e del livello misurato dal Sonar.</li>
+            <li>Validazione dei segnali del LED e della loro coerenza con lo stato del sistema.</li>
+            <li>Test di integrazione tra tutti i componenti per garantire il corretto ciclo operativo.</li>
+        </ul>
 
+        <h2>Deployment</h2>
+        <p>Questa sezione sarà completata nelle fasi successive del progetto.</p>
 
-</div>
+        <h2>Maintenance</h2>
+        <p>Piani di manutenzione e miglioramenti futuri saranno implementati dopo la fase di testing.</p>
+    </div>
 
-<h2>Problem analysis</h2>
- 
-
-<h2>Test plans</h2> 
-
-
-<h2>Project</h2> 
- 
-</div>
-
-<h2>Testing</h2> 
- 
-
-<h2>Deployment</h2> 
-
- 
-<h2>Maintenance</h2> 
- 
-<!-- USEFUL
-<table style="width:100%" border="1">
-<tr>
-<td style="width:50%">
-</td>
-<td></td>
-</tr>
-</table>
--->
-	      	
-<br/><br/> 	
-</div>  
-
-<div style="background-color:rgba(86, 56, 253, 0.9); width:60%;text-align:left;color:white">
-By studentName email: student@studio.unibo.it, 
-<img src="./img/emiglio.png" alt="mbot" width="15%" height="15%">
-GIT repo: https://github.com/... 
-</div> 
+    <div style="background-color:rgba(86, 56, 253, 0.9); width:60%;text-align:left;color:white">
+        By studentName email: student@studio.unibo.it, 
+        <img src="./img/emiglio.png" alt="mbot" width="15%" height="15%">
+        GIT repo: <a href="https://github.com/..." style="color:white;">https://github.com/...</a>
+    </div> 
 </body>
 </html>
+
