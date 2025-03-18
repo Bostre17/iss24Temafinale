@@ -263,8 +263,8 @@ div.imagedesc{
 		<p>Per modellare il servizio, è necessario introdurre il concetto di attore, un componente software autonomo in grado di gestire, inviare e ricevere messaggi all'interno di un ambiente 
 			distribuito.
 			 Per approfondire le funzionalità e le possibili interazioni di un attore, si rimanda a <a href="./QakActors24.html">QakActors24</a>.</p>
-        <h3>Service Area</h3>
-		<h4>Definizione</h4>
+		<ul>
+		<h3>Service Area</h3>
 		<ul style="padding-left: 30px; padding-right: 30px;">
 			<li>La Service Area è un rettangolo situato in un piano euclideo.</li>
 			<li>All'interno della Service Area sono presenti ostacoli.</li>
@@ -290,86 +290,85 @@ div.imagedesc{
 
 		</ul>
 
-		<br>
-        <h4>Aree funzionali</h4>
 		Nella Service Area, sono presenti diverse aree funzionali in cui vengono svolte attività specifiche. Ogni area ha un ruolo definito nel processo di gestione e incenerimento dei rifiuti.<br>
 		Di seguito sono descritti i dettagli relativi a ciascuna area:
 
 		<ul style="padding-left: 30px; padding-right: 30px;">
-			<li><strong>HOME:</strong> area di partenza del robot, definita nel piano come uno spazio delimitato dai seguenti quattro punti:
+			<li><h4>HOME</h4> area di partenza del robot, definita nel piano come uno spazio delimitato dai seguenti quattro punti:
 				<ul style="list-style-type: circle; padding-left: 20px;">
-					<li><b>H1(0, 0)</b></li>
-					<li><b>H2(LHO, 0)</b></li>
-					<li><b>H3(LHO, LHV)</b></li>
-					<li><b>H4(0, LHV)</b></li>
+					<li><b>H0(0, 0)</b></li>
+					<li><b>H1(LHO, 0)</b></li>
+					<li><b>H2(LHO, LHV)</b></li>
+					<li><b>H3(0, LHV)</b></li>
 				</ul>
 				In questa area, il robot è inizialmente in standby, pronto per l'attività.
 			</li>
-			<li><strong>WASTEIN:</strong> segmento situato lungo il lato <span class="formula">ld</span>, definito dai vertici:
+			<li><h4>WASTEIN</h4>segmento situato lungo il lato <span class="formula">ld</span>, definito dai vertici:
 				<ul style="list-style-type: circle; padding-left: 20px;">
 					<li><b>(0, LV)</b></li>
 					<li><b>(LW, LV)</b></li>
 				</ul>
 				Dove <span class="formula">LW</span> rappresenta la lunghezza del <b>WasteIn Port</b>, l'ingresso dei rifiuti nella Service Area.
 			</li>
-			<li><strong>ASHOUT:</strong> area situata lungo il lato <span class="formula">ld</span>, delimitata dai vertici:
+			<li><h4>ASHOUT</h4> area situata lungo il lato <span class="formula">ld</span>, delimitata dai vertici:
 				<ul style="list-style-type: circle; padding-left: 20px;">
 					<li><b>(LA, LV)</b></li>
 					<li><b>(LO, LV)</b></li>
 				</ul>
-				Qui si scaricano le ceneri, e la lunghezza della porta di uscita è definita dalla distanza <span class="formula">LO - LA</span>.
+				Questo è il punto di accesso per lo scarico delle ceneri, e la lunghezza della porta di uscita è definita dalla distanza <span class="formula">LO - LA</span>.
 			</li>
-			<li><strong>Incinerator:</strong> area dove avviene l'incenerimento dei rifiuti. È rappresentata come un rettangolo all'interno della Service Area, definito dai seguenti vertici:
+			<li><h4>INCINERATOR</h4> area dove avviene l'incenerimento dei rifiuti. È rappresentata come un rettangolo all'interno della Service Area, definito dai seguenti vertici:
 				<ul style="list-style-type: circle; padding-left: 20px;">
-					<li><b>A(x1, y1)</b></li>
-					<li><b>B(x2, y1)</b></li>
-					<li><b>C(x2, y2)</b></li>
-					<li><b>D(x1, y2)</b></li>
+					<li><b>I0(x1, y1)</b></li>
+					<li><b>I1(x2, y1)</b></li>
+					<li><b>I2(x2, y2)</b></li>
+					<li><b>I3(x1, y2)</b></li>
 				</ul>
-				L'inceneritore ha due porti: il <b>BurnIn Port</b>, definito dai vertici A=(x1, y1) e B=(x2, y1), e il <b>BurnOut Port</b>, definito dai vertici C=(x2, y2) e D=(x1, y2), attraverso i quali i rifiuti vengono trasferiti e le ceneri vengono rilasciate.
+				L'inceneritore ha due ingressi: il <b>BurnIn Port</b>, definito dai vertici I0=(x1, y1) e I3=(x2, y1), e il <b>BurnOut Port</b>, definito dai vertici I1=(x2, y2) e I2=(x1, y2), attraverso i quali i rifiuti vengono trasferiti e le ceneri vengono rilasciate.
 			</li>
-			<li><strong>Obstacle:</strong> Un ostacolo nel piano, delimitato dai seguenti 4 vertici:
+			<li><h4>OBSTACLE</h4> Un ostacolo nel piano, delimitato dai seguenti 4 vertici:
 				<ul style="list-style-type: circle; padding-left: 20px;">
-					<li><b>O1(xo1, yo1)</b></li>
-					<li><b>O2(xo2, yo1)</b></li>
-					<li><b>O3(xo2, yo2)</b></li>
-					<li><b>O4(xo1, yo2)</b></li>
+					<li><b>O0(xo1, yo1)</b></li>
+					<li><b>O1(xo2, yo1)</b></li>
+					<li><b>O2(xo2, yo2)</b></li>
+					<li><b>O3(xo1, yo2)</b></li>
 				</ul>
 				Sebbene non esplicitamente menzionato dal committente, questo ostacolo è visibile nella figura e si trova nelle aree indicate.
 			</li>
 		</ul>
 
 		<br>
-		<h4>Esterni alla service area</h4>
-
+		<h3>WasteStorage e AshStorage</h3>
 		<ul>
-            <li><strong>WasteStorage:</strong> Contenitore per i rifiuti sotto forma di Roll Packets (RP), ciascuno con un peso stimato di 50 kg. Ha un device atto al pesare la quantità 
-			dei rifiuti, sarà quindi un componente con stato,"All'interno del contesto storagw area?"</li>
-            <li><strong>AshStorage:</strong> Contenitore per la raccolta delle ceneri risultanti dal processo di incenerimento, capacità di circa 3-4 RP.</li>
-			<li>Il <strong>MonitoringDevice</strong> è costituito da un <strong>Sonar</strong> e un <strong>Led</strong>, entrambi montati su un <strong>Raspberry Pi</strong>.</li>
-        
-			<h2>Funzioni del MonitoringDevice</h2>
-			<ul>
-				<li>Il <strong>Sonar</strong> misura il livello delle ceneri nell'AshStorage container.</li>
-				<li>La soglia <strong>DLIMIT</strong> definisce il livello minimo sotto il quale il contenitore è considerato pieno.</li>
-				<li>Il <strong>Led</strong> funge da dispositivo di allerta, segnalando lo stato dell'<strong>Inceneritore</strong> e dell'<strong>AshStorage</strong>.</li>
-			</ul>
-	
-			<h2>Supporto Software</h2>
-			<p>Il Sonar e il Led sono dispositivi fisici per cui il committente fornisce software di supporto per il loro utilizzo:</p>
-			<ul>
-				<li><strong>RaspBasicCode</strong></li>
-				<li><strong>RaspApplCode24</strong></li>
-			</ul>
-	
-			<h2>Modellazione come Attore</h2>
-			<p>Analogamente all'OpRobot con il DDR robot, è possibile modellare il <strong>MonitoringDevice</strong> come un attore esterno al sistema, che interagisce con i dispositivi fisici associati.</p>
-			<p>La distanza <strong>DLIMIT</strong> sarà definita come una variabile intera e positiva dell'attore.</p>
-		 
+			WasteStorage e AshStorage sono entità non facenti parte del sistema che però vi comunicano attraverso il deposito di spazzatura ed il raccoglimento di ceneri, 
+			andando ad alterare i valori dei sensori presenti all'interno di ogni area (scale in WasteStorage, sonar in AshStorage), in cui il WIS terrà traccia dello stato.
+			
 		</ul>
-
+		<h3>Incinerator</h3>
+		<ul>
+			L'Incinerator è l'entità che si occupa di bruciare i rifiuti che vengono portati nella WasteIn port.
+			Analizzando la richiesta del committente, è obbligo considerare l'Incinerator come entità attiva, 
+			in quanto ha necessità di dover emettere un segnale (acustico o di altro tipo) che può essere percepito dall'OpRobot e dal WIS.
+			Inoltre, l'Incinerator deve essere anche in grado di ricevere un segnale di attivazione, 
+			il quale non è stato correttamente definito dal committente, quindi non è possibile un analisi più approfondita. 
+			Si evince però che:
+			<ul>
+				<li>Lo stato dell'Incinerator può essere <i>On</i>, <i>Off</i> e <i>Idle</i>.</li>
+				<li>L'inceneritore può trattare un RP alla volta.</li>
+				<li>Il processo di combustione richiede BTIME secondi.</li>
+			</ul>
+		</ul>
+		<h3>MonitoringDevice</h3>
+		<ul>
+			<li>Il <strong>Sonar</strong> misura il livello delle ceneri nell'AshStorage container.</li>
+			<li>La soglia <strong>DLIMIT</strong> definisce il livello minimo sotto il quale il contenitore è considerato pieno.</li>
+			<li>Il <strong>Led</strong> funge da dispositivo di allerta, segnalando lo stato dell'<strong>Inceneritore</strong> e dell'<strong>AshStorage</strong>.</li>
+		</ul>
 		<br>
-		<h4>OPRobot</h4>
+		<h3>DDRRobot</h3>
+		<ul>
+		</ul>
+		<h3>OPRobot</h3>
 		<p>L'<strong>OpRobot</strong> si occupa di spostarsi tra le varie aree operative del sistema, raggiungendo le posizioni 
 			<strong>WASTEIN, BURNIN, BURNOUT, ASHOUT</strong> e <strong>HOME</strong>.</p>
 			
@@ -383,25 +382,35 @@ div.imagedesc{
 
 
 		<br>
-		<h4>ServiceStatusGUI</h4>
-
-		<br>
-        <h4>Incinerator</h4>
+		<h3>WIS</h3>
         <ul>
-            <li>Accensione tramite comando wireless.</li>
-            <li>Accettazione di un RP attraverso la porta BURNIN.</li>
-            <li>Bruciatura del RP in BTIME secondi.</li>
-            <li>Emissione di un segnale alla fine del processo per avvisare il sistema.</li>
-            <li>Espulsione delle ceneri tramite la porta BURNOUT.</li>
+			L'attore WIS è incaricato di gestire lo stato dell'inceneritore, mantenendo traccia del suo stato (<i>On/Off/Idle</i>) e del livello di cenere accumulata. Per svolgere queste operazioni, interagisce direttamente con gli attori Incinerator e MonitoringDevice.
+			Il WIS ha il ruolo di coordinare le operazioni fondamentali del sistema e di comunicare con gli altri attori. Le sue principali responsabilità includono:
+			
+			<ul>
+				<li>Inviare un segnale di attivazione all'Incinerator</li>
+				<li>Avviare il processo di incenerimento inviando il messaggio startBurning, il quale determina la combustione di un RP per una durata predefinita (BTIME secondi).</li>
+				<li>Aggiornare il proprio stato interno in base ai messaggi ricevuti come la notifica l'inizio del processo di incenerimento, il completamento della combustione,inviato dal MonitoringDevice, riporta il livello attuale delle ceneri.</li>
+				<li>Accettazione di un RP attraverso la porta BURNIN.</li>
+				<li>Bruciatura del RP in BTIME secondi.</li>
+				<li>Emissione di un segnale alla fine del processo per avvisare il sistema.</li>
+				<li>Espulsione delle ceneri tramite la porta BURNOUT.</li>
         </ul>
 
-		<h4>WIS</h4>
-		<p> Il WIS è modellato come attore (wis.qak). Il suo compito in questa fase è quello di mantenere lo stato attuale dell'inceneritore (acceso o spento) e il livello della cenere.
-			Per questo motivo il WIS interagirà con gli attori Incinerator e MonitoringDevice che saranno descritti nelle sezioni immediatamente successive.
-			Abbiamo scelto di dare più responsabilità al WIS perchè in quanto rappresentazione del sistema ha senso che gestisca le azioni dell'OpRobot e dell'Incenerator.
-			Detta anche lo stato della gui</p>
-
+		<h3>mancano bilancia e sonar</h3>
+	</ul>
+		<h2>Supporto Software</h2>
+			<p>Il Sonar e il Led sono dispositivi fisici per cui il committente fornisce software di supporto per il loro utilizzo:</p>
+			<ul>
+				<li><strong>RaspBasicCode</strong></li>
+				<li><strong>RaspApplCode24</strong></li>
+			</ul>
+	
+			<h2>Modellazione come Attore</h2>
+			<p>Analogamente all'OpRobot con il DDR robot, è possibile modellare il <strong>MonitoringDevice</strong> come un attore esterno al sistema, che interagisce con i dispositivi fisici associati.</p>
+			<p>La distanza <strong>DLIMIT</strong> sarà definita come una variabile intera e positiva dell'attore.</p>
         <h2>Test Plan</h2>
+		WIS
         <p>Per verificare il corretto funzionamento del sistema, sono previsti test sui seguenti aspetti, considerando il movimento come quello di un robot:</p>
         <ul>
             <li>Verifica del corretto spostamento dell’OpRobot tra i vari punti della Service Area.</li>
