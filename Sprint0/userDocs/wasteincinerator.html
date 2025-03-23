@@ -356,6 +356,7 @@ div.imagedesc{
 				<li>Lo stato dell'Incinerator può essere <i>On</i>, <i>Off</i> e <i>Idle</i>.</li>
 				<li>L'inceneritore può trattare un RP alla volta.</li>
 				<li>Il processo di combustione richiede BTIME secondi.</li>
+				<li>WIS e OPRobot dovranno essere notificati a fine incenerimento.</li>
 			</ul>
 		</ul>
 		<h3>MonitoringDevice</h3>
@@ -367,21 +368,25 @@ div.imagedesc{
 		<br>
 		<h3>DDRRobot</h3>
 		<ul>
+			Il DDRRobot è il robot fornito dal committente che permette la rappresentazione fisica dell'OPRobot. Viene rappresentato come un attore autonomo che opera all'interno di un proprio contesto esecutivo. 
+			Per approfondire le sue modalità di interazione e i dettagli tecnici, si può fare riferimento a <a href="">BasicRobot</a>.
 		</ul>
-		<h3>OPRobot</h3>
-		<p>L'<strong>OpRobot</strong> si occupa di spostarsi tra le varie aree operative del sistema, raggiungendo le posizioni 
-			<strong>WASTEIN, BURNIN, BURNOUT, ASHOUT</strong> e <strong>HOME</strong>.</p>
-			
-			<p>Le sue funzioni principali includono:</p>
+			<h3>OPRobot</h3>
 			<ul>
-				<li>Il prelievo dei rifiuti da <strong>WASTEIN</strong> per il trasferimento in <strong>BURNIN</strong>.</li>
-				<li>Il ritorno a <strong>HOME</strong> durante la fase di bruciatura dell'inceneritore o in assenza di attività.</li>
-				<li>La raccolta delle ceneri da <strong>BURNOUT</strong> per il loro scarico in <strong>ASHOUT</strong>.</li>
-			</ul>
-			<p> È controllato dal WIS, che invia istruzioni al BasicRobot24 per gestirne il movimento e le operazioni.</p>
+			<p>L'<strong>OpRobot</strong> si occupa di spostarsi tra le varie aree operative del sistema, raggiungendo le posizioni 
+				<strong>WASTEIN, BURNIN, BURNOUT, ASHOUT</strong> e <strong>HOME</strong>.</p>
+				
+				<p>Le sue funzioni principali includono:</p>
+				<ul>
+					<li>Il prelievo dei rifiuti da <strong>WASTEIN</strong> per il trasferimento in <strong>BURNIN</strong>.</li>
+					<li>Il ritorno a <strong>HOME</strong> durante la fase di bruciatura dell'inceneritore o in assenza di attività.</li>
+					<li>La raccolta delle ceneri da <strong>BURNOUT</strong> per il loro scarico in <strong>ASHOUT</strong>.</li>
+				</ul>
+				<p> È controllato dal WIS, che invia istruzioni al BasicRobot24 per gestirne il movimento e le operazioni.</p>
 
 
-		<br>
+			<br>
+		</ul>
 		<h3>WIS</h3>
         <ul>
 			L'attore WIS è incaricato di gestire lo stato dell'inceneritore, mantenendo traccia del suo stato (<i>On/Off/Idle</i>) e del livello di cenere accumulata. Per svolgere queste operazioni, interagisce direttamente con gli attori Incinerator e MonitoringDevice.
@@ -410,14 +415,14 @@ div.imagedesc{
 			<p>Analogamente all'OpRobot con il DDR robot, è possibile modellare il <strong>MonitoringDevice</strong> come un attore esterno al sistema, che interagisce con i dispositivi fisici associati.</p>
 			<p>La distanza <strong>DLIMIT</strong> sarà definita come una variabile intera e positiva dell'attore.</p>
         <h2>Test Plan</h2>
-		WIS
-        <p>Per verificare il corretto funzionamento del sistema, sono previsti test sui seguenti aspetti, considerando il movimento come quello di un robot:</p>
-        <ul>
-            <li>Verifica del corretto spostamento dell’OpRobot tra i vari punti della Service Area.</li>
-            <li>Controllo della gestione delle ceneri e del livello misurato dal Sonar.</li>
-            <li>Validazione dei segnali del LED e della loro coerenza con lo stato del sistema.</li>
-            <li>Test di integrazione tra tutti i componenti per garantire il corretto ciclo operativo.</li>
-        </ul>
+			Per validare il corretto funzionamento del sistema, è possibile eseguire un primo test semplice focalizzato sul core business: il processo di incenerimento.<br>
+            <b>Test di Base: Simulazione dell’Incenerimento.</b><br>
+            Partendo da una condizione iniziale in cui tutti i container sono vuoti, un utente, attraverso un'interfaccia grafica, può inserire un RP (rifiuto processabile) all'interno del WasteStorage. Dopo un determinato intervallo di tempo, il sistema dovrà mostrare che:
+			<ul>
+                <li>Il livello del WasteStorage è diminuito di 1.</li>
+                <li>Il livello dell'AshStorage è aumentato di 1.</li>
+			</ul>
+            Questo test consentirà di verificare che il flusso base dell’incenerimento funzioni correttamente
 
         <h2>Deployment</h2>
         <p>Questa sezione sarà completata nelle fasi successive del progetto.</p>
