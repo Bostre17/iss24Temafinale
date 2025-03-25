@@ -1,0 +1,69 @@
+System oprobot
+
+// Dispatches for system communication
+Dispatch go : go(ACTION)
+Dispatch status : status(CONDITION)
+
+Context ctxoprobot ip [host="localhost" port=8030]
+
+QActor oprobot context ctxoprobot {
+    [#
+    var ashStorageFull = false
+    var wasteStorageEmpty = true
+    var incineratorBusy = false
+    #]
+
+    State s0 initial {
+        println("$name attivo")
+    }
+    Goto home 
+
+    State home {
+        println("Robot in home position")
+    }
+    Transition t0 
+        whenMsg go -> checkMovement
+        whenMsg status -> updateStatus
+
+    State checkMovement {
+        onMsg(go : go(ACTION)) {
+            //ci andrebbe un if qak non so come farlo"(ACTION == 'wasteStorage' && !ashStorageFull && !wasteStorageEmpty && !incineratorBusy)"
+
+               println("Condizioni soddisfatte: spostamento in waste storage")
+        }
+    }
+    Goto wasteStorage
+
+    State wasteStorage {
+        println("Prelievo Radioactive Pulp (RP)")
+        [# wasteStorageEmpty = true #]
+    }
+    Goto burnin
+
+    State burnin {
+        println("Deposito RP nella porta di incenerimento")
+    }
+    Goto home
+
+    State burnout {
+        println("Prelievo cenere dalla porta di burnout")
+    }
+    Goto ashout 
+
+    State ashout {
+        println("Deposito cenere in ash storage")
+        [# ashStorageFull = true #]
+    }
+    Goto home
+
+    State updateStatus {
+        onMsg(status : status(CONDITION)) {
+            [# 
+            if(CONDITION == "ashFull") ashStorageFull = true
+            if(CONDITION == "wasteEmpty") wasteStorageEmpty = true
+            if(CONDITION == "incineratorBusy") incineratorBusy = true
+            #]
+        }
+    }
+    Goto home
+}

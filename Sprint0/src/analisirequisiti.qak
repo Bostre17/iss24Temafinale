@@ -1,0 +1,82 @@
+System sprintzero
+Event burnEnd: burnEnd(X)
+Event startUp: startUp(X)
+Event burning: burning(X)
+Event finishedBurning: finishedBurning(X)
+Event startIncinerator: startIncinerator(X)
+Event startBurning: startBurning(X)
+Event ashMeasurement: ashMeasurement(level)
+
+Context ctxservicearea ip [host="localhost" port=8016]
+
+QActor wis context ctxservicearea {
+    State s0 initial {
+        printCurrentMessage
+        delay 300
+        println("WIS: Initializing system") color blue
+    }
+    Goto idle
+
+    State idle {
+        println("WIS: Waiting for system events") color blue
+    }
+    Transition t0 
+        whenEvent startIncinerator -> prepareIncinerator
+        whenEvent ashMeasurement -> updateAshLevel
+
+    State prepareIncinerator {
+        println("WIS: Preparing incinerator") color blue
+        emit startBurning : startBurning(go)
+    }
+
+    State updateAshLevel {
+        println("WIS: Updating ash level") color blue
+    }
+    Goto idle
+}
+
+QActor oprobot context ctxservicearea {
+    State home initial {
+        println("(${name}): home") color magenta
+    }
+    Transition t0 
+        whenEvent burnEnd -> gatheringAsh
+
+    State gatheringAsh {
+        println("Oprobot: Gathering ash") color magenta
+    }
+    Goto home
+}
+
+QActor incinerator context ctxservicearea {
+    [#
+    val BTIME = 200L
+    var burningInProgress = false
+    #]
+
+    State s0 initial {
+        printCurrentMessage
+        println("Incinerator: Initialized") color green
+    }
+    Transition t0 
+        whenEvent startUp -> standby
+        whenEvent startBurning -> startBurningCycle
+
+    State standby {
+        println("Incinerator: Standing by") color green
+    }
+
+    State startBurningCycle {
+        println("Incinerator: Starting burning cycle") color green
+        emit burning : burning(start)
+
+        [#
+        burningInProgress = true
+        #]
+
+
+        emit finishedBurning : finishedBurning(complete)
+        emit burnEnd : burnEnd(stop)
+    }
+    Goto standby
+}

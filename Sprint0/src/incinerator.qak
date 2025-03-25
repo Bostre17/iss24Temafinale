@@ -1,32 +1,43 @@
-System wasteinceneratorsystem
+System incinerator
 
-Event burnEnd : burnEnd(BTIME)
-
+Event startUp: startUp(BTIME)
+Event startBurning: startBurning(BTIME)
+Event burning: burning(start)
+Event finishedBurning : finishedBurning(complete)
+Event burnEnd : burnEnd(stop)
 
 Context ctxincinerator ip [host="localhost" port=8001] 
 
-QActor incenerator context ctxincinerator{
-	[#	
-		val Btime = 10000L 	
-		val name = "Incinerator"
-	#]
-	State off initial{
-		println("$name is OFF")
-	}
-	
-	State idle{
-		println("$name is IDLE")
-	}
-			
-	State burn{
-		println("$name is ON")
-		[#delay Btime*1000#]
-		emit burnEnd : burnend($Btime)
-	}
-	Goto idle
-	
-	// Transition t0 whenMsg cmd -> idle
-	// L'analisi dei requisiti, per cmd, definirà poi
-	//	- il mittente del messaggio
-	// 	- il tipo di messaggio
+
+QActor incinerator context ctxincinerator {
+    [#
+    val BTIME = 200L
+    var burningInProgress = false
+    #]
+
+    State s0 initial {
+        printCurrentMessage
+        println("Incinerator: Initialized") color green
+    }
+    Transition t0 
+        whenEvent startUp -> standby
+        whenEvent startBurning -> startBurningCycle
+
+    State standby {
+        println("Incinerator: Standing by") color green
+    }
+
+    State startBurningCycle {
+        println("Incinerator: Starting burning cycle") color green
+        emit burning : burning(start)
+
+        [#
+        burningInProgress = true
+        #]
+
+
+        emit finishedBurning : finishedBurning(complete)
+        emit burnEnd : burnEnd(stop)
+    }
+    Goto standby
 }

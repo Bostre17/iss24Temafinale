@@ -21,11 +21,10 @@ evattr = {
     'color': 'darkgreen',
     'style': 'dotted'
 }
-with Diagram('wasteinceneratorsystemArch', show=False, outformat='png', graph_attr=graphattr) as diag:
+with Diagram('oprobotArch', show=False, outformat='png', graph_attr=graphattr) as diag:
   with Cluster('env'):
      sys = Custom('','./qakicons/system.png')
 ### see https://renenyffenegger.ch/notes/tools/Graphviz/attributes/label/HTML-like/index
-     with Cluster('ctxincinerator', graph_attr=nodeattr):
-          incenerator=Custom('incenerator','./qakicons/symActorSmall.png')
-     incenerator >> Edge( label='burnEnd', **eventedgeattr, decorate='true', fontcolor='red') >> sys
+     with Cluster('ctxoprobot', graph_attr=nodeattr):
+          oprobot=Custom('oprobot','./qakicons/symActorSmall.png')
 diag

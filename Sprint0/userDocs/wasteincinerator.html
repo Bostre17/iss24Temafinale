@@ -340,30 +340,39 @@ div.imagedesc{
 		<br>
 		<h3>WasteStorage e AshStorage</h3>
 		<ul>
-			WasteStorage e AshStorage sono entità non facenti parte del sistema che però vi comunicano attraverso il deposito di spazzatura ed il raccoglimento di ceneri, 
-			attraverso la loro misurazione da parte di sensori presenti all'interno di ogni area (scale in WasteStorage, sonar in AshStorage), in cui il WIS terrà traccia dello stato.
+			WasteStorage e AshStorage sono entità fuori dal sistema che però vi comunicano attraverso il deposito di spazzatura ed il raccoglimento di ceneri, 
+			i quali verranno misurati dai sensori presenti (scale in WasteStorage, sonar in AshStorage).<br>
+			WasteStorage è collegato a Scale, mentre AshStorage è collegato al Sonar: attraverso un apposito supporto software sarebbe possibile ottenere lo stato di ogni sensore,
+			dove poi ne terrà traccia il WIS.
 			
 		</ul>
 		<h3>Incinerator</h3>
 		<ul>
-			L'Incinerator è l'entità che si occupa di bruciare i rifiuti che vengono portati nella WasteIn port.
-			Analizzando la richiesta del committente, è obbligo considerare l'Incinerator come entità attiva, 
-			in quanto ha necessità di dover emettere un segnale (acustico o di altro tipo) che può essere percepito dall'OpRobot e dal WIS.
-			Inoltre, l'Incinerator deve essere anche in grado di ricevere un segnale di attivazione, 
-			il quale non è stato correttamente definito dal committente, quindi non è possibile un analisi più approfondita. 
-			Si evince però che:
+			L'Incinerator è un'entità che si occupa di bruciare i rifiuti che vengono portati nella WasteIn port.<br>
+			Dalla richiesta del committente si evinceche:
 			<ul>
 				<li>Lo stato dell'Incinerator può essere <i>On</i>, <i>Off</i> e <i>Idle</i>.</li>
 				<li>L'inceneritore può trattare un RP alla volta.</li>
 				<li>Il processo di combustione richiede BTIME secondi.</li>
 				<li>WIS e OPRobot dovranno essere notificati a fine incenerimento.</li>
+			Analizzando la richiesta del committente, è obbligo considerare l'Incinerator come entità attiva 
+			in quanto ha necessità, a fine incenerimento, di dover emettere un segnale (acustico o di altro tipo) che può essere percepito dall'OpRobot e dal WIS.<br>
+			Essendo un'entità attiva è quindi modellabile come un attore QAK che, a fine incenermento, notifica le altre entità attraverso un Evento.
+			<!-- Grafico Incinerator e evento-->
+			Inoltre, l'Incinerator deve essere anche in grado di ricevere un segnale di attivazione, 
+			il quale non è stato correttamente definito dal committente, quindi non è possibile un analisi più approfondita. 
+			
 			</ul>
 		</ul>
 		<h3>MonitoringDevice</h3>
 		<ul>
-			<li>Il <strong>Sonar</strong> misura il livello delle ceneri nell'AshStorage container.</li>
-			<li>La soglia <strong>DLIMIT</strong> definisce il livello minimo sotto il quale il contenitore è considerato pieno.</li>
-			<li>Il <strong>Led</strong> funge da dispositivo di allerta, segnalando lo stato dell'<strong>Inceneritore</strong> e dell'<strong>AshStorage</strong>.</li>
+			Il MonitoringDevice è un'entità attiva, quindi modellabile come attore QAK, composta da due componenti:
+			<ul>
+				<li><strong>Sonar:</strong> si occupa di misurare i livelli di cenere dell'AshStorage, utilizzando il sonar fisico fornito dal committente.</li>
+				<li><strong>WarningDevice:</strong> si occupa di allarmare visivamente attraverso l'utilizzo di un led secondo le regole definite dal committente.</li>
+			</ul>
+			Come specificato dai requisiti, sia il sonar che il led sono montati su un RaspberryPI, quindi in un contesto separato da quello del sistema.
+			Esso deve essere in grado di comunicare al WIS lo stato del Sonar, la cui modalità non è stata definito dal committente, quindi non è possibile fare un'analisi più approfondita.
 		</ul>
 		<br>
 		<h3>DDRRobot</h3>
@@ -371,49 +380,32 @@ div.imagedesc{
 			Il DDRRobot è il robot fornito dal committente che permette la rappresentazione fisica dell'OPRobot. Viene rappresentato come un attore autonomo che opera all'interno di un proprio contesto esecutivo. 
 			Per approfondire le sue modalità di interazione e i dettagli tecnici, si può fare riferimento a <a href="">BasicRobot</a>.
 		</ul>
-			<h3>OPRobot</h3>
-			<ul>
-			<p>L'<strong>OpRobot</strong> si occupa di spostarsi tra le varie aree operative del sistema, raggiungendo le posizioni 
-				<strong>WASTEIN, BURNIN, BURNOUT, ASHOUT</strong> e <strong>HOME</strong>.</p>
-				
-				<p>Le sue funzioni principali includono:</p>
-				<ul>
-					<li>Il prelievo dei rifiuti da <strong>WASTEIN</strong> per il trasferimento in <strong>BURNIN</strong>.</li>
-					<li>Il ritorno a <strong>HOME</strong> durante la fase di bruciatura dell'inceneritore o in assenza di attività.</li>
-					<li>La raccolta delle ceneri da <strong>BURNOUT</strong> per il loro scarico in <strong>ASHOUT</strong>.</li>
-				</ul>
-				<p> È controllato dal WIS, che invia istruzioni al BasicRobot24 per gestirne il movimento e le operazioni.</p>
-
-
+		<h3>OPRobot</h3>
+		<ul>
+		<p> L'OpRobot è un'entità che esegue sopra il robot fisico DDRRobot fornito dal committente.<br>
+			E' un entità attiva in quanto ha la necessità di ricevere un segnale da parte del ripetitore e, quindi, modellabile come attore QAK.<br>
+			Conosce il concetto di ServiceArea, quindi conosce le posizioni e grandezze dei punti di interesse presenti.
+			<!-- Aggiugnere codice qak e spiegazione del perchè non è implementato (perchè commentato)-->
 			<br>
 		</ul>
-		<h3>WIS</h3>
+		<h3>WasteIncineratorService</h3>
         <ul>
-			L'attore WIS è incaricato di gestire lo stato dell'inceneritore, mantenendo traccia del suo stato (<i>On/Off/Idle</i>) e del livello di cenere accumulata. Per svolgere queste operazioni, interagisce direttamente con gli attori Incinerator e MonitoringDevice.
-			Il WIS ha il ruolo di coordinare le operazioni fondamentali del sistema e di comunicare con gli altri attori. Le sue principali responsabilità includono:
-			
+			Il WasteIncineratorService (WIS) è un'entità incaricata di mantenere le informazioni sullo stato del sistema.<br>
+			Può essere considerato un'entità attiva, quindi modellabile come attore QAK, in quanto deve:
 			<ul>
-				<li>Inviare un segnale di attivazione all'Incinerator</li>
-				<li>Avviare il processo di incenerimento inviando il messaggio startBurning, il quale determina la combustione di un RP per una durata predefinita (BTIME secondi).</li>
-				<li>Aggiornare il proprio stato interno in base ai messaggi ricevuti come la notifica l'inizio del processo di incenerimento, il completamento della combustione,inviato dal MonitoringDevice, riporta il livello attuale delle ceneri.</li>
-				<li>Accettazione di un RP attraverso la porta BURNIN.</li>
-				<li>Bruciatura del RP in BTIME secondi.</li>
-				<li>Emissione di un segnale alla fine del processo per avvisare il sistema.</li>
-				<li>Espulsione delle ceneri tramite la porta BURNOUT.</li>
-        </ul>
-
-		<h3>mancano bilancia e sonar</h3>
-	</ul>
-		<h2>Supporto Software</h2>
-			<p>Il Sonar e il Led sono dispositivi fisici per cui il committente fornisce software di supporto per il loro utilizzo:</p>
-			<ul>
-				<li><strong>RaspBasicCode</strong></li>
-				<li><strong>RaspApplCode24</strong></li>
+				<li>ricevere informazioni dall'Incinerator riguardo la terminazione dell'incenerimento;</li>
+				<li>comunicare con i supporti software di sonar e scale, ricevendo lo stato di riempimento dell'AshStorage e del peso del WasteStorage.</li>
 			</ul>
-	
-			<h2>Modellazione come Attore</h2>
-			<p>Analogamente all'OpRobot con il DDR robot, è possibile modellare il <strong>MonitoringDevice</strong> come un attore esterno al sistema, che interagisce con i dispositivi fisici associati.</p>
-			<p>La distanza <strong>DLIMIT</strong> sarà definita come una variabile intera e positiva dell'attore.</p>
+			Il WIS è incaricato, inoltre, di fornire alla ServiceStatusGUI (SSGUI) le informazioni specificate dal committente, quindi:
+			<ul>
+				<li><strong>Stato Incineritor:</strong> il WIS, come già descritto precedentemente, riceve una notifica tramite evento la terminazione dell'incenerimento, ma non è chiaro di come venga a conoscenza dell'azione di inizio.</li>
+				<li><strong>Stato WasteStorage:</strong> numero di RP presenti che, conoscendone il peso unitario ed il peso complessivo, è facilmente calcolabile;</li>
+				<li><strong>Stato AshStorage:</strong> deducibile dalla distanza fornita dal sonar;</li>
+				<li><strong>Stato OpRobot:</strong> come definito dai requisiti, il WIS conosce la posizione esatta dell'OpRobot in qualunque momento e l'azione che esso sta svolgendo.</li>
+			</ul>
+        </ul>
+	</ul>
+
         <h2>Test Plan</h2>
 			Per validare il corretto funzionamento del sistema, è possibile eseguire un primo test semplice focalizzato sul core business: il processo di incenerimento.<br>
             <b>Test di Base: Simulazione dell’Incenerimento.</b><br>
@@ -423,12 +415,8 @@ div.imagedesc{
                 <li>Il livello dell'AshStorage è aumentato di 1.</li>
 			</ul>
             Questo test consentirà di verificare che il flusso base dell’incenerimento funzioni correttamente
-
-        <h2>Deployment</h2>
-        <p>Questa sezione sarà completata nelle fasi successive del progetto.</p>
-
-        <h2>Maintenance</h2>
-        <p>Piani di manutenzione e miglioramenti futuri saranno implementati dopo la fase di testing.</p>
+			<br>
+			<br>
     </div>
 
     <div style="background-color:rgba(86, 56, 253, 0.9); width:60%;text-align:left;color:white">
