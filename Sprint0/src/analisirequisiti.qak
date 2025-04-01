@@ -7,7 +7,7 @@ Event startIncinerator: startIncinerator(X)
 Event startBurning: startBurning(X)
 Event ashMeasurement: ashMeasurement(level)
 
-Context ctxservicearea ip [host="localhost" port=8016]
+Context ctxservicearea ip [host="localhost" port=8003]
 
 QActor wis context ctxservicearea {
     State s0 initial {

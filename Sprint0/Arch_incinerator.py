@@ -27,9 +27,5 @@ with Diagram('incineratorArch', show=False, outformat='png', graph_attr=graphatt
 ### see https://renenyffenegger.ch/notes/tools/Graphviz/attributes/label/HTML-like/index
      with Cluster('ctxincinerator', graph_attr=nodeattr):
           incinerator=Custom('incinerator','./qakicons/symActorSmall.png')
-     sys >> Edge( label='startUp', **evattr, decorate='true', fontcolor='darkgreen') >> incinerator
-     sys >> Edge( label='startBurning', **evattr, decorate='true', fontcolor='darkgreen') >> incinerator
-     incinerator >> Edge( label='burning', **eventedgeattr, decorate='true', fontcolor='red') >> sys
-     incinerator >> Edge( label='finishedBurning', **eventedgeattr, decorate='true', fontcolor='red') >> sys
      incinerator >> Edge( label='burnEnd', **eventedgeattr, decorate='true', fontcolor='red') >> sys
 diag

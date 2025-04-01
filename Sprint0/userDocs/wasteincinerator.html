@@ -273,7 +273,7 @@ div.imagedesc{
 				<img src="_images/ModelloStanza.png" alt="Modello stanza" width="15%">
 			</div>
 			<li>Poiché la stanza ha una forma rettangolare, si ha <span class="formula">lf = lr</span> e <span class="formula">ld = lu</span>. Per comodità, i lati orizzontali verranno indicati con <span class="formula">LO</span> e quelli verticali con <span class="formula">LV</span>.</li>
-			<li>Il DDRRobot fornito dal committente ha un ingombro tale da poter essere racchiuso in un cerchio di raggio <span class="formula">R</span>, quindi il suo diametro risulta <span class="formula">DR = 2R</span>.</li>
+			<li>Il DDR robot fornito dal committente ha un ingombro tale da poter essere racchiuso in un cerchio di raggio <span class="formula">R</span>, quindi il suo diametro risulta <span class="formula">DR = 2R</span>.</li>
 		</ul>
 		<div style="text-align: center; padding-top: 10px; padding-bottom: 10px;">
 			<img src="img/WasteIncineratorGrid.jpg" alt="Mappa" width="50%">
@@ -340,16 +340,15 @@ div.imagedesc{
 		<br>
 		<h3>WasteStorage e AshStorage</h3>
 		<ul>
-			WasteStorage e AshStorage sono entità fuori dal sistema che però vi comunicano attraverso il deposito di spazzatura ed il raccoglimento di ceneri, 
-			i quali verranno misurati dai sensori presenti (scale in WasteStorage, sonar in AshStorage).<br>
-			WasteStorage è collegato a Scale, mentre AshStorage è collegato al Sonar: attraverso un apposito supporto software sarebbe possibile ottenere lo stato di ogni sensore,
-			dove poi ne terrà traccia il WIS.
+			Nel sistema, WasteStorage e AshStorage rappresentano rispettivamente il magazzino della spazzatura e il deposito delle ceneri.
+			WasteStorage è collegato a Scale, che ne misura la quantità di spazzatura, mentre AshStorage è collegato al Sonar, che ne misura la quantità di cenere.
+			Attraverso un apposito supporto software, sarebbe possibile ottenere lo stato di ogni sensore, il quale verrà registrato dal WIS.
 			
 		</ul>
 		<h3>Incinerator</h3>
 		<ul>
 			L'Incinerator è un'entità che si occupa di bruciare i rifiuti che vengono portati nella WasteIn port.<br>
-			Dalla richiesta del committente si evinceche:
+			Dalla richiesta del committente si evince che:
 			<ul>
 				<li>Lo stato dell'Incinerator può essere <i>On</i>, <i>Off</i> e <i>Idle</i>.</li>
 				<li>L'inceneritore può trattare un RP alla volta.</li>
@@ -358,7 +357,10 @@ div.imagedesc{
 			Analizzando la richiesta del committente, è obbligo considerare l'Incinerator come entità attiva 
 			in quanto ha necessità, a fine incenerimento, di dover emettere un segnale (acustico o di altro tipo) che può essere percepito dall'OpRobot e dal WIS.<br>
 			Essendo un'entità attiva è quindi modellabile come un attore QAK che, a fine incenermento, notifica le altre entità attraverso un Evento.
-			<!-- Grafico Incinerator e evento-->
+			<!-- mettere link ai file qak-->
+			<div style="text-align: center; padding-top: 10px; padding-bottom: 10px;">
+				<img src="../incineratorarch.png" alt="incinerator arch" width="60%" height="60%">
+			</div>
 			Inoltre, l'Incinerator deve essere anche in grado di ricevere un segnale di attivazione, 
 			il quale non è stato correttamente definito dal committente, quindi non è possibile un analisi più approfondita. 
 			
@@ -375,16 +377,17 @@ div.imagedesc{
 			Esso deve essere in grado di comunicare al WIS lo stato del Sonar, la cui modalità non è stata definito dal committente, quindi non è possibile fare un'analisi più approfondita.
 		</ul>
 		<br>
-		<h3>DDRRobot</h3>
+		<h3>DDR robot</h3>
 		<ul>
-			Il DDRRobot è il robot fornito dal committente che permette la rappresentazione fisica dell'OPRobot. Viene rappresentato come un attore autonomo che opera all'interno di un proprio contesto esecutivo. 
+			Il DDR robot è il robot fornito dal committente che permette la rappresentazione fisica dell'OPRobot. Viene rappresentato come un attore autonomo che opera all'interno di un proprio contesto esecutivo. 
 			Per approfondire le sue modalità di interazione e i dettagli tecnici, si può fare riferimento a <a href="">BasicRobot</a>.
 		</ul>
 		<h3>OPRobot</h3>
 		<ul>
-		<p> L'OpRobot è un'entità che esegue sopra il robot fisico DDRRobot fornito dal committente.<br>
+		<p> L'OpRobot è un'entità che esegue nel DDR robot fornito dal committente.<br>
 			E' un entità attiva in quanto ha la necessità di ricevere un segnale da parte del ripetitore e, quindi, modellabile come attore QAK.<br>
 			Conosce il concetto di ServiceArea, quindi conosce le posizioni e grandezze dei punti di interesse presenti.
+			<!-- mettere link ai file qak-->
 			<!-- Aggiugnere codice qak e spiegazione del perchè non è implementato (perchè commentato)-->
 			<br>
 		</ul>
@@ -419,15 +422,16 @@ div.imagedesc{
 			<br>
     </div>
 
-    <div style="background-color:rgba(86, 56, 253, 0.9); width:100%;text-align:left;color:white">
-		By
-		<ul>
+    <div style="background-color:rgba(86, 56, 253, 0.9); width:100%;text-align:left;color:white;">
+		
+		<ul style="margin:15px">
+			By
 			<li>Bostrenghi Matteo email: matteo.bostrenghi@studio.unibo.it<br>
 				<img src="./img/bostrenghi.png" alt="bostrenghi" width="15%" height="15%"></li>
 			<li>Severini Lorenzo email: lorenzo.severini5@studio.unibo.it<br>
 				<img src="./img/severini.png" alt="severini" width="15%" height="15%"><br></li>
+			GIT repo: <a href="https://github.com/Bostre17/iss24Temafinale" style="color:white;">https://github.com/Bostre17/iss24Temafinale</a>
 		</ul>
-        GIT repo: <a href="https://github.com/Bostre17/iss24Temafinale" style="color:white;">https://github.com/Bostre17/iss24Temafinale</a>
     </div> 
 </body>
 </html>

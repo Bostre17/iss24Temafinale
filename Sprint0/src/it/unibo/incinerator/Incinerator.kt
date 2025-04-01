@@ -27,46 +27,39 @@ class Incinerator ( name: String, scope: CoroutineScope, isconfined: Boolean=fal
 	}
 	override fun getBody() : (ActorBasicFsm.() -> Unit){
 		//val interruptedStateTransitions = mutableListOf<Transition>()
-		
-		    val BTIME = 200L
-		    var burningInProgress = false
+		val BTIME = 100L 
 		return { //this:ActionBasciFsm
 				state("s0") { //this:State
 					action { //it:State
 						CommUtils.outcyan("$name in ${currentState.stateName} | $currentMsg | ${Thread.currentThread().getName()} n=${Thread.activeCount()}")
 						 	   
-						CommUtils.outgreen("Incinerator: Initialized")
-						//genTimer( actor, state )
-					}
-					//After Lenzi Aug2002
-					sysaction { //it:State
-					}	 	 
-					 transition(edgeName="t00",targetState="standby",cond=whenEvent("startUp"))
-					transition(edgeName="t01",targetState="startBurningCycle",cond=whenEvent("startBurning"))
-				}	 
-				state("standby") { //this:State
-					action { //it:State
-						CommUtils.outgreen("Incinerator: Standing by")
+						CommUtils.outgreen("Incinerator: initialized")
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
 				}	 
-				state("startBurningCycle") { //this:State
+				state("idle") { //this:State
 					action { //it:State
-						CommUtils.outgreen("Incinerator: Starting burning cycle")
-						emit("burning", "burning(start)" ) 
-						
-						        burningInProgress = true
-						emit("finishedBurning", "finishedBurning(complete)" ) 
-						emit("burnEnd", "burnEnd(stop)" ) 
+						CommUtils.outgreen("Incinerator: idle")
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition( edgeName="goto",targetState="standby", cond=doswitch() )
+				}	 
+				state("on") { //this:State
+					action { //it:State
+						CommUtils.outgreen("Incinerator: burning")
+						delay BTIME*1000 
+						emit("burnEnd", "burnEnd(BTIME)" ) 
+						//genTimer( actor, state )
+					}
+					//After Lenzi Aug2002
+					sysaction { //it:State
+					}	 	 
+					 transition( edgeName="goto",targetState="idle", cond=doswitch() )
 				}	 
 			}
 		}

@@ -1,43 +1,36 @@
 System incinerator
 
-Event startUp: startUp(BTIME)
-Event startBurning: startBurning(BTIME)
-Event burning: burning(start)
-Event finishedBurning : finishedBurning(complete)
-Event burnEnd : burnEnd(stop)
+Event burnEnd : burnEnd(BTIME)
 
 Context ctxincinerator ip [host="localhost" port=8001] 
 
 
 QActor incinerator context ctxincinerator {
-    [#
-    val BTIME = 200L
-    var burningInProgress = false
-    #]
+    [#val BTIME = 100L#]
 
     State s0 initial {
         printCurrentMessage
-        println("Incinerator: Initialized") color green
+        println("Incinerator: initialized") color green
     }
-    Transition t0 
-        whenEvent startUp -> standby
-        whenEvent startBurning -> startBurningCycle
+    //Transition t0 whenMsg cmd -> idle
+    //	messaggio di transizione da iniziale a idle;
+    //	ancora da definire il mittente ed il tipo di messaggio 
+    //	in quanto non è specificato dal committente
 
-    State standby {
-        println("Incinerator: Standing by") color green
+    State idle {
+        println("Incinerator: idle") color green
     }
-
-    State startBurningCycle {
-        println("Incinerator: Starting burning cycle") color green
-        emit burning : burning(start)
-
-        [#
-        burningInProgress = true
-        #]
-
-
-        emit finishedBurning : finishedBurning(complete)
-        emit burnEnd : burnEnd(stop)
+    //	non è ancora chiaro come passare dallo stato idle
+    //	a quello On in quanto non è chiaramente specificato
+    //	dal committente
+    
+    State on {
+        println("Incinerator: burning") color green
+		//simulazione del processo di incenerimento
+		[#delay BTIME*1000#]
+        emit burnEnd : burnEnd(BTIME)
     }
-    Goto standby
+   	Goto idle
+    
+        
 }

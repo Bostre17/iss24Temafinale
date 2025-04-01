@@ -9,7 +9,7 @@ event( startIncinerator, startIncinerator(X) ).
 event( startBurning, startBurning(X) ).
 event( ashMeasurement, ashMeasurement(level) ).
 %====================================================================================
-context(ctxservicearea, "localhost",  "TCP", "8016").
+context(ctxservicearea, "localhost",  "TCP", "8003").
  qactor( wis, ctxservicearea, "it.unibo.wis.Wis").
  static(wis).
   qactor( oprobot, ctxservicearea, "it.unibo.oprobot.Oprobot").

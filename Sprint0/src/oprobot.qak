@@ -1,69 +1,51 @@
 System oprobot
 
-// Dispatches for system communication
 Dispatch go : go(ACTION)
-Dispatch status : status(CONDITION)
 
-Context ctxoprobot ip [host="localhost" port=8030]
+Context ctxoprobot ip [host="localhost" port=8002]
 
 QActor oprobot context ctxoprobot {
-    [#
-    var ashStorageFull = false
-    var wasteStorageEmpty = true
-    var incineratorBusy = false
-    #]
 
     State s0 initial {
         println("$name attivo")
     }
-    Goto home 
+    Goto home
+    
+    //	Da considerare alla fine di State home e State ashout:
+    // 		se il contenitore WasteStorage non è vuoto, il contenitore AshStorage non è pieno e 
+	//		l'inceneritore non è in fase di combustione, passare alla porta WASTEIN. 
+	//		Se una delle condizioni non è vera, attendere a HOME finché non diventa vera.
 
     State home {
         println("Robot in home position")
     }
-    Transition t0 
-        whenMsg go -> checkMovement
-        whenMsg status -> updateStatus
-
-    State checkMovement {
-        onMsg(go : go(ACTION)) {
-            //ci andrebbe un if qak non so come farlo"(ACTION == 'wasteStorage' && !ashStorageFull && !wasteStorageEmpty && !incineratorBusy)"
-
-               println("Condizioni soddisfatte: spostamento in waste storage")
-        }
-    }
-    Goto wasteStorage
-
-    State wasteStorage {
-        println("Prelievo Radioactive Pulp (RP)")
-        [# wasteStorageEmpty = true #]
-    }
-    Goto burnin
+    //Transition t0 whenMsg go -> wastein
+    //				whenMsg go -> burnout
+ 
+    
+    //	messaggio di transizione da home a WASTEIN o da home a BURNOUT
+    //	ancora da definire il mittente ed il tipo di messaggio 
+    //	in quanto non è specificato dal committente 
+	
+    State wastein {
+        println("OpRobot: prelievo roll packets da WASTEIN") color green
+    }Goto burnin
 
     State burnin {
-        println("Deposito RP nella porta di incenerimento")
-    }
-    Goto home
+        println("OpRobot: deposito roll packets nella porta BURNIN") color green
+    }Goto home
 
     State burnout {
-        println("Prelievo cenere dalla porta di burnout")
-    }
-    Goto ashout 
+        println("OpRobot: prelievo cenere dalla porta BURNOUT") color green
+    }Goto ashout
 
     State ashout {
-        println("Deposito cenere in ash storage")
-        [# ashStorageFull = true #]
+        println("OpRobot: deposito cenere nella porta ASHOUT") color green
     }
-    Goto home
-
-    State updateStatus {
-        onMsg(status : status(CONDITION)) {
-            [# 
-            if(CONDITION == "ashFull") ashStorageFull = true
-            if(CONDITION == "wasteEmpty") wasteStorageEmpty = true
-            if(CONDITION == "incineratorBusy") incineratorBusy = true
-            #]
-        }
-    }
-    Goto home
+    //Transition t0 whenMsg go -> wastein 
+    //				whenMsg go -> home
+	
+	//	messaggio di transizione da ASHOUT a home o da ASHOUT a WASTEIN
+    //	ancora da definire il mittente ed il tipo di messaggio 
+    //	in quanto non è specificato dal committente
 }

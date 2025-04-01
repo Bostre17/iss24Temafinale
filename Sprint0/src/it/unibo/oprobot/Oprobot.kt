@@ -27,10 +27,6 @@ class Oprobot ( name: String, scope: CoroutineScope, isconfined: Boolean=false  
 	}
 	override fun getBody() : (ActorBasicFsm.() -> Unit){
 		//val interruptedStateTransitions = mutableListOf<Transition>()
-		
-		    var ashStorageFull = false
-		    var wasteStorageEmpty = true
-		    var incineratorBusy = false
 		return { //this:ActionBasciFsm
 				state("s0") { //this:State
 					action { //it:State
@@ -50,26 +46,10 @@ class Oprobot ( name: String, scope: CoroutineScope, isconfined: Boolean=false  
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t00",targetState="checkMovement",cond=whenDispatch("go"))
-					transition(edgeName="t01",targetState="updateStatus",cond=whenDispatch("status"))
 				}	 
-				state("checkMovement") { //this:State
+				state("wastein") { //this:State
 					action { //it:State
-						if( checkMsgContent( Term.createTerm("go(ACTION)"), Term.createTerm("go(ACTION)"), 
-						                        currentMsg.msgContent()) ) { //set msgArgList
-								CommUtils.outblack("Condizioni soddisfatte: spostamento in waste storage")
-						}
-						//genTimer( actor, state )
-					}
-					//After Lenzi Aug2002
-					sysaction { //it:State
-					}	 	 
-					 transition( edgeName="goto",targetState="wasteStorage", cond=doswitch() )
-				}	 
-				state("wasteStorage") { //this:State
-					action { //it:State
-						CommUtils.outblack("Prelievo Radioactive Pulp (RP)")
-						 wasteStorageEmpty = true  
+						CommUtils.outgreen("OpRobot: prelievo roll packets da WASTEIN")
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
@@ -79,7 +59,7 @@ class Oprobot ( name: String, scope: CoroutineScope, isconfined: Boolean=false  
 				}	 
 				state("burnin") { //this:State
 					action { //it:State
-						CommUtils.outblack("Deposito RP nella porta di incenerimento")
+						CommUtils.outgreen("OpRobot: deposito roll packets nella porta BURNIN")
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
@@ -89,7 +69,7 @@ class Oprobot ( name: String, scope: CoroutineScope, isconfined: Boolean=false  
 				}	 
 				state("burnout") { //this:State
 					action { //it:State
-						CommUtils.outblack("Prelievo cenere dalla porta di burnout")
+						CommUtils.outgreen("OpRobot: prelievo cenere dalla porta BURNOUT")
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
@@ -99,30 +79,12 @@ class Oprobot ( name: String, scope: CoroutineScope, isconfined: Boolean=false  
 				}	 
 				state("ashout") { //this:State
 					action { //it:State
-						CommUtils.outblack("Deposito cenere in ash storage")
-						 ashStorageFull = true  
+						CommUtils.outgreen("OpRobot: deposito cenere nella porta ASHOUT")
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition( edgeName="goto",targetState="home", cond=doswitch() )
-				}	 
-				state("updateStatus") { //this:State
-					action { //it:State
-						if( checkMsgContent( Term.createTerm("status(CONDITION)"), Term.createTerm("status(CONDITION)"), 
-						                        currentMsg.msgContent()) ) { //set msgArgList
-								 
-								            if(CONDITION == "ashFull") ashStorageFull = true
-								            if(CONDITION == "wasteEmpty") wasteStorageEmpty = true
-								            if(CONDITION == "incineratorBusy") incineratorBusy = true
-						}
-						//genTimer( actor, state )
-					}
-					//After Lenzi Aug2002
-					sysaction { //it:State
-					}	 	 
-					 transition( edgeName="goto",targetState="home", cond=doswitch() )
 				}	 
 			}
 		}
