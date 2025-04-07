@@ -1,5 +1,6 @@
 System oprobot
 
+Event burnEnd : burnEnd(BTIME)
 Dispatch go : go(ACTION)
 
 Context ctxoprobot ip [host="localhost" port=8002]
@@ -19,7 +20,8 @@ QActor oprobot context ctxoprobot {
     State home {
         println("Robot in home position")
     }
-    //Transition t0 whenMsg go -> wastein
+    Transition t0 whenEvent burnEnd -> burnout
+    //				whenMsg go -> wastein
     //				whenMsg go -> burnout
  
     

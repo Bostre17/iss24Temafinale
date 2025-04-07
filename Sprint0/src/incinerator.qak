@@ -31,6 +31,4 @@ QActor incinerator context ctxincinerator {
         emit burnEnd : burnEnd(BTIME)
     }
    	Goto idle
-    
-        
 }

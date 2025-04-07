@@ -27,4 +27,5 @@ with Diagram('oprobotArch', show=False, outformat='png', graph_attr=graphattr) a
 ### see https://renenyffenegger.ch/notes/tools/Graphviz/attributes/label/HTML-like/index
      with Cluster('ctxoprobot', graph_attr=nodeattr):
           oprobot=Custom('oprobot','./qakicons/symActorSmall.png')
+     sys >> Edge( label='burnEnd', **evattr, decorate='true', fontcolor='darkgreen') >> oprobot
 diag

@@ -257,7 +257,7 @@ div.imagedesc{
         Il sistema sarà organizzato in una Service Area con una serie di elementi chiave per la gestione del processo.</p>
         
         <h2>Requirements</h2>
-        <p>Per vedere i requisiti visitare la pagina relativa alla richiesta del committente presso <a href="./TemaFinale24.html">TemaFinale24</a></p>
+        <p>Per vedere i requisiti visitare la pagina relativa alla richiesta del committente presso <a href="./TemaFinale24.html">TemaFinale24</a>.</p>
 
         <h2>Requirement Analysis</h2>
 		<p>Per modellare il servizio, è necessario introdurre il concetto di attore, un componente software autonomo in grado di gestire, inviare e ricevere messaggi all'interno di un ambiente 
@@ -266,7 +266,7 @@ div.imagedesc{
 		<ul>
 		<h3>Service Area</h3>
 		<ul style="padding-left: 30px; padding-right: 30px;">
-			<li>La Service Area è un rettangolo situato in un piano euclideo.</li>
+			<li>La <b>Service Area</b> è un rettangolo situato in un piano euclideo.</li>
 			<li>All'interno della Service Area sono presenti ostacoli.</li>
 			<li>Il bordo perimetrale ha una lunghezza totale data da <span class="formula">lf + ld + lr + lu</span>, come mostrato in figura.</li>
 			<div style="text-align: center; padding-top: 10px; padding-bottom: 10px;">
@@ -347,19 +347,19 @@ div.imagedesc{
 		</ul>
 		<h3>Incinerator</h3>
 		<ul>
-			L'Incinerator è un'entità che si occupa di bruciare i rifiuti che vengono portati nella WasteIn port.<br>
+			L'<b>Incinerator</b> è un'entità che si occupa di bruciare i rifiuti che vengono portati nella WasteIn port.<br>
 			Dalla richiesta del committente si evince che:
 			<ul>
 				<li>Lo stato dell'Incinerator può essere <i>On</i>, <i>Off</i> e <i>Idle</i>.</li>
 				<li>L'inceneritore può trattare un RP alla volta.</li>
 				<li>Il processo di combustione richiede BTIME secondi.</li>
-				<li>WIS e OPRobot dovranno essere notificati a fine incenerimento.</li>
+				<li>WIS e OpRobot dovranno essere notificati a fine incenerimento.</li>
 			Analizzando la richiesta del committente, è obbligo considerare l'Incinerator come entità attiva 
 			in quanto ha necessità, a fine incenerimento, di dover emettere un segnale (acustico o di altro tipo) che può essere percepito dall'OpRobot e dal WIS.<br>
 			Essendo un'entità attiva è quindi modellabile come un attore QAK che, a fine incenermento, notifica le altre entità attraverso un Evento.
 			<!-- mettere link ai file qak-->
 			<div style="text-align: center; padding-top: 10px; padding-bottom: 10px;">
-				<img src="../incineratorarch.png" alt="incinerator arch" width="60%" height="60%">
+				<img src="./img/incineratorarch.png" alt="Incinerator arch" width="40%" height="40%">
 			</div>
 			Inoltre, l'Incinerator deve essere anche in grado di ricevere un segnale di attivazione, 
 			il quale non è stato correttamente definito dal committente, quindi non è possibile un analisi più approfondita. 
@@ -368,7 +368,7 @@ div.imagedesc{
 		</ul>
 		<h3>MonitoringDevice</h3>
 		<ul>
-			Il MonitoringDevice è un'entità attiva, quindi modellabile come attore QAK, composta da due componenti:
+			Il <b>MonitoringDevice</b> è un'entità attiva, quindi modellabile come attore QAK, composta da due componenti:
 			<ul>
 				<li><strong>Sonar:</strong> si occupa di misurare i livelli di cenere dell'AshStorage, utilizzando il sonar fisico fornito dal committente.</li>
 				<li><strong>WarningDevice:</strong> si occupa di allarmare visivamente attraverso l'utilizzo di un led secondo le regole definite dal committente.</li>
@@ -377,23 +377,26 @@ div.imagedesc{
 			Esso deve essere in grado di comunicare al WIS lo stato del Sonar, la cui modalità non è stata definito dal committente, quindi non è possibile fare un'analisi più approfondita.
 		</ul>
 		<br>
-		<h3>DDR robot</h3>
+		<h3>DDRRobot</h3>
 		<ul>
-			Il DDR robot è il robot fornito dal committente che permette la rappresentazione fisica dell'OPRobot. Viene rappresentato come un attore autonomo che opera all'interno di un proprio contesto esecutivo. 
-			Per approfondire le sue modalità di interazione e i dettagli tecnici, si può fare riferimento a <a href="">BasicRobot</a>.
+			Il <b>DDRRobot</b> è il robot fornito dal committente che permette la rappresentazione fisica dell'OpRobot. Viene rappresentato come un attore autonomo che opera all'interno di un proprio contesto esecutivo. 
+			Per approfondire le sue modalità di interazione e i dettagli tecnici, si può fare riferimento a <a href="BasicRobot24.html">BasicRobot</a>.
 		</ul>
-		<h3>OPRobot</h3>
+		<h3>OpRobot</h3>
 		<ul>
-		<p> L'OpRobot è un'entità che esegue nel DDR robot fornito dal committente.<br>
+		<p> L'<b>OpRobot</b> è un'entità che esegue nel DDR robot fornito dal committente.<br>
 			E' un entità attiva in quanto ha la necessità di ricevere un segnale da parte del ripetitore e, quindi, modellabile come attore QAK.<br>
-			Conosce il concetto di ServiceArea, quindi conosce le posizioni e grandezze dei punti di interesse presenti.
-			<!-- mettere link ai file qak-->
-			<!-- Aggiugnere codice qak e spiegazione del perchè non è implementato (perchè commentato)-->
+			Conosce il concetto di ServiceArea, quindi conosce le posizioni e grandezze dei punti di interesse presenti.<br>
+			Deve essere in grado di ricevere una notifica di fine incenerimento da parte dell'Incinerator in modo da poter adattare il proprio comportamento in funzione dello stato corrente del robot e delle operazioni in corso. 
+			
+			<div style="text-align: center; padding-top: 10px; padding-bottom: 10px;">
+				<img src="./img/oprobotarch.png" alt="OpRobot arch" width="40%" height="40%">
+			</div>
 			<br>
 		</ul>
 		<h3>WasteIncineratorService</h3>
         <ul>
-			Il WasteIncineratorService (WIS) è un'entità incaricata di mantenere le informazioni sullo stato del sistema.<br>
+			Il <b>WasteIncineratorService (WIS)</b> è un'entità incaricata di mantenere le informazioni sullo stato del sistema.<br>
 			Può essere considerato un'entità attiva, quindi modellabile come attore QAK, in quanto deve:
 			<ul>
 				<li>ricevere informazioni dall'Incinerator riguardo la terminazione dell'incenerimento;</li>
@@ -407,11 +410,22 @@ div.imagedesc{
 				<li><strong>Stato OpRobot:</strong> come definito dai requisiti, il WIS conosce la posizione esatta dell'OpRobot in qualunque momento e l'azione che esso sta svolgendo.</li>
 			</ul>
         </ul>
+		<h3>ServiceStatusGUI</h3>
+        <ul>
+			La <b>ServiceStatusGUI</b> rappresenta un componente del sistema dedicato alla visualizzazione dello stato dei principali elementi coinvolti nel processo: WasteStorage, AshStorage, Incinerator e OpRobot.<br>
+			La posizione e l'attività corrente del Robot operativo, informazioni che dai requisiti risultano sempre disponibili, sebbene non sia stata ancora definita in dettaglio la modalità di interazione.<br>
+			In questa fase, la ServiceStatusGUI può essere modellata come un attore che interagisce direttamente con il WIS, lasciando spazio a una successiva formalizzazione più completa nei prossimi Sprint.<br>
+		</ul>
 	</ul>
-
+		
+		<div style="text-align: center; padding-top: 10px; padding-bottom: 10px;">
+			<img src="./img/sprintzeroarch.png" alt="Sprint0 arch" width="40%" height="40%">
+		</div>
+		<br>
+		<br>
         <h2>Test Plan</h2>
 			Per validare il corretto funzionamento del sistema, è possibile eseguire un primo test semplice focalizzato sul core business: il processo di incenerimento.<br>
-            <b>Test di Base: Simulazione dell’Incenerimento.</b><br>
+            <b>Test di Base: Simulazione dell'Incenerimento.</b><br>
             Partendo da una condizione iniziale in cui tutti i container sono vuoti, un utente, attraverso un'interfaccia grafica, può inserire un RP (rifiuto processabile) all'interno del WasteStorage. Dopo un determinato intervallo di tempo, il sistema dovrà mostrare che:
 			<ul>
                 <li>Il livello del WasteStorage è diminuito di 1.</li>

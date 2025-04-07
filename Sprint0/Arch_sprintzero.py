@@ -25,17 +25,15 @@ with Diagram('sprintzeroArch', show=False, outformat='png', graph_attr=graphattr
   with Cluster('env'):
      sys = Custom('','./qakicons/system.png')
 ### see https://renenyffenegger.ch/notes/tools/Graphviz/attributes/label/HTML-like/index
-     with Cluster('ctxservicearea', graph_attr=nodeattr):
+     with Cluster('ctxwis', graph_attr=nodeattr):
           wis=Custom('wis','./qakicons/symActorSmall.png')
           oprobot=Custom('oprobot','./qakicons/symActorSmall.png')
           incinerator=Custom('incinerator','./qakicons/symActorSmall.png')
-     sys >> Edge( label='startIncinerator', **evattr, decorate='true', fontcolor='darkgreen') >> wis
-     sys >> Edge( label='ashMeasurement', **evattr, decorate='true', fontcolor='darkgreen') >> wis
-     wis >> Edge( label='startBurning', **eventedgeattr, decorate='true', fontcolor='red') >> sys
+     with Cluster('ctxbasicrobot', graph_attr=nodeattr):
+          ddr_robot=Custom('ddr_robot(ext)','./qakicons/externalQActor.png')
+     with Cluster('ctxmonitoringdevice', graph_attr=nodeattr):
+          monitoringdevice=Custom('monitoringdevice','./qakicons/symActorSmall.png')
+     sys >> Edge( label='burnEnd', **evattr, decorate='true', fontcolor='darkgreen') >> wis
      sys >> Edge( label='burnEnd', **evattr, decorate='true', fontcolor='darkgreen') >> oprobot
-     sys >> Edge( label='startUp', **evattr, decorate='true', fontcolor='darkgreen') >> incinerator
-     sys >> Edge( label='startBurning', **evattr, decorate='true', fontcolor='darkgreen') >> incinerator
-     incinerator >> Edge( label='burning', **eventedgeattr, decorate='true', fontcolor='red') >> sys
-     incinerator >> Edge( label='finishedBurning', **eventedgeattr, decorate='true', fontcolor='red') >> sys
      incinerator >> Edge( label='burnEnd', **eventedgeattr, decorate='true', fontcolor='red') >> sys
 diag

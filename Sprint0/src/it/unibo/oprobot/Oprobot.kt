@@ -46,6 +46,7 @@ class Oprobot ( name: String, scope: CoroutineScope, isconfined: Boolean=false  
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
+					 transition(edgeName="t00",targetState="burnout",cond=whenEvent("burnEnd"))
 				}	 
 				state("wastein") { //this:State
 					action { //it:State

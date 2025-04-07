@@ -27,13 +27,18 @@ class Wis ( name: String, scope: CoroutineScope, isconfined: Boolean=false  ) : 
 	}
 	override fun getBody() : (ActorBasicFsm.() -> Unit){
 		//val interruptedStateTransitions = mutableListOf<Transition>()
+		
+			//val DLIMT = X
+			//var RP=0;
+			//var ASHLEVEL = 0;
+			//var INCENERATOR = true;
+			//var ROUTINE = 0;
+			//var POSX = 0;
+			//var POSY = 0;
 		return { //this:ActionBasciFsm
 				state("s0") { //this:State
 					action { //it:State
-						CommUtils.outcyan("$name in ${currentState.stateName} | $currentMsg | ${Thread.currentThread().getName()} n=${Thread.activeCount()}")
-						 	   
-						delay(300) 
-						CommUtils.outblue("WIS: Initializing system")
+						CommUtils.outgreen("WIS: Initializing system")
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
@@ -43,28 +48,69 @@ class Wis ( name: String, scope: CoroutineScope, isconfined: Boolean=false  ) : 
 				}	 
 				state("idle") { //this:State
 					action { //it:State
-						CommUtils.outblue("WIS: Waiting for system events")
+						CommUtils.outgreen("WIS: Waiting for system events")
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t00",targetState="prepareIncinerator",cond=whenEvent("startIncinerator"))
-					transition(edgeName="t01",targetState="updateAshLevel",cond=whenEvent("ashMeasurement"))
+					 transition(edgeName="t00",targetState="endIncinerator",cond=whenEvent("burnEnd"))
 				}	 
 				state("prepareIncinerator") { //this:State
 					action { //it:State
-						CommUtils.outblue("WIS: Preparing incinerator")
-						emit("startBurning", "startBurning(go)" ) 
+						CommUtils.outgreen("WIS: Preparing incinerator")
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
+					 transition( edgeName="goto",targetState="idle", cond=doswitch() )
 				}	 
-				state("updateAshLevel") { //this:State
+				state("updateAshStorageStatus") { //this:State
 					action { //it:State
-						CommUtils.outblue("WIS: Updating ash level")
+						CommUtils.outgreen("WIS: Updating ash level")
+						//genTimer( actor, state )
+					}
+					//After Lenzi Aug2002
+					sysaction { //it:State
+					}	 	 
+					 transition( edgeName="goto",targetState="idle", cond=doswitch() )
+				}	 
+				state("updateWasteStorageStatus") { //this:State
+					action { //it:State
+						CommUtils.outgreen("WIS: Updating number of RP")
+						//genTimer( actor, state )
+					}
+					//After Lenzi Aug2002
+					sysaction { //it:State
+					}	 	 
+					 transition( edgeName="goto",targetState="idle", cond=doswitch() )
+				}	 
+				state("updateOpRobotStatus") { //this:State
+					action { //it:State
+						CommUtils.outgreen("WIS: Updating the OpRobot status")
+						//genTimer( actor, state )
+					}
+					//After Lenzi Aug2002
+					sysaction { //it:State
+					}	 	 
+					 transition( edgeName="goto",targetState="idle", cond=doswitch() )
+				}	 
+				state("startIncenerator") { //this:State
+					action { //it:State
+						//INCENERATOR = true 
+						CommUtils.outgreen("WIS: Incinerator started")
+						//genTimer( actor, state )
+					}
+					//After Lenzi Aug2002
+					sysaction { //it:State
+					}	 	 
+					 transition( edgeName="goto",targetState="idle", cond=doswitch() )
+				}	 
+				state("endIncinerator") { //this:State
+					action { //it:State
+						//INCENERATOR = false 
+						CommUtils.outgreen("WIS: Incinerator ended")
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002

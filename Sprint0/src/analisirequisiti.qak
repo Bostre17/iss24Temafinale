@@ -1,82 +1,151 @@
 System sprintzero
-Event burnEnd: burnEnd(X)
-Event startUp: startUp(X)
-Event burning: burning(X)
-Event finishedBurning: finishedBurning(X)
-Event startIncinerator: startIncinerator(X)
-Event startBurning: startBurning(X)
-Event ashMeasurement: ashMeasurement(level)
 
-Context ctxservicearea ip [host="localhost" port=8003]
+Event burnEnd : burnEnd(BTIME)
 
-QActor wis context ctxservicearea {
+Context ctxwis ip [host="localhost" port=8001]
+Context ctxbasicrobot ip [host="127.0.0.2" port=8002]
+Context ctxmonitoringdevice ip [host="127.0.0.1" port=8003]
+
+
+ExternalQActor ddr_robot context ctxbasicrobot
+
+QActor monitoringdevice context ctxmonitoringdevice{
+	State s0 initial{
+		println("$name") color green
+	}
+}
+
+QActor wis context ctxwis {
+	[#
+	//val DLIMT = X
+	//var RP=0;
+	//var ASHLEVEL = 0;
+	//var INCENERATOR = true;
+	//var ROUTINE = 0;
+	//var POSX = 0;
+	//var POSY = 0;
+	#]
+
     State s0 initial {
-        printCurrentMessage
-        delay 300
-        println("WIS: Initializing system") color blue
+        println("WIS: Initializing system") color green
     }
     Goto idle
 
     State idle {
-        println("WIS: Waiting for system events") color blue
+        println("WIS: Waiting for system events") color green
     }
-    Transition t0 
-        whenEvent startIncinerator -> prepareIncinerator
-        whenEvent ashMeasurement -> updateAshLevel
+	Transition t0 	
+		whenEvent burnEnd -> endIncinerator
 
     State prepareIncinerator {
-        println("WIS: Preparing incinerator") color blue
-        emit startBurning : startBurning(go)
-    }
-
-    State updateAshLevel {
-        println("WIS: Updating ash level") color blue
+        println("WIS: Preparing incinerator") color green
     }
     Goto idle
+
+    State updateAshStorageStatus {
+        println("WIS: Updating ash level") color green
+        // Simulazione dell'aggiornamento variabile ASHLEVEL
+    }
+    Goto idle
+    
+    State updateWasteStorageStatus {
+        println("WIS: Updating number of RP") color green
+        // Simulazione dell'aggiornamento variabile RP
+    }
+    Goto idle
+    
+    State updateOpRobotStatus {
+        println("WIS: Updating the OpRobot status") color green
+        // Simulazione dell'aggiornamento variabili ROUTINE, POSX, POSY
+    }
+    Goto idle
+    
+	State startIncenerator{
+		[#//INCENERATOR = true#]
+        println("WIS: Incinerator started") color green
+	}
+	Goto idle
+	
+	State endIncinerator{
+		[#//INCENERATOR = false#]
+        println("WIS: Incinerator ended") color green
+	}
+	Goto idle
 }
 
-QActor oprobot context ctxservicearea {
-    State home initial {
-        println("(${name}): home") color magenta
-    }
-    Transition t0 
-        whenEvent burnEnd -> gatheringAsh
 
-    State gatheringAsh {
-        println("Oprobot: Gathering ash") color magenta
+QActor oprobot context ctxwis {
+
+    State s0 initial {
+        println("$name attivo")
     }
     Goto home
+    
+    //	Da considerare alla fine di State home e State ashout:
+    // 	se il contenitore WasteStorage non è vuoto, il contenitore AshStorage non è pieno e 
+	//	l'inceneritore non è in fase di combustione, passare alla porta WASTEIN. 
+	//	Se una delle condizioni non è vera, attendere a HOME finché non diventa vera.
+
+    State home {
+        println("Robot in home position")
+    }
+    Transition t0 whenEvent burnEnd -> burnout
+    //Transition t0 whenMsg go -> wastein
+    //				whenMsg go -> burnout
+ 
+    
+    //	messaggio di transizione da home a WASTEIN o da home a BURNOUT
+    //	ancora da definire il mittente ed il tipo di messaggio 
+    //	in quanto non è specificato dal committente 
+	
+    State wastein {
+        println("OpRobot: prelievo roll packets da WASTEIN") color green
+    }Goto burnin
+
+    State burnin {
+        println("OpRobot: deposito roll packets nella porta BURNIN") color green
+    }Goto home
+
+    State burnout {
+        println("OpRobot: prelievo cenere dalla porta BURNOUT") color green
+    }Goto ashout
+
+    State ashout {
+        println("OpRobot: deposito cenere nella porta ASHOUT") color green
+    }
+    //Transition t0 whenMsg go -> wastein 
+    //				whenMsg go -> home
+	
+	//	messaggio di transizione da ASHOUT a home o da ASHOUT a WASTEIN
+    //	ancora da definire il mittente ed il tipo di messaggio 
+    //	in quanto non è specificato dal committente
 }
 
-QActor incinerator context ctxservicearea {
-    [#
-    val BTIME = 200L
-    var burningInProgress = false
-    #]
+
+QActor incinerator context ctxwis {
+    [#val BTIME = 100L#]
 
     State s0 initial {
         printCurrentMessage
-        println("Incinerator: Initialized") color green
+        println("Incinerator: initialized") color green
     }
-    Transition t0 
-        whenEvent startUp -> standby
-        whenEvent startBurning -> startBurningCycle
+    //Transition t0 whenMsg cmd -> idle
+    //	messaggio di transizione da iniziale a idle;
+    //	ancora da definire il mittente ed il tipo di messaggio 
+    //	in quanto non è specificato dal committente
 
-    State standby {
-        println("Incinerator: Standing by") color green
+    State idle {
+        println("Incinerator: idle") color green
     }
-
-    State startBurningCycle {
-        println("Incinerator: Starting burning cycle") color green
-        emit burning : burning(start)
-
-        [#
-        burningInProgress = true
-        #]
-
-
-        emit finishedBurning : finishedBurning(complete)
-        emit burnEnd : burnEnd(stop)
+    //	non è ancora chiaro come passare dallo stato idle
+    //	a quello On in quanto non è chiaramente specificato
+    //	dal committente
+    
+    State on {
+        println("Incinerator: burning") color green
+		//simulazione del processo di incenerimento
+		[#delay BTIME*1000#]
+        emit burnEnd : burnEnd(BTIME)
     }
-    Goto standby
+   	Goto idle
 }
