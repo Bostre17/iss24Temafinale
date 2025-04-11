@@ -260,9 +260,9 @@ div.imagedesc{
         <p>Per vedere i requisiti visitare la pagina relativa alla richiesta del committente presso <a href="./TemaFinale24.html">TemaFinale24</a>.</p>
 
         <h2>Requirement Analysis</h2>
-		<p>Per modellare il servizio, è necessario introdurre il concetto di attore, un componente software autonomo in grado di gestire, inviare e ricevere messaggi all'interno di un ambiente 
-			distribuito.
-			 Per approfondire le funzionalità e le possibili interazioni di un attore, si rimanda a <a href="./QakActors24.html">QakActors24</a>.</p>
+		<p>
+			Per modellare il sistema, avendo la necessità di scambiare messaggi in un ambiente distribuito, è stato scelto di adottare le funzionalità offerte dal linguaggio qak che, grazie al concetto di attore, permette una semplice e agile implementazione.<br>
+			Per approfondire le funzionalità di un attore qak, si rimanda a <a href="./QakActors24.html">QakActors24</a>.</p>
 		<ul>
 		<h3>Service Area</h3>
 		<ul style="padding-left: 30px; padding-right: 30px;">
@@ -340,10 +340,9 @@ div.imagedesc{
 		<br>
 		<h3>WasteStorage e AshStorage</h3>
 		<ul>
-			Nel sistema, WasteStorage e AshStorage rappresentano rispettivamente il magazzino della spazzatura e il deposito delle ceneri.
-			WasteStorage è collegato a Scale, che ne misura la quantità di spazzatura, mentre AshStorage è collegato al Sonar, che ne misura la quantità di cenere.
+			Nel sistema, WasteStorage e AshStorage rappresentano rispettivamente il magazzino della spazzatura e il deposito delle ceneri.<br>
+			WasteStorage è collegato a Scale, che ne misura la quantità di spazzatura, mentre AshStorage è collegato al Sonar, che ne misura la quantità di cenere. Conoscendo la quantità di spazzatura presente nel WasteStorage ed il peso unitario di un RP è possibile calcolarne le unità presenti.<br>
 			Attraverso un apposito supporto software, sarebbe possibile ottenere lo stato di ogni sensore, il quale verrà registrato dal WIS.
-			
 		</ul>
 		<h3>Incinerator</h3>
 		<ul>
@@ -359,7 +358,7 @@ div.imagedesc{
 			Essendo un'entità attiva è quindi modellabile come un attore QAK che, a fine incenermento, notifica le altre entità attraverso un Evento.
 			<!-- mettere link ai file qak-->
 			<div style="text-align: center; padding-top: 10px; padding-bottom: 10px;">
-				<img src="./img/incineratorarch.png" alt="Incinerator arch" width="40%" height="40%">
+				<img src="./img/incineratorarch.png" alt="Incinerator arch" width="30%" height="30%">
 			</div>
 			Inoltre, l'Incinerator deve essere anche in grado di ricevere un segnale di attivazione, 
 			il quale non è stato correttamente definito dal committente, quindi non è possibile un analisi più approfondita. 
@@ -384,13 +383,12 @@ div.imagedesc{
 		</ul>
 		<h3>OpRobot</h3>
 		<ul>
-		<p> L'<b>OpRobot</b> è un'entità che esegue nel DDR robot fornito dal committente.<br>
-			E' un entità attiva in quanto ha la necessità di ricevere un segnale da parte del ripetitore e, quindi, modellabile come attore QAK.<br>
+		<p> L'<b>OpRobot</b> esegue nel DDR robot fornito dal committente: è un entità attiva in quanto ha la necessità di ricevere un segnale da parte del ripetitore e, quindi, modellabile come attore QAK.<br>
 			Conosce il concetto di ServiceArea, quindi conosce le posizioni e grandezze dei punti di interesse presenti.<br>
 			Deve essere in grado di ricevere una notifica di fine incenerimento da parte dell'Incinerator in modo da poter adattare il proprio comportamento in funzione dello stato corrente del robot e delle operazioni in corso. 
 			
 			<div style="text-align: center; padding-top: 10px; padding-bottom: 10px;">
-				<img src="./img/oprobotarch.png" alt="OpRobot arch" width="40%" height="40%">
+				<img src="./img/oprobotarch.png" alt="OpRobot arch" width="30%" height="30%">
 			</div>
 			<br>
 		</ul>
@@ -419,34 +417,38 @@ div.imagedesc{
 	</ul>
 		
 		<div style="text-align: center; padding-top: 10px; padding-bottom: 10px;">
-			<img src="./img/sprintzeroarch.png" alt="Sprint0 arch" width="40%" height="40%">
+			<img src="./img/sprintzeroarch.png" alt="Sprint0 arch" width="30%" height="30%">
 		</div>
-		<br>
-		<br>
-        <h2>Test Plan</h2>
-			Per validare il corretto funzionamento del sistema, è possibile eseguire un primo test semplice focalizzato sul core business: il processo di incenerimento.<br>
-            <b>Test di Base: Simulazione dell'Incenerimento.</b><br>
-            Partendo da una condizione iniziale in cui tutti i container sono vuoti, un utente, attraverso un'interfaccia grafica, può inserire un RP (rifiuto processabile) all'interno del WasteStorage. Dopo un determinato intervallo di tempo, il sistema dovrà mostrare che:
-			<ul>
-                <li>Il livello del WasteStorage è diminuito di 1.</li>
-                <li>Il livello dell'AshStorage è aumentato di 1.</li>
-			</ul>
-            Questo test consentirà di verificare che il flusso base dell’incenerimento funzioni correttamente
-			<br>
-			<br>
     </div>
 
-    <div style="background-color:rgba(86, 56, 253, 0.9); width:100%;text-align:left;color:white;">
+    <div style="background-color:rgba(86, 56, 253, 0.9); width:100%;text-align:left;color:white;padding: 30px;">
+		<div style="display: flex; justify-content: center; gap: 40px; align-items: center; flex-wrap: wrap;">
+			<div>
+				<p><strong>Bostrenghi Matteo</strong><br>
+					matteo.bostrenghi@studio.unibo.it</p>
+				
+				<p><strong>Severini Lorenzo</strong><br>
+					lorenzo.severini5@studio.unibo.it</p>
+			</div>
+			<div>
+				<img src="./img/bostrenghi.png" alt="bostrenghi" style="width:150px; height:auto">
+			</div>
 		
-		<ul style="margin:15px">
-			By
-			<li>Bostrenghi Matteo email: matteo.bostrenghi@studio.unibo.it<br>
-				<img src="./img/bostrenghi.png" alt="bostrenghi" width="15%" height="15%"></li>
-			<li>Severini Lorenzo email: lorenzo.severini5@studio.unibo.it<br>
-				<img src="./img/severini.png" alt="severini" width="15%" height="15%"><br></li>
-			GIT repo: <a href="https://github.com/Bostre17/iss24Temafinale" style="color:white;">https://github.com/Bostre17/iss24Temafinale</a>
-		</ul>
-    </div> 
+			<div>
+				<img src="./img/severini.png" alt="severini" style="width:150px; height:auto;">
+			</div>
+
+			<p style="margin-top:20px;">Repository: 
+				<a href="https://github.com/Bostre17/iss24Temafinale" style="color:white;">
+					https://github.com/Bostre17/iss24Temafinale
+				</a>
+			</p>
+		</div>
+		
+		
+		
+	</div>
+
 </body>
 </html>
 
