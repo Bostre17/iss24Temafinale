@@ -260,7 +260,62 @@ div.imagedesc{
         <h2>Requirement Analysis</h2>
 		<p>
 			I requisiti possono essere trovati nello <a href="../../Sprint0/userDocs/wasteincineratorv1.html">Sprint0</a>.</p>
-		
+		<h2>Problem Analysis</h2>
+		<h3>Modellazione OpRobot</h3>
+		<h4>P1-Modellazione OpRobot e il suo rapporto con il WIS</h4>
+		Come precedentemente anticipato nello sprint0 l'architettura ci permette un'estensione nei concetti di rappresentazione e di implementazione.
+		In questo senso si è deciso di definire l'Oprobot come Arttore invece che come POJO.
+		Questo porta ad un vanaggio fondamentale, ovvero la possibilità di delegare all'Oprobot la gestione del BasicRobo, senza dover passare per il WIS.
+		In modo tale da rendere l'architettura più scalabile e modulare.
+		Sempre nell'ottica di fornire indipendenza all'oprobot, si è pensato sia necessario fornirgli lo stato della mappa che caratterizza il WIS in modo table
+		da limitare le chiamate al WIS.
+		<h4>P2-Come gestire i messaggi in quanto attore</h4>
+		Dall'analisi dei requisiti emerge la necessità di un sistema di comunicazione basato su messaggi per assegnare compiti specifici all'OpRobot. 
+		Si propone un'architettura Request-Reply: il WIS invia una "Request" all'OpRobot per avviare un'attività, e l'OpRobot risponde con una "Reply" 
+		a compito ultimato. Questo approccio con una singola Reply finale elimina la necessità per il WIS di monitorare continuamente lo stato del task (polling). 
+		Dato che questi scambi avvengono tra componenti specifici del sistema, l'uso di Eventi generalizzati non è considerato vantaggioso. 
+		Si raccomanda quindi l'adozione del pattern Request-Reply per tutte le interazioni tra WIS e OpRobot relative alle operazioni di recupero e deposito di 
+		RP e Ash, nonché per il comando di ritorno alla postazione "HOME".
+		<h3>Modellazione Incenerator</h3>
+		<h4>P3-Come rendere l'incenerator un punto d'interesse rilevante per l'oprobot</h4>
+		Per consentire a OpRobot di navigare autonomamente, è necessario creare una rappresentazione digitale della stanza. 
+		Questo permetterà al WIS (Warehouse Information System) di definire un percorso che OpRobot seguirà per spostarsi da un punto di partenza, 
+		come la sua postazione "HOME", a una destinazione specifica, ad esempio l'area "WasteIn". Fortunatamente, disponiamo internamente di strumenti software, 
+		un "MapBuilder" e un "Planner", che ci consentono rispettivamente di generare la mappa dell'ambiente e di calcolare il tragitto ottimale tra due punti qualsiasi.
+		<h4>P4-Capire quando attivare l'incenerator</h4>
+		L'inceneritore ha un tempo di combustione fisso (BTIME) e notifica la fine del processo. 
+		Il punto critico è come rileva nuovo materiale RP nella porta BURNIN per avviare il ciclo.
+
+		Due le ipotesi:
+			<ul>
+
+				<li>Un sensore di presenza materiale</li>
+				<li>Una notifica che il robot ha consegnato il materiale.</li>
+			</ul>
+		In assenza di un sensore specificato nei requisiti (e assumendo di non poterlo aggiungere), abbiamo considerato che l'arrivo del robot, che per definizione trasporta un RP, funge da segnale di presenza materiale. Questa è la via che abbiamo scelto.
+
+		Di conseguenza, l'inceneritore necessita di un messaggio per iniziare. Chi lo invia?
+
+
+		<h4>P5-Gestione messaggi</h4>
+		Dobbiamo ora determinare la tipologia adeguata per il messaggio di avvio scambiato tra il WIS e l'Inceneritore. 
+		Poiché si tratta di una comunicazione diretta, punto-punto, l'utilizzo di un 'Evento' non risulta appropriato in questo contesto.
+
+		La natura di questo messaggio prevede esclusivamente l'invio del comando di inizio, senza che sia richiesta o attesa alcuna risposta dall'Inceneritore. Valutando i possibili modelli di comunicazione:
+			<ul>
+
+    			<li>Request: Questo schema implica tipicamente la necessità di una risposta da parte del destinatario. 
+					Dato che il nostro obiettivo è semplicemente inviare un comando unidirezionale di avvio, il modello 'Request' non soddisfa i requisiti.</li>
+   				 <li>Dispatch: Questa modalità è concepita per inviare messaggi punto-punto senza prevedere un messaggio di risposta obbligatorio. 
+					Ciò la rende perfettamente adatta per impartire il comando di inizio all'Inceneritore, 
+					rispettando l'esigenza di una comunicazione non bloccante e senza feedback atteso.</li>
+			</ul>
+		Alla luce di queste considerazioni funzionali, il modello 'Dispatch' si configura come la scelta più idonea per la gestione del 
+		messaggio di avvio tra il WIS e l'Inceneritore.
+		<h3>WIS</h3>
+		<h3>Logical architecture</h3>
+		<h3>Testing</h3>
+		<h3>Deployment</h3>
     </div>
 
     <div style="background-color:rgba(86, 56, 253, 0.9); width:100%;text-align:left;color:white;padding: 30px;">
