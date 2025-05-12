@@ -261,49 +261,82 @@ div.imagedesc{
 		<p>
 			I requisiti possono essere trovati nello <a href="../../Sprint0/userDocs/wasteincineratorv1.html">Sprint0</a>.</p>
 		<h2>Problem Analysis</h2>
-		<h3>Modellazione OpRobot</h3>
-		<h4>P1-Modellazione OpRobot e il suo rapporto con il WIS</h4>
-		Come precedentemente anticipato nello sprint0 l'architettura ci permette un'estensione nei concetti di rappresentazione e di implementazione.
-		In questo senso si è deciso di definire l'Oprobot come Arttore invece che come POJO.
-		Questo porta ad un vanaggio fondamentale, ovvero la possibilità di delegare all'Oprobot la gestione del BasicRobo, senza dover passare per il WIS.
-		In modo tale da rendere l'architettura più scalabile e modulare.
-		Sempre nell'ottica di fornire indipendenza all'oprobot, si è pensato sia necessario fornirgli lo stato della mappa che caratterizza il WIS in modo table
-		da limitare le chiamate al WIS.
-		<h4>P2-Come gestire i messaggi in quanto attore</h4>
-		Dall'analisi dei requisiti emerge la necessità di un sistema di comunicazione basato su messaggi per assegnare compiti specifici all'OpRobot. 
-		Si propone un'architettura Request-Reply: il WIS invia una "Request" all'OpRobot per avviare un'attività, e l'OpRobot risponde con una "Reply" 
-		a compito ultimato. Questo approccio con una singola Reply finale elimina la necessità per il WIS di monitorare continuamente lo stato del task (polling). 
-		Dato che questi scambi avvengono tra componenti specifici del sistema, l'uso di Eventi generalizzati non è considerato vantaggioso. 
-		Si raccomanda quindi l'adozione del pattern Request-Reply per tutte le interazioni tra WIS e OpRobot relative alle operazioni di recupero e deposito di 
-		RP e Ash, nonché per il comando di ritorno alla postazione "HOME".
+		<h3>OpRobot</h3>
+		<ul>
+			<h4>P1 - Modellazione OpRobot</h4>
+			Come precedentemente anticipato nello sprint0 l'architettura ci permette un'estensione nei concetti di rappresentazione e di implementazione.
+			In questo senso si è deciso di definire l'OpRobot come Attore invece che come POJO: questo porta ad un vantaggio fondamentale, ovvero la possibilità di delegare all'OpRobot la gestione del BasicRoboT senza dover passare per il WIS, in modo tale da rendere l'architettura più scalabile e modulare.
+			
+			<h4>P2 - Mappa</h4>
+				Per potersi muovere all'interno dell'ambiente, il robot ha bisogno di una rappresentazione interna della stanza. Questa mappa può essere fornita direttamente, oppure può essere generata in autonomia, nel qual caso è necessario affrontare il problema della sua costruzione.
+				Come visibile in figura, l'area operativa contiene vari ostacoli che devono essere considerati nella creazione della mappa. Una possibile soluzione consiste nell'adottare strategie di esplorazione sistematica, evitando approcci casuali. Tra le modalità di movimento viste a lezione, alcune applicabili sono, ad esempio:
+				<ul>
+					<li>movimento per colonne</li>
+					<li>movimento a onde</li>
+					<li>movimento a spirale</li>
+				</ul>
+
+			<h4>P3 - Accesso alla mappa</h4>
+			Un aspetto da chiarire riguarda chi debba effettivamente accedere alla mappa: il DDRRobot, l'OpRobot o il WIS. 
+			Analizzando il software di base (BasicRobot), si osserva che il modulo planner ha già una conoscenza interna della mappa.
+			Per evitare modifiche al codice esistente, si è deciso che la gestione della mappa rimarrà a carico del planner.
+			Tuttavia, l'Oprobot continuerà a conoscere le posizioni chiave come WASTEIN, WASTEOUT, BURNIN etc.
+
+			<h4>P4 - Planner</h4>
+			Dato un punto di partenza, il robot deve individuare un percorso che lo conduca alla posizione di destinazione sulla mappa.
+			E' necessario definire una logica che consenta di determinare dinamicamente la sequenza di mosse da compiere a partire dalla posizione corrente del robot: questa logica è implementata all'interno di un modulo denominato planner, il quale viene interrogato dall'OpRobot per calcolare il percorso corretto verso la destinazione.
+			
+			<h4>P5 - Interazione con il WIS</h4>
+				Dall'analisi dei requisiti emerge la necessità di un sistema di comunicazione basato su messaggi per assegnare compiti specifici all'OpRobot. 
+				Si propone un'architettura Request-Reply: il WIS invia una "Request" all'OpRobot per avviare un'attività, e l'OpRobot risponde con una "Reply" 
+				a compito ultimato. Questo approccio con una singola Reply finale elimina la necessità per il WIS di monitorare continuamente lo stato del task (polling). 
+				Dato che questi scambi avvengono tra componenti specifici del sistema, l'uso di Eventi generalizzati non è considerato vantaggioso. 
+				Si raccomanda quindi l'adozione del pattern Request-Reply per tutte le interazioni tra WIS e OpRobot relative alle operazioni di recupero e deposito di 
+				RP e Ash, nonché per il comando di ritorno alla postazione "HOME".
+				A tal proposito, dato che la mappa risiede nell'OpRobot, basterebbe che il WIS comunichi ad esso di andare in un determinato luogo della service area tramite l'utilizzo di appositi comandi, nello specifico:
+				<ul>
+					<li>go_home</li>
+					<li>go_wastestorage</li>
+					<li>go_burnin</li>
+					<li>go_burnout</li>
+					<li>go_ashstorage</li>
+				</ul>
+
+		</ul>
+
+
 		<h3>Modellazione Incenerator</h3>
-		<h4>P3-Come rendere l'incenerator un punto d'interesse rilevante per l'oprobot</h4>
+		<ul>
+		
+			
+		<h4>P6 - Come rendere l'incenerator un punto d'interesse rilevante per l'oprobot</h4>
+		<b>QUESTA PARTE QUA NON C'ENTRA NULLA</b>
 		Per consentire a OpRobot di navigare autonomamente, è necessario creare una rappresentazione digitale della stanza. 
-		Questo permetterà al WIS (Warehouse Information System) di definire un percorso che OpRobot seguirà per spostarsi da un punto di partenza, 
+		Questo permetterà al WIS di definire un percorso che OpRobot seguirà per spostarsi da un punto di partenza, 
 		come la sua postazione "HOME", a una destinazione specifica, ad esempio l'area "WasteIn". Fortunatamente, disponiamo internamente di strumenti software, 
 		un "MapBuilder" e un "Planner", che ci consentono rispettivamente di generare la mappa dell'ambiente e di calcolare il tragitto ottimale tra due punti qualsiasi.
-		<h4>P4-Capire quando attivare l'incenerator</h4>
-		L'inceneritore ha un tempo di combustione fisso (BTIME) e notifica la fine del processo. 
-		Il punto critico è come rileva nuovo materiale RP nella porta BURNIN per avviare il ciclo.
+		<b>FINO A QUA</b>
 
+
+		<h4>P7 - Quando attivare l'incenerator?</h4>
+		L'inceneritore ha un tempo di combustione fisso (BTIME) e notifica la fine del processo. 
+		Il punto critico è come l'incinerator rileva del nuovo materiale presente nella porta BURNIN per avviare il ciclo.
 		Due le ipotesi:
 			<ul>
-
 				<li>Un sensore di presenza materiale</li>
 				<li>Una notifica che il robot ha consegnato il materiale.</li>
 			</ul>
-		In assenza di un sensore specificato nei requisiti (e assumendo di non poterlo aggiungere), abbiamo considerato che l'arrivo del robot, che per definizione trasporta un RP, funge da segnale di presenza materiale. Questa è la via che abbiamo scelto.
+		In assenza di un sensore che rilevi la presenza di un nuovo materiale da smaltire (come specificato nei requisiti) e assumendo di non poterlo aggiungere, è stata considerata la seconda opzione, dato che, l'arrivo del robot alla porta BURNIN (che per definizione trasporta un RP) funge da segnale di presenza materiale.
 
-		Di conseguenza, l'inceneritore necessita di un messaggio per iniziare. Chi lo invia?
+		<h4>P8 - Chi attiva l'incenerator?</h4>
+		Una volta deciso quando attivare l'incinerator, sorge il problema sul chi debba farlo.
+		Viene logico pensare che sia l'OpRobot ad attivare l'incinerator una volta che porta un RP presso la porta BurnIn: dopo un'attenta analisi, per rispettare il SRP (Single Responsibility Principle) è stato deciso che sarà il WIS ad interagire con il robot per comunicare l'accensione all'incinerator.
 
-
-		<h4>P5-Gestione messaggi</h4>
+		<h4>P9 - Gestione messaggi</h4>
 		Dobbiamo ora determinare la tipologia adeguata per il messaggio di avvio scambiato tra il WIS e l'Inceneritore. 
 		Poiché si tratta di una comunicazione diretta, punto-punto, l'utilizzo di un 'Evento' non risulta appropriato in questo contesto.
-
 		La natura di questo messaggio prevede esclusivamente l'invio del comando di inizio, senza che sia richiesta o attesa alcuna risposta dall'Inceneritore. Valutando i possibili modelli di comunicazione:
 			<ul>
-
     			<li>Request: Questo schema implica tipicamente la necessità di una risposta da parte del destinatario. 
 					Dato che il nostro obiettivo è semplicemente inviare un comando unidirezionale di avvio, il modello 'Request' non soddisfa i requisiti.</li>
    				 <li>Dispatch: Questa modalità è concepita per inviare messaggi punto-punto senza prevedere un messaggio di risposta obbligatorio. 
@@ -312,10 +345,14 @@ div.imagedesc{
 			</ul>
 		Alla luce di queste considerazioni funzionali, il modello 'Dispatch' si configura come la scelta più idonea per la gestione del 
 		messaggio di avvio tra il WIS e l'Inceneritore.
+
+		</ul>
+
+
 		<h3>WIS</h3>
-		<h4>P6-MNodellazione</h4>
-		<h4>P7-Interazione con OpRobot </h4>
-		<h4>P8-Interazione con Incenerator </h4>
+		<h4>P - Modellazione</h4>
+		<h4>P - Interazione con OpRobot </h4>
+		<h4>P - Interazione con Incenerator </h4>
 	
 		<h3>Logical architecture</h3>
 		<h3>Testing</h3>
