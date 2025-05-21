@@ -287,38 +287,29 @@ div.imagedesc{
 			E' necessario definire una logica che consenta di determinare dinamicamente la sequenza di mosse da compiere a partire dalla posizione corrente del robot: questa logica è implementata all'interno di un modulo denominato planner, il quale viene interrogato dall'OpRobot per calcolare il percorso corretto verso la destinazione.
 			
 			<h4>P5 - Interazione con il WIS</h4>
-				Dall'analisi dei requisiti emerge la necessità di un sistema di comunicazione basato su messaggi per assegnare compiti specifici all'OpRobot. 
-				Si propone un'architettura Request-Reply: il WIS invia una "Request" all'OpRobot per avviare un'attività, e l'OpRobot risponde con una "Reply" 
-				a compito ultimato. Questo approccio con una singola Reply finale elimina la necessità per il WIS di monitorare continuamente lo stato del task (polling). 
+				Dall'analisi dei requisiti emerge la necessità di un sistema di comunicazione basato su messaggi per assegnare compiti specifici all'OpRobot.<br>
+				A primo impatto sorge l'idea di proporre un'architettura Request-Reply: il WIS invia una "Request" all'OpRobot per avviare un'attività, e l'OpRobot risponde con una "Reply" 
+				a compito ultimato. Questo approccio con una singola Reply finale eliminerebbe la necessità per il WIS di monitorare continuamente lo stato del task (polling).
+				Questo approccio però, nel complesso, non è conveniente in quanto sincrono: quando il WIS invia una richiesta all'OpRobot, esso deve fermarsi in attesa di risposta di quest'ultimo.
+				Una soluzione a questo problema è quella di renderla asincrona attraverso una comunicazione di tipo "Dispatch" in modo tale che il WIS possa continuare ad effettuare altre operazioni.
 				Dato che questi scambi avvengono tra componenti specifici del sistema, l'uso di Eventi generalizzati non è considerato vantaggioso. 
-				Si raccomanda quindi l'adozione del pattern Request-Reply per tutte le interazioni tra WIS e OpRobot relative alle operazioni di recupero e deposito di 
+				Si raccomanda quindi l'adozione del Dispatch per tutte le interazioni tra WIS e OpRobot relative alle operazioni di recupero e deposito di 
 				RP e Ash, nonché per il comando di ritorno alla postazione "HOME".
 				A tal proposito, dato che la mappa risiede nell'OpRobot, basterebbe che il WIS comunichi ad esso di andare in un determinato luogo della service area tramite l'utilizzo di appositi comandi, nello specifico:
 				<ul>
 					<li>go_home</li>
-					<li>go_wastestorage</li>
+					<li>go_wastein</li>
 					<li>go_burnin</li>
 					<li>go_burnout</li>
-					<li>go_ashstorage</li>
+					<li>go_ashout</li>
 				</ul>
 
 		</ul>
 
 
-		<h3>Modellazione Incenerator</h3>
+		<h3>Incenerator</h3>
 		<ul>
-		
-			
-		<h4>P6 - Come rendere l'incenerator un punto d'interesse rilevante per l'oprobot</h4>
-		<b>QUESTA PARTE QUA NON C'ENTRA NULLA</b>
-		Per consentire a OpRobot di navigare autonomamente, è necessario creare una rappresentazione digitale della stanza. 
-		Questo permetterà al WIS di definire un percorso che OpRobot seguirà per spostarsi da un punto di partenza, 
-		come la sua postazione "HOME", a una destinazione specifica, ad esempio l'area "WasteIn". Fortunatamente, disponiamo internamente di strumenti software, 
-		un "MapBuilder" e un "Planner", che ci consentono rispettivamente di generare la mappa dell'ambiente e di calcolare il tragitto ottimale tra due punti qualsiasi.
-		<b>FINO A QUA</b>
-
-
-		<h4>P7 - Quando attivare l'incenerator?</h4>
+		<h4>P6 - Quando attivare l'incenerator?</h4>
 		L'inceneritore ha un tempo di combustione fisso (BTIME) e notifica la fine del processo. 
 		Il punto critico è come l'incinerator rileva del nuovo materiale presente nella porta BURNIN per avviare il ciclo.
 		Due le ipotesi:
@@ -328,11 +319,11 @@ div.imagedesc{
 			</ul>
 		In assenza di un sensore che rilevi la presenza di un nuovo materiale da smaltire (come specificato nei requisiti) e assumendo di non poterlo aggiungere, è stata considerata la seconda opzione, dato che, l'arrivo del robot alla porta BURNIN (che per definizione trasporta un RP) funge da segnale di presenza materiale.
 
-		<h4>P8 - Chi attiva l'incenerator?</h4>
+		<h4>P7 - Chi attiva l'incenerator?</h4>
 		Una volta deciso quando attivare l'incinerator, sorge il problema sul chi debba farlo.
 		Viene logico pensare che sia l'OpRobot ad attivare l'incinerator una volta che porta un RP presso la porta BurnIn: dopo un'attenta analisi, per rispettare il SRP (Single Responsibility Principle) è stato deciso che sarà il WIS ad interagire con il robot per comunicare l'accensione all'incinerator.
 
-		<h4>P9 - Gestione messaggi</h4>
+		<h4>P8 - Gestione messaggi</h4>
 		Dobbiamo ora determinare la tipologia adeguata per il messaggio di avvio scambiato tra il WIS e l'Inceneritore. 
 		Poiché si tratta di una comunicazione diretta, punto-punto, l'utilizzo di un 'Evento' non risulta appropriato in questo contesto.
 		La natura di questo messaggio prevede esclusivamente l'invio del comando di inizio, senza che sia richiesta o attesa alcuna risposta dall'Inceneritore. Valutando i possibili modelli di comunicazione:
@@ -350,10 +341,34 @@ div.imagedesc{
 
 
 		<h3>WIS</h3>
-		<h4>P - Modellazione</h4>
-		<h4>P - Interazione con OpRobot </h4>
-		<h4>P - Interazione con Incenerator </h4>
-	
+		<ul>
+			<h4>P9 - Stato </h4>
+			Il punto principale dell'architettura del WIS si basa sulla definizione di uno stato tratto dalle informazioni specificate nello Sprint0: per poter dare un valore allo stato, è necessario reperire le informazioni dalle varie entità coinvolte.<br>
+			Per mantenere lo stato del WIS aggiornato, invece che richiedere ogni volta le informazioni alle entità coinvolte e quindi evitare sovraccarico generale, è stato scelto di modellare il WIS come Observer di:
+			<ul>
+				<li><b>Incinerator</b>: per ottenerne lo stato attuale (On, Off, Idle);</li>
+				<li><b>Scale</b>: per ottenerne il peso misurato;</li>
+				<li><b>Sonar</b>: per ottenerne il valore misurato;</li>
+				<li><b>OpRobot</b>: per ottenerne la posizione esatta.</li>
+			</ul>
+			<h4>P10 - Interazione con OpRobot </h4>
+			Come già detto in precedenza, il ruolo del WIS ne i confronti dell'OpRobot è quello, in base allo stato attuale del sistema, di fornirgli indicazioni sulle operazioni da eseguire.<br>
+			Abbiamo detto che la comunicazione tra WIS e OpRobot avviene in modalità Dispatch: affinchè il WIS non invierà un comando all'OpRobot, esso è consapevole che quest'ultimo si troverà in idle. 
+			Sono stati quindi individuati 3 situazioni in cui il WIS invia dei comandi all'OpRobot:
+			<ul>
+				<li>1. Attimo in cui il robot è in HOME e si verifica la <a href="link all'ancora sulla condizione nella descrizione del tema finale">condizione di attivazione</a>;</li>
+				<li>2. Attimo in cui il robot è in attesa dell'Incinerator e quest'ultimo ha terminato il suo compito;</li>
+				<li>3. Attimo in cui il robot ha scaricato le ceneri nell'AshStorage.</li>
+			</ul>
+			Riprendendo i comandi descritti in P5 ed essendo alcuni di loro continuativi, ovvero:
+			<ul>
+				<li>go_burnin si verifica sempre dopo go_wastein</li>
+				<li>go_ashout si verifica sempre dopo go_burnout</li>
+			</ul>
+			potrebbe essere conveniente raggruppare queste coppie di comandi per diminuire l'interazione WIS-OpRobot.
+			<h4>P - Interazione con Incenerator </h4>
+			e di recepire il segnale di fine incenerimento dall'Incinerator.
+		</ul>
 		<h3>Logical architecture</h3>
 		<h3>Testing</h3>
 		<h3>Deployment</h3>
