@@ -6,6 +6,10 @@ dispatch( bringRP, bringRP(X) ).
 dispatch( bringAsh, bringAsh(X) ).
 dispatch( act, act(X) ).
 dispatch( burn, burn(X) ).
+dispatch( stateScale, updateScale(X) ).
+dispatch( stateSonar, updateSonar(x) ).
+dispatch( position, position(X,Y) ).
+dispatch( stateIncinerator, stateIncinerator(X) ).
 event( burnEnd, burnEnd(BTIME) ).
 %====================================================================================
 context(ctxwis, "localhost",  "TCP", "8001").

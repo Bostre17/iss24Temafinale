@@ -38,4 +38,5 @@ with Diagram('sprintzeroArch', show=False, outformat='png', graph_attr=graphattr
      sys >> Edge( label='burnEnd', **evattr, decorate='true', fontcolor='darkgreen') >> wis
      sys >> Edge( label='burnEnd', **evattr, decorate='true', fontcolor='darkgreen') >> oprobot
      incinerator >> Edge( label='burnEnd', **eventedgeattr, decorate='true', fontcolor='red') >> sys
+     wis >> Edge(color='blue', style='solid',  decorate='true', label='<act &nbsp; >',  fontcolor='blue') >> incinerator
 diag

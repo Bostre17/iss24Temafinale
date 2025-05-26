@@ -346,7 +346,7 @@ div.imagedesc{
 				Il punto principale dell'architettura del WIS si basa sulla definizione di uno stato tratto dalle informazioni specificate nello Sprint0: per poter dare un valore allo stato, è necessario reperire le informazioni dalle varie entità coinvolte.<br>
 				Per mantenere lo stato del WIS aggiornato, invece che richiedere ogni volta le informazioni alle entità coinvolte e quindi evitare sovraccarico generale, è stato scelto di modellare il WIS come Observer di:
 				<ul>
-					<li><b>Incinerator</b>: per ottenerne lo stato attuale (On, Off, Idle);</li>
+					<li><b>Incinerator</b>: per ottenerne lo stato attuale (Off = 0, On = 1, Idle = 2);</li>
 					<li><b>Scale</b>: per ottenerne il peso misurato;</li>
 					<li><b>Sonar</b>: per ottenerne il valore misurato;</li>
 					<li><b>OpRobot</b>: per ottenerne la posizione esatta.</li>
@@ -367,11 +367,12 @@ div.imagedesc{
 				</ul>
 				potrebbe essere conveniente raggruppare queste coppie di comandi per diminuire l'interazione WIS-OpRobot.
 			<h4>P11 - Interazione con Incenerator </h4>
-				Come già anticipato in P7, l'Incinerator deve essere attivato dal WIS tramite un apposito comando di attivazione: lo stesso vale per l'incenerimento in quanto, essendo il core business, sa quando l'OpRobot ha depositato un RP nella porta BURNIN.<br>
-				I comandi che verranno inviati all'incinerator saranno quindi:
+				Come già anticipato in P7, l'Incinerator deve essere attivato dal WIS tramite un apposito comando di attivazione: lo stesso vale per lo spegnimento o incenerimento in quanto, essendo il core business, sa quando l'OpRobot ha depositato un RP nella porta BURNIN.<br>
+				Il comando che verrannà inviato all'incinerator sarà quindi <b>act</b>, che verrà discriminato in base al valore che possiede:
 				<ul>
-					<li>Attivazione <b>act</b></li>
-					<li>Incenerimento <b>burn</b></li>
+					<li><b>Off</b>: 0</li>
+					<li><b>On</b>: 1</li>
+					<li><b>Idle</b>: 2</li>
 				</ul>
 		</ul>
 		<h3>Logical architecture</h3>

@@ -28,17 +28,16 @@ class Wis ( name: String, scope: CoroutineScope, isconfined: Boolean=false  ) : 
 	override fun getBody() : (ActorBasicFsm.() -> Unit){
 		//val interruptedStateTransitions = mutableListOf<Transition>()
 		
-			//val DLIMT = X
-			//var RP=0;
-			//var ASHLEVEL = 0;
-			//var INCENERATOR = true;
-			//var ROUTINE = 0;
-			//var POSX = 0;
-			//var POSY = 0;
+			val DLIMT = 5
+			var wasteStorageWeight=0;
+			var ashStorageLevel = 0;
+			var posX = 0;
+			var posY = 0;
 		return { //this:ActionBasciFsm
 				state("s0") { //this:State
 					action { //it:State
 						CommUtils.outgreen("WIS: Initializing system")
+						forward("act", "act(2)" ,"incinerator" ) 
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
@@ -55,20 +54,19 @@ class Wis ( name: String, scope: CoroutineScope, isconfined: Boolean=false  ) : 
 					sysaction { //it:State
 					}	 	 
 					 transition(edgeName="t00",targetState="endIncinerator",cond=whenEvent("burnEnd"))
+					transition(edgeName="t01",targetState="handleStateScale",cond=whenDispatch("stateScale"))
+					transition(edgeName="t02",targetState="handleStateSonar",cond=whenDispatch("stateSonar"))
+					transition(edgeName="t03",targetState="position",cond=whenDispatch("position"))
+					transition(edgeName="t04",targetState="handleStateIncinerator",cond=whenDispatch("stateIncinerator"))
 				}	 
-				state("prepareIncinerator") { //this:State
-					action { //it:State
-						CommUtils.outgreen("WIS: Preparing incinerator")
-						//genTimer( actor, state )
-					}
-					//After Lenzi Aug2002
-					sysaction { //it:State
-					}	 	 
-					 transition( edgeName="goto",targetState="idle", cond=doswitch() )
-				}	 
-				state("updateAshStorageStatus") { //this:State
+				state("handleStateSonar") { //this:State
 					action { //it:State
 						CommUtils.outgreen("WIS: Updating ash level")
+						if( checkMsgContent( Term.createTerm("updateSonar(x)"), Term.createTerm("stateSonar(X)"), 
+						                        currentMsg.msgContent()) ) { //set msgArgList
+								 ashStorageLevel = payloadArg(0).toInt()  
+								CommUtils.outgreen("Ash storage level: $ashStorageLevel")
+						}
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
@@ -76,9 +74,15 @@ class Wis ( name: String, scope: CoroutineScope, isconfined: Boolean=false  ) : 
 					}	 	 
 					 transition( edgeName="goto",targetState="idle", cond=doswitch() )
 				}	 
-				state("updateWasteStorageStatus") { //this:State
+				state("handleStateScale") { //this:State
 					action { //it:State
 						CommUtils.outgreen("WIS: Updating number of RP")
+						if( checkMsgContent( Term.createTerm("updateScale(X)"), Term.createTerm("stateScale(X)"), 
+						                        currentMsg.msgContent()) ) { //set msgArgList
+								 	wasteStorageWeight = payloadArg(0).toInt() 
+												var RP = wasteStorageWeight/50
+								CommUtils.outgreen("RP quantity: $RP")
+						}
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
@@ -86,9 +90,25 @@ class Wis ( name: String, scope: CoroutineScope, isconfined: Boolean=false  ) : 
 					}	 	 
 					 transition( edgeName="goto",targetState="idle", cond=doswitch() )
 				}	 
-				state("updateOpRobotStatus") { //this:State
+				state("position") { //this:State
 					action { //it:State
 						CommUtils.outgreen("WIS: Updating the OpRobot status")
+						if( checkMsgContent( Term.createTerm("position(X,Y)"), Term.createTerm("position(X,Y)"), 
+						                        currentMsg.msgContent()) ) { //set msgArgList
+								 	posX = payloadArg(0).toInt()
+												posY = payloadArg(1).toInt()
+								CommUtils.outgreen("OpRobot position: $posX $posY")
+						}
+						//genTimer( actor, state )
+					}
+					//After Lenzi Aug2002
+					sysaction { //it:State
+					}	 	 
+					 transition( edgeName="goto",targetState="idle", cond=doswitch() )
+				}	 
+				state("handleStateIncinerator") { //this:State
+					action { //it:State
+						CommUtils.outgreen("WIS: Updating ash level")
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
