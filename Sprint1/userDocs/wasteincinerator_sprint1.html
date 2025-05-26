@@ -259,7 +259,7 @@ div.imagedesc{
 
         <h2>Requirement Analysis</h2>
 		<p>
-			I requisiti possono essere trovati nello <a href="../../Sprint0/userDocs/wasteincineratorv1.html">Sprint0</a>.</p>
+			L'analisi dei requisiti può essere trovata nello <a href="../../Sprint0/userDocs/wasteincineratorv1.html">Sprint0</a>.</p>
 		<h2>Problem Analysis</h2>
 		<h3>OpRobot</h3>
 		<ul>
@@ -343,31 +343,36 @@ div.imagedesc{
 		<h3>WIS</h3>
 		<ul>
 			<h4>P9 - Stato </h4>
-			Il punto principale dell'architettura del WIS si basa sulla definizione di uno stato tratto dalle informazioni specificate nello Sprint0: per poter dare un valore allo stato, è necessario reperire le informazioni dalle varie entità coinvolte.<br>
-			Per mantenere lo stato del WIS aggiornato, invece che richiedere ogni volta le informazioni alle entità coinvolte e quindi evitare sovraccarico generale, è stato scelto di modellare il WIS come Observer di:
-			<ul>
-				<li><b>Incinerator</b>: per ottenerne lo stato attuale (On, Off, Idle);</li>
-				<li><b>Scale</b>: per ottenerne il peso misurato;</li>
-				<li><b>Sonar</b>: per ottenerne il valore misurato;</li>
-				<li><b>OpRobot</b>: per ottenerne la posizione esatta.</li>
-			</ul>
+				Il punto principale dell'architettura del WIS si basa sulla definizione di uno stato tratto dalle informazioni specificate nello Sprint0: per poter dare un valore allo stato, è necessario reperire le informazioni dalle varie entità coinvolte.<br>
+				Per mantenere lo stato del WIS aggiornato, invece che richiedere ogni volta le informazioni alle entità coinvolte e quindi evitare sovraccarico generale, è stato scelto di modellare il WIS come Observer di:
+				<ul>
+					<li><b>Incinerator</b>: per ottenerne lo stato attuale (On, Off, Idle);</li>
+					<li><b>Scale</b>: per ottenerne il peso misurato;</li>
+					<li><b>Sonar</b>: per ottenerne il valore misurato;</li>
+					<li><b>OpRobot</b>: per ottenerne la posizione esatta.</li>
+				</ul>
 			<h4>P10 - Interazione con OpRobot </h4>
-			Come già detto in precedenza, il ruolo del WIS ne i confronti dell'OpRobot è quello, in base allo stato attuale del sistema, di fornirgli indicazioni sulle operazioni da eseguire.<br>
-			Abbiamo detto che la comunicazione tra WIS e OpRobot avviene in modalità Dispatch: affinchè il WIS non invierà un comando all'OpRobot, esso è consapevole che quest'ultimo si troverà in idle. 
-			Sono stati quindi individuati 3 situazioni in cui il WIS invia dei comandi all'OpRobot:
-			<ul>
-				<li>1. Attimo in cui il robot è in HOME e si verifica la <a href="link all'ancora sulla condizione nella descrizione del tema finale">condizione di attivazione</a>;</li>
-				<li>2. Attimo in cui il robot è in attesa dell'Incinerator e quest'ultimo ha terminato il suo compito;</li>
-				<li>3. Attimo in cui il robot ha scaricato le ceneri nell'AshStorage.</li>
-			</ul>
-			Riprendendo i comandi descritti in P5 ed essendo alcuni di loro continuativi, ovvero:
-			<ul>
-				<li>go_burnin si verifica sempre dopo go_wastein</li>
-				<li>go_ashout si verifica sempre dopo go_burnout</li>
-			</ul>
-			potrebbe essere conveniente raggruppare queste coppie di comandi per diminuire l'interazione WIS-OpRobot.
-			<h4>P - Interazione con Incenerator </h4>
-			e di recepire il segnale di fine incenerimento dall'Incinerator.
+				Come già detto in precedenza, il ruolo del WIS ne i confronti dell'OpRobot è quello, in base allo stato attuale del sistema, di fornirgli indicazioni sulle operazioni da eseguire.<br>
+				Abbiamo detto che la comunicazione tra WIS e OpRobot avviene in modalità Dispatch: affinchè il WIS non invierà un comando all'OpRobot, esso è consapevole che quest'ultimo si troverà in idle. 
+				Sono stati quindi individuati 3 situazioni in cui il WIS invia dei comandi all'OpRobot:
+				<ul>
+					<li>1. Attimo in cui il robot è in HOME e si verifica la <a href="link all'ancora sulla condizione nella descrizione del tema finale">condizione di attivazione</a>;</li>
+					<li>2. Attimo in cui il robot è in attesa dell'Incinerator e quest'ultimo ha terminato il suo compito;</li>
+					<li>3. Attimo in cui il robot ha scaricato le ceneri nell'AshStorage.</li>
+				</ul>
+				Riprendendo i comandi descritti in P5 ed essendo alcuni di loro continuativi, ovvero:
+				<ul>
+					<li>go_burnin si verifica sempre dopo go_wastein</li>
+					<li>go_ashout si verifica sempre dopo go_burnout</li>
+				</ul>
+				potrebbe essere conveniente raggruppare queste coppie di comandi per diminuire l'interazione WIS-OpRobot.
+			<h4>P11 - Interazione con Incenerator </h4>
+				Come già anticipato in P7, l'Incinerator deve essere attivato dal WIS tramite un apposito comando di attivazione: lo stesso vale per l'incenerimento in quanto, essendo il core business, sa quando l'OpRobot ha depositato un RP nella porta BURNIN.<br>
+				I comandi che verranno inviati all'incinerator saranno quindi:
+				<ul>
+					<li>Attivazione <b>act</b></li>
+					<li>Incenerimento <b>burn</b></li>
+				</ul>
 		</ul>
 		<h3>Logical architecture</h3>
 		<h3>Testing</h3>
