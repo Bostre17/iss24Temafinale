@@ -23,22 +23,37 @@ import org.json.simple.JSONObject
 class Incinerator ( name: String, scope: CoroutineScope, isconfined: Boolean=false  ) : ActorBasicFsm( name, scope, confined=isconfined ){
 
 	override fun getInitialState() : String{
-		return "s0"
+		return "off"
 	}
 	override fun getBody() : (ActorBasicFsm.() -> Unit){
 		//val interruptedStateTransitions = mutableListOf<Transition>()
-		val BTIME = 100L 
+		
+		    	var BTIME = 10L
+		    	var state = 0
 		return { //this:ActionBasciFsm
-				state("s0") { //this:State
+				state("off") { //this:State
 					action { //it:State
-						CommUtils.outcyan("$name in ${currentState.stateName} | $currentMsg | ${Thread.currentThread().getName()} n=${Thread.activeCount()}")
-						 	   
-						CommUtils.outgreen("Incinerator: initialized")
+						delay(100) 
+						CommUtils.outgreen("Incinerator: waiting for activation")
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
+					 transition(edgeName="t014",targetState="handleAct",cond=whenDispatch("act"))
+				}	 
+				state("handleAct") { //this:State
+					action { //it:State
+						 state = payloadArg(0).toInt() 
+						//genTimer( actor, state )
+					}
+					//After Lenzi Aug2002
+					sysaction { //it:State
+					}	 	 
+					 transition( edgeName="goto",targetState="burn", cond=doswitchGuarded({ state == 1  
+					}) )
+					transition( edgeName="goto",targetState="idle", cond=doswitchGuarded({! ( state == 1  
+					) }) )
 				}	 
 				state("idle") { //this:State
 					action { //it:State
@@ -48,12 +63,17 @@ class Incinerator ( name: String, scope: CoroutineScope, isconfined: Boolean=fal
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
+					 transition(edgeName="t015",targetState="handleAct",cond=whenDispatch("act"))
 				}	 
-				state("on") { //this:State
+				state("burn") { //this:State
 					action { //it:State
-						CommUtils.outgreen("Incinerator: burning")
-						delay BTIME*1000 
-						emit("burnEnd", "burnEnd(BTIME)" ) 
+						CommUtils.outgreen("Incinerator: on")
+						
+									delay(Btime*1000)
+									state = 2	
+						emit("burnEnd", "burnend($Btime)" ) 
+						updateResourceRep( "burnEnd(${Btime})"  
+						)
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002

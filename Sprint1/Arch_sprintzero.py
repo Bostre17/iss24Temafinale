@@ -27,16 +27,23 @@ with Diagram('sprintzeroArch', show=False, outformat='png', graph_attr=graphattr
 ### see https://renenyffenegger.ch/notes/tools/Graphviz/attributes/label/HTML-like/index
      with Cluster('ctxwis', graph_attr=nodeattr):
           wis=Custom('wis','./qakicons/symActorSmall.png')
-          oprobot=Custom('oprobot','./qakicons/symActorSmall.png')
           incinerator=Custom('incinerator','./qakicons/symActorSmall.png')
+          oprobot=Custom('oprobot','./qakicons/symActorSmall.png')
      with Cluster('ctxscale', graph_attr=nodeattr):
           scale=Custom('scale','./qakicons/symActorSmall.png')
      with Cluster('ctxsonar', graph_attr=nodeattr):
           sonar=Custom('sonar','./qakicons/symActorSmall.png')
      with Cluster('ctxbasicrobot', graph_attr=nodeattr):
           ddr_robot=Custom('ddr_robot(ext)','./qakicons/externalQActor.png')
+     incinerator >> Edge( label='burnEnd', **eventedgeattr, decorate='true', fontcolor='red') >> wis
+     scale >> Edge( label='stateScale', **eventedgeattr, decorate='true', fontcolor='red') >> wis
+     sonar >> Edge( label='stateSonar', **eventedgeattr, decorate='true', fontcolor='red') >> wis
+     oprobot >> Edge( label='position', **eventedgeattr, decorate='true', fontcolor='red') >> wis
+     sys >> Edge( label='stateScale', **evattr, decorate='true', fontcolor='darkgreen') >> wis
+     sys >> Edge( label='stateSonar', **evattr, decorate='true', fontcolor='darkgreen') >> wis
      sys >> Edge( label='burnEnd', **evattr, decorate='true', fontcolor='darkgreen') >> wis
-     sys >> Edge( label='burnEnd', **evattr, decorate='true', fontcolor='darkgreen') >> oprobot
      incinerator >> Edge( label='burnEnd', **eventedgeattr, decorate='true', fontcolor='red') >> sys
+     sys >> Edge( label='burnEnd', **evattr, decorate='true', fontcolor='darkgreen') >> oprobot
      wis >> Edge(color='blue', style='solid',  decorate='true', label='<act &nbsp; >',  fontcolor='blue') >> incinerator
+     wis >> Edge(color='blue', style='solid',  decorate='true', label='<goHome &nbsp; bringRP &nbsp; bringAsh &nbsp; >',  fontcolor='blue') >> oprobot
 diag

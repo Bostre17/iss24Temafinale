@@ -30,9 +30,6 @@ class Scale ( name: String, scope: CoroutineScope, isconfined: Boolean=false  ) 
 		return { //this:ActionBasciFsm
 				state("s0") { //this:State
 					action { //it:State
-						CommUtils.outcyan("$name in ${currentState.stateName} | $currentMsg | ${Thread.currentThread().getName()} n=${Thread.activeCount()}")
-						 	   
-						CommUtils.outgreen("Scale: initialized")
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
