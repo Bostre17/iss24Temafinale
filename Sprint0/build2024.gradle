@@ -149,7 +149,7 @@ eclipse {
 
 application {
     //Define the main class for the application.
-    mainClassName    = 'it.unibo.ctxoprobot.MainCtxoprobotKt'
+    mainClassName    = 'it.unibo.ctxincinerator.MainCtxincineratorKt'
 }
  
  jar {
@@ -172,9 +172,9 @@ task dovesiamo {
 
 distributions {
     main {
-        distributionBaseName = 'oprobot'
+        distributionBaseName = 'incinerator'
         contents { 
-             from './oprobot.pl'
+             from './incinerator.pl'
              from './sysRules.pl'
              from './facadeConfig.json'
         }
@@ -185,7 +185,7 @@ task run0(type: JavaExec) {
     group = "Execution"
     description = "Run the main class with JavaExecTask"
     classpath = sourceSets.main.runtimeClasspath
-    main = 'it.unibo.ctxoprobot.MainCtxoprobotKt'
+    main = 'it.unibo.ctxincinerator.MainCtxincineratorKt'
 }
 
 /*

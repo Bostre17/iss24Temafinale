@@ -34,11 +34,11 @@ class Wis ( name: String, scope: CoroutineScope, isconfined: Boolean=false  ) : 
 			var posX = 0
 			var posY = 0
 			var incinerator = 0
-			var robotRoutine = "HOME"
+			var job = ""
 		return { //this:ActionBasciFsm
 				state("s0") { //this:State
 					action { //it:State
-						CommUtils.outgreen("WIS: Initializing system")
+						CommUtils.outgreen("[$name] Initializing system")
 						subscribeToLocalActor("incinerator") 
 						subscribeToLocalActor("scale") 
 						subscribeToLocalActor("sonar") 
@@ -54,7 +54,7 @@ class Wis ( name: String, scope: CoroutineScope, isconfined: Boolean=false  ) : 
 				}	 
 				state("waitingRP") { //this:State
 					action { //it:State
-						CommUtils.outgreen("WIS: waiting for RP")
+						CommUtils.outgreen("[$name] wa-miting for RP")
 						forward("goHome", "goHome(X)" ,"oprobot" ) 
 						//genTimer( actor, state )
 					}
@@ -71,13 +71,13 @@ class Wis ( name: String, scope: CoroutineScope, isconfined: Boolean=false  ) : 
 						if( checkMsgContent( Term.createTerm("stateSonar(x)"), Term.createTerm("stateSonar(X)"), 
 						                        currentMsg.msgContent()) ) { //set msgArgList
 								 ashStorageLevel = payloadArg(0).toInt()  
-								CommUtils.outgreen("Ash storage level updated: $ashStorageLevel")
+								CommUtils.outgreen("[$name] Ash storage level updated: $ashStorageLevel")
 						}
 						if( checkMsgContent( Term.createTerm("stateScale(X)"), Term.createTerm("stateScale(X)"), 
 						                        currentMsg.msgContent()) ) { //set msgArgList
 								 	wasteStorageWeight = payloadArg(0).toInt() 
 												var RP = wasteStorageWeight/50  
-								CommUtils.outgreen("RP quantity updated: $RP")
+								CommUtils.outgreen("[$name] RP quantity updated: $RP")
 						}
 						//genTimer( actor, state )
 					}
@@ -91,9 +91,8 @@ class Wis ( name: String, scope: CoroutineScope, isconfined: Boolean=false  ) : 
 				}	 
 				state("startRoutine") { //this:State
 					action { //it:State
-						CommUtils.outgreen("WIS: start routine")
+						CommUtils.outgreen("[$name] start routine")
 						forward("bringRP", "bringRP(X)" ,"oprobot" ) 
-						 robotRoutine = "go WASTEIN and BURNIN"  
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
@@ -106,7 +105,7 @@ class Wis ( name: String, scope: CoroutineScope, isconfined: Boolean=false  ) : 
 				}	 
 				state("startIncinerator") { //this:State
 					action { //it:State
-						CommUtils.outgreen("WIS: Incinerator started")
+						CommUtils.outgreen("[$name] Incinerator started")
 						forward("act", "act(1)" ,"incinerator" ) 
 						forward("goHome", "goHome(X)" ,"oprobot" ) 
 						 var incinerator = 1 
@@ -122,10 +121,9 @@ class Wis ( name: String, scope: CoroutineScope, isconfined: Boolean=false  ) : 
 				}	 
 				state("endIncinerator") { //this:State
 					action { //it:State
-						CommUtils.outgreen("WIS: incinerator is now idle")
+						CommUtils.outgreen("[$name] incinerator is now idle")
 						forward("bringAsh", "bringAsh(X)" ,"oprobot" ) 
 						 
-						    		robotRoutine = "go BURNOUT and ASHOUT" 
 						    		incinerator = 2
 						//genTimer( actor, state )
 					}
@@ -142,7 +140,7 @@ class Wis ( name: String, scope: CoroutineScope, isconfined: Boolean=false  ) : 
 						if( checkMsgContent( Term.createTerm("stateSonar(x)"), Term.createTerm("stateSonar(X)"), 
 						                        currentMsg.msgContent()) ) { //set msgArgList
 								 ashStorageLevel = payloadArg(0).toInt()  
-								CommUtils.outgreen("Ash storage level updated: $ashStorageLevel")
+								CommUtils.outgreen("[$name] Ash storage level updated: $ashStorageLevel")
 						}
 						returnFromInterrupt(interruptedStateTransitions)
 						//genTimer( actor, state )
@@ -157,7 +155,7 @@ class Wis ( name: String, scope: CoroutineScope, isconfined: Boolean=false  ) : 
 						                        currentMsg.msgContent()) ) { //set msgArgList
 								 	wasteStorageWeight = payloadArg(0).toInt() 
 												var RP = wasteStorageWeight/50  
-								CommUtils.outgreen("RP quantity updated: $RP")
+								CommUtils.outgreen("[$name] RP quantity updated: $RP")
 						}
 						returnFromInterrupt(interruptedStateTransitions)
 						//genTimer( actor, state )
@@ -168,11 +166,12 @@ class Wis ( name: String, scope: CoroutineScope, isconfined: Boolean=false  ) : 
 				}	 
 				state("handleRobotPosition") { //this:State
 					action { //it:State
-						if( checkMsgContent( Term.createTerm("position(X,Y)"), Term.createTerm("position(X,Y)"), 
+						if( checkMsgContent( Term.createTerm("position(X,Y,J)"), Term.createTerm("position(X,Y)"), 
 						                        currentMsg.msgContent()) ) { //set msgArgList
 								 	posX = payloadArg(0).toInt()
-												posY = payloadArg(1).toInt()  
-								CommUtils.outgreen("OpRobot   position $posX $posY   routine $robotRoutine")
+												posY = payloadArg(1).toInt() 
+												job = payloadArg(2)
+								CommUtils.outgreen("[$name] OpRobot   position $posX $posY   routine $job")
 						}
 						returnFromInterrupt(interruptedStateTransitions)
 						//genTimer( actor, state )

@@ -1,0 +1,402 @@
+System sprintzero
+
+Dispatch goHome : goHome(X)				// comando da WIS per OpRobot di andare a HOME
+Dispatch bringRP : bringRP(X)			// comando da WIS per OpRobot di andare a prendere RP in WASTEIN e portarlo in BURNIN
+Dispatch bringAsh : bringAsh(X)			// comando da WIS per OpRobot di andare a prendere Ash in BURNOUT e portarlo in ASHOUT
+Dispatch act : act(X)					// comando da WIS a Incinerator (Off = 0, On = 1, Idle = 2)
+Dispatch ack : ack(X)					// messaggio di ack
+
+Dispatch atIncinerator : atIncinerator(X) // messaggio da OpRobot a WIS quando arriva all'incinerator
+Dispatch ashDeposited : ashDeposited(X)	  //  messaggio da OpRobot a WIS quando arriva ad ASHOUT
+Dispatch rpTaken : rpTaken(X)			// messaggio per scale
+
+
+//Observable
+
+Event stateScale : stateScale(X) 			// messaggio observable update valore scale
+Event stateSonar : stateSonar(x)			// messaggio observable update valore sonar
+Event position : position(X,Y,J)				// messaggio observable posizione oprobot
+
+// messaggi conversazione engage tra OpRobot e BasicRobot
+Request  engage : engage(OWNER, STEPTIME)
+Reply engagedone : engagedone(ARG) for engage
+Reply engagerefused : engagerefused(ARG) for engage
+Dispatch disengage    : disengage(ARG)
+
+Request moverobot : moverobot(X,Y)
+Reply moverobotdone : moverobotdone(X) for moverobot
+Reply moverobotfailed : moverobotfailed(X) for moverobot
+
+Event burnEnd : burnEnd(BTIME)
+
+
+
+Context ctxwis ip [host="localhost" port=8001]
+Context ctxscale ip [host="localhost" port=8002]
+Context ctxsonar ip [host="localhost" port=8003]
+Context ctxbasicrobot ip [host="127.0.0.1" port=8001]
+
+ExternalQActor basicrobot context ctxbasicrobot
+
+
+
+
+
+
+//--------------------------WIS-----------------------------
+
+QActor wis context ctxwis {
+	[#
+	val DLIMT = 5
+	var wasteStorageWeight=0
+	var ashStorageLevel = 0
+	var posX = 0
+	var posY = 0
+	var incinerator = 0
+	var job = ""
+	#]
+
+    State s0 initial {
+        println("[$name] Initializing system") color green
+        
+        subscribeTo incinerator for burnEnd 
+		subscribeTo scale for stateScale
+		subscribeTo sonar for stateSonar
+		subscribeTo oprobot for position
+		
+        //incinerator idle (Off = 0, On = 1, Idle = 2)
+        forward incinerator -m act : act(2)
+        [# incinerator = 2 #]
+    }
+    Goto waitingRP
+
+
+    State waitingRP {
+        println("[$name] wa-miting for RP") color green
+        forward oprobot -m goHome : goHome(X)
+    }
+	Transition t0
+		whenEvent stateScale -> verifyCondition
+		whenEvent stateSonar -> verifyCondition
+	
+	
+	
+	
+	State verifyCondition{
+		printCurrentMessage
+		onMsg( stateSonar : stateSonar(X)){
+			[# ashStorageLevel = payloadArg(0).toInt() #]
+			println("[$name] Ash storage level updated: $ashStorageLevel") color green
+		}
+		onMsg( stateScale : stateScale(X)){
+			[# 	wasteStorageWeight = payloadArg(0).toInt() 
+				var RP = wasteStorageWeight/50 #]
+			println("[$name] RP quantity updated: $RP") color green
+		}
+	}
+	Goto startRoutine if [#RP>0 && !INCENERATOR && ASHVALUE > DLIMT#] else waitingRP
+			
+    
+    
+    
+    State startRoutine{
+    	println("[$name] start routine") color green
+    	forward oprobot -m bringRP : bringRP(X)
+    }
+    Transition t0
+    	whenMsg atIncinerator -> startIncinerator
+		whenEvent stateScale -> handleStateScale
+		whenEvent stateSonar -> handleStateSonar
+		whenEvent position -> handleRobotPosition
+		
+    
+    State startIncinerator{
+        println("[$name] Incinerator started") color green
+        forward incinerator -m act : act(1)
+        // il robot potrebbe tornare in home da solo senza comando del wis, però se non facessi così tornerebbe ad home istantaneamente, senza scaricare RP (su controllo del WIS)
+        forward oprobot -m goHome : goHome(X)
+        [# var incinerator = 1#]
+	}
+	Transition t0
+		whenEvent burnEnd -> endIncinerator
+		whenEvent stateScale -> handleStateScale
+		whenEvent stateSonar -> handleStateSonar
+		whenEvent position -> handleRobotPosition
+	
+	State endIncinerator{
+        println("[$name] incinerator is now idle") color green
+        forward oprobot -m bringAsh : bringAsh(X)
+    	[# 
+    		incinerator = 2
+    	#]
+
+	}
+	Transition t0
+    	whenMsg ashDeposited -> verifyCondition
+		whenEvent stateScale -> handleStateScale
+		whenEvent stateSonar -> handleStateSonar
+		whenEvent position -> handleRobotPosition
+    
+    
+    //State handleStateIncinerator {
+    //    onMsg( stateIncinerator : stateIncinerator(X)){
+	//		[# incinerator = payloadArg(0).toInt() #]
+	//		println("Incinerator state (Off = 0, On = 1, Idle = 2): $incinerator") color green
+	//	}
+	//	returnFromInterrupt
+    //}
+    
+    State handleStateSonar {
+        onMsg( stateSonar : stateSonar(X)){
+			[# ashStorageLevel = payloadArg(0).toInt() #]
+			println("[$name] Ash storage level updated: $ashStorageLevel") color green
+		}
+		returnFromInterrupt
+    }
+    
+    State handleStateScale {
+        onMsg( stateScale : stateScale(X)){
+			[# 	wasteStorageWeight = payloadArg(0).toInt() 
+				var RP = wasteStorageWeight/50 #]
+			println("[$name] RP quantity updated: $RP") color green
+		}
+		returnFromInterrupt
+    }
+    
+    State handleRobotPosition {
+        onMsg( position : position(X,Y)){
+			[# 	posX = payloadArg(0).toInt()
+				posY = payloadArg(1).toInt() 
+				job = payloadArg(2)
+			#]
+			println("[$name] OpRobot   position $posX $posY   routine $job") color green
+		}
+		returnFromInterrupt
+    }
+}
+
+
+
+
+
+//--------------------------Incinerator-----------------------------
+
+QActor incinerator context ctxwis {
+	//(Off = 0, On = 1, Idle = 2)
+    [#
+    	var BTIME = 10L
+    	var state = 0
+    #]
+    
+	State off initial{
+		delay 100
+		println("[$name] waiting for activation") color green
+	}
+	Transition t0 whenMsg act -> handleAct
+	
+	State handleAct{
+		[# state = payloadArg(0).toInt()#]
+	} 
+	Goto burn if [# state == 1 #] else idle
+
+	
+	State idle{
+		println("[$name] idle") color green
+	}
+	Transition t0 whenMsg act -> handleAct
+			
+	State burn{
+		println("[$name] on") color green
+		[#
+			delay(Btime*1000)
+			state = 2	
+		#]
+		emit burnEnd : burnend($Btime)
+		updateResource [# "burnEnd(${Btime})" #]
+	}
+	Goto idle
+}
+
+
+
+//--------------------------Scale-----------------------------
+
+
+QActor scale context ctxscale {
+	State s0 initial {
+    }
+}
+	
+	
+
+
+	
+	
+//--------------------------Sonar-----------------------------
+
+
+QActor sonar context ctxsonar {
+	State s0 initial {
+    }
+}
+
+
+
+
+
+
+
+//--------------------------OpRobot-----------------------------
+
+QActor oprobot context ctxwis {
+	
+	[#
+		val pos: MutableMap<String, Array<String>> = mutableMapOf()
+	    pos["home"] = arrayOf("0", "0")
+	    pos["burnin"] = arrayOf("2", "1")
+	    pos["burnout"] = arrayOf("4", "3")
+		pos["ashout"] = arrayOf("5", "4")
+		pos["wastein"] = arrayOf("0", "4")
+		var X="0"
+		var Y="0"
+		var Xfut = "0"
+		var Yfut = "0"
+		var Job=""
+	#]
+
+    State s0 initial {
+	    println("[$name] inizializzazione.") color yellow
+	}
+	Goto tryEngage
+	
+	
+	// Stato che tenta di stabilire la connessione con il BasicRobot
+	State tryEngage {
+	    println("[$name] tentativo engage a BasicRobot...") color yellow
+	    request basicrobot -m engage : engage($MyName, 330)
+	}
+	Transition t1 whenTime 1000         	-> noReply
+	              whenReply engagedone   	-> standby
+	
+	
+	// Stato che gestisce l'assenza di risposta
+	State noReply {
+	    println("[$name] nessuna risposta da BasicRobot: failed.") color yellow
+	}
+	
+	// Stato in attesa di ricevere un compito
+	State standby {
+	    println("[$name] pronto e in attesa in HOME.") color yellow
+	    [#
+			X= pos["home"]!!.get(0)
+			Y= pos["home"]!!.get(1)
+			Job="Waiting Home"
+		#]
+		emitlocalstream position : position($X,$Y,$Job)
+	}
+	Transition t1 	whenMsg bringRP -> goWasteIn
+					whenMsg bringAsh -> goBurnOut
+	
+	
+	State goWasteIn {
+		[#
+			X = pos["wastein"].get(0)
+			Y = pos["wastein"].get(1)
+		#]
+		request basicrobot -m moverobot : moverobot($X,$Y)
+	} 
+	Transition t0 whenReply moverobotdone -> goBurnIn
+				  whenReply moverobotfailed -> goHome
+	
+	State goBurnIn {
+		[#
+			Job = "In WasteIn"
+		#]
+		emitlocalstream position : position($X,$Y,$Job)
+		
+		forward scale -m rpTaken : rpTaken(1)
+		
+		[#
+			X = pos["burnin"].get(0)
+			Y = pos["burnin"].get(1)
+		#]
+		request basicrobot -m moverobot : moverobot($X,$Y)
+		
+	} 
+	Transition t0 whenReply moverobotdone -> arrivedToIncinerator
+				  whenReply moverobotfailed -> goHome
+	
+	State arrivedToIncinerator {
+		[#
+			Job = "Waiting in BurnIn"
+		#]
+		emitlocalstream position : position($X,$Y,$Job)
+		
+		forward wis -m atIncinerator : atIncinerator(X)
+		
+		delay 1000
+	}
+	Transition t0 whenMsg goHome -> goHome
+	
+	State goHome {
+		[#
+			Job = "Going Home"
+		#]
+		emitlocalstream position : position($X,$Y,$Job)
+		
+		[#
+			X= pos["home"]!!.get(0)
+			Y= pos["home"]!!.get(1)	
+		#]
+		request basicrobot -m moverobot : moverobot($X,$Y)
+		
+	} 
+	Transition t0 whenReply moverobotdone -> standby
+				  whenReply moverobotfailed -> goHome
+				  
+	
+	State goBurnOut {
+		[#
+			Job = "Going BurnOut"
+		#]
+		emitlocalstream position : position($X,$Y,$Job)
+		
+		[#
+			X= pos["burnout"]!!.get(0)
+			Y= pos["burnout"]!!.get(1)
+		#]
+		request basicrobot -m moverobot : moverobot($X,$Y)
+	}
+	Transition t0 whenReply moverobotdone -> goAshOut
+				  whenReply moverobotfailed -> goHome
+	
+	State goAshOut {
+		[#
+			Job = "In BurnOut"
+		#]
+		emitlocalstream position : position($X,$Y,$Job)
+		
+		[#
+			X= pos["ashout"]!!.get(0)
+			Y= pos["ashout"]!!.get(1)
+		#]
+		request basicrobot -m moverobot : moverobot($X,$Y)
+	}
+	Transition t0 whenReply moverobotdone -> atAshStorage
+				  whenReply moverobotfailed -> goHome
+	
+	State atAshStorage {
+		[#
+			Job = "Depositing Ashes in AshStorage"
+		#]
+		emitlocalstream position : position($X,$Y,$Job)
+		
+		delay 2000
+		
+		forward sonar -m ashDeposited : ashDeposited(X)
+		
+		
+	}
+	Transition t0 whenMsg goHome -> goHome
+				  
+}

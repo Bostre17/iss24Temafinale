@@ -34,7 +34,7 @@ class Incinerator ( name: String, scope: CoroutineScope, isconfined: Boolean=fal
 				state("off") { //this:State
 					action { //it:State
 						delay(100) 
-						CommUtils.outgreen("Incinerator: waiting for activation")
+						CommUtils.outgreen("[$name] waiting for activation")
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
@@ -57,7 +57,7 @@ class Incinerator ( name: String, scope: CoroutineScope, isconfined: Boolean=fal
 				}	 
 				state("idle") { //this:State
 					action { //it:State
-						CommUtils.outgreen("Incinerator: idle")
+						CommUtils.outgreen("[$name] idle")
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
@@ -67,7 +67,7 @@ class Incinerator ( name: String, scope: CoroutineScope, isconfined: Boolean=fal
 				}	 
 				state("burn") { //this:State
 					action { //it:State
-						CommUtils.outgreen("Incinerator: on")
+						CommUtils.outgreen("[$name] on")
 						
 									delay(Btime*1000)
 									state = 2	
