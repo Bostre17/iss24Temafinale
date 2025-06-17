@@ -34,7 +34,7 @@ Event burnEnd : burnEnd(BTIME)
 Context ctxwis ip [host="localhost" port=8001]
 Context ctxscale ip [host="localhost" port=8002]
 Context ctxsonar ip [host="localhost" port=8003]
-Context ctxbasicrobot ip [host="127.0.0.1" port=8001]
+Context ctxbasicrobot ip [host="localhost" port=8090]
 
 ExternalQActor basicrobot context ctxbasicrobot
 
@@ -54,8 +54,10 @@ QActor wis context ctxwis {
 	var posY = 0
 	var incinerator = 0
 	var job = ""
+	var RP=0
 	#]
-
+	
+	
     State s0 initial {
         println("[$name] Initializing system") color green
         
@@ -90,11 +92,11 @@ QActor wis context ctxwis {
 		}
 		onMsg( stateScale : stateScale(X)){
 			[# 	wasteStorageWeight = payloadArg(0).toInt() 
-				var RP = wasteStorageWeight/50 #]
+				 RP = wasteStorageWeight/50 #]
 			println("[$name] RP quantity updated: $RP") color green
 		}
 	}
-	Goto startRoutine if [#RP>0 && !INCENERATOR && ASHVALUE > DLIMT#] else waitingRP
+	Goto startRoutine if [#RP>0 && incinerator!=1 && ashStorageLevel > DLIMT#] else waitingRP
 			
     
     
@@ -115,7 +117,7 @@ QActor wis context ctxwis {
         forward incinerator -m act : act(1)
         // il robot potrebbe tornare in home da solo senza comando del wis, però se non facessi così tornerebbe ad home istantaneamente, senza scaricare RP (su controllo del WIS)
         forward oprobot -m goHome : goHome(X)
-        [# var incinerator = 1#]
+        [# incinerator = 1#]
 	}
 	Transition t0
 		whenEvent burnEnd -> endIncinerator
@@ -157,7 +159,7 @@ QActor wis context ctxwis {
     State handleStateScale {
         onMsg( stateScale : stateScale(X)){
 			[# 	wasteStorageWeight = payloadArg(0).toInt() 
-				var RP = wasteStorageWeight/50 #]
+				RP = wasteStorageWeight/50 #]
 			println("[$name] RP quantity updated: $RP") color green
 		}
 		returnFromInterrupt
@@ -184,10 +186,9 @@ QActor wis context ctxwis {
 QActor incinerator context ctxwis {
 	//(Off = 0, On = 1, Idle = 2)
     [#
-    	var BTIME = 10L
+    	var Btime = 10L
     	var state = 0
     #]
-    
 	State off initial{
 		delay 100
 		println("[$name] waiting for activation") color green
@@ -300,8 +301,8 @@ QActor oprobot context ctxwis {
 	
 	State goWasteIn {
 		[#
-			X = pos["wastein"].get(0)
-			Y = pos["wastein"].get(1)
+			X = pos["wastein"]!!.get(0)
+			Y = pos["wastein"]!!.get(1)
 		#]
 		request basicrobot -m moverobot : moverobot($X,$Y)
 	} 
@@ -317,8 +318,8 @@ QActor oprobot context ctxwis {
 		forward scale -m rpTaken : rpTaken(1)
 		
 		[#
-			X = pos["burnin"].get(0)
-			Y = pos["burnin"].get(1)
+			X = pos["burnin"]!!.get(0)
+			Y = pos["burnin"]!!.get(1)
 		#]
 		request basicrobot -m moverobot : moverobot($X,$Y)
 		
