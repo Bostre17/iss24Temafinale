@@ -92,8 +92,8 @@ class Oprobot ( name: String, scope: CoroutineScope, isconfined: Boolean=false  
 				state("goWasteIn") { //this:State
 					action { //it:State
 						
-									X = pos["wastein"].get(0)
-									Y = pos["wastein"].get(1)
+									X = pos["wastein"]!!.get(0)
+									Y = pos["wastein"]!!.get(1)
 						request("moverobot", "moverobot($X,$Y)" ,"basicrobot" )  
 						//genTimer( actor, state )
 					}
@@ -110,8 +110,8 @@ class Oprobot ( name: String, scope: CoroutineScope, isconfined: Boolean=false  
 						emitLocalStreamEvent("position", "position($X,$Y,$Job)" ) 
 						forward("rpTaken", "rpTaken(1)" ,"scale" ) 
 						
-									X = pos["burnin"].get(0)
-									Y = pos["burnin"].get(1)
+									X = pos["burnin"]!!.get(0)
+									Y = pos["burnin"]!!.get(1)
 						request("moverobot", "moverobot($X,$Y)" ,"basicrobot" )  
 						//genTimer( actor, state )
 					}

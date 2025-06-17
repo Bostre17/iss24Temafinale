@@ -28,7 +28,7 @@ class Incinerator ( name: String, scope: CoroutineScope, isconfined: Boolean=fal
 	override fun getBody() : (ActorBasicFsm.() -> Unit){
 		//val interruptedStateTransitions = mutableListOf<Transition>()
 		
-		    	var BTIME = 10L
+		    	var Btime = 10L
 		    	var state = 0
 		return { //this:ActionBasciFsm
 				state("off") { //this:State

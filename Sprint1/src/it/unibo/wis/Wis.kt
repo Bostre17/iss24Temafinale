@@ -35,6 +35,7 @@ class Wis ( name: String, scope: CoroutineScope, isconfined: Boolean=false  ) : 
 			var posY = 0
 			var incinerator = 0
 			var job = ""
+			var RP=1
 		return { //this:ActionBasciFsm
 				state("s0") { //this:State
 					action { //it:State
@@ -76,7 +77,7 @@ class Wis ( name: String, scope: CoroutineScope, isconfined: Boolean=false  ) : 
 						if( checkMsgContent( Term.createTerm("stateScale(X)"), Term.createTerm("stateScale(X)"), 
 						                        currentMsg.msgContent()) ) { //set msgArgList
 								 	wasteStorageWeight = payloadArg(0).toInt() 
-												var RP = wasteStorageWeight/50  
+												 RP = wasteStorageWeight/50  
 								CommUtils.outgreen("[$name] RP quantity updated: $RP")
 						}
 						//genTimer( actor, state )
@@ -84,9 +85,9 @@ class Wis ( name: String, scope: CoroutineScope, isconfined: Boolean=false  ) : 
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition( edgeName="goto",targetState="startRoutine", cond=doswitchGuarded({RP>0 && !INCENERATOR && ASHVALUE > DLIMT 
+					 transition( edgeName="goto",targetState="startRoutine", cond=doswitchGuarded({RP>0 && incinerator!=1 && ashStorageLevel > DLIMT 
 					}) )
-					transition( edgeName="goto",targetState="waitingRP", cond=doswitchGuarded({! (RP>0 && !INCENERATOR && ASHVALUE > DLIMT 
+					transition( edgeName="goto",targetState="waitingRP", cond=doswitchGuarded({! (RP>0 && incinerator!=1 && ashStorageLevel > DLIMT 
 					) }) )
 				}	 
 				state("startRoutine") { //this:State
@@ -108,7 +109,7 @@ class Wis ( name: String, scope: CoroutineScope, isconfined: Boolean=false  ) : 
 						CommUtils.outgreen("[$name] Incinerator started")
 						forward("act", "act(1)" ,"incinerator" ) 
 						forward("goHome", "goHome(X)" ,"oprobot" ) 
-						 var incinerator = 1 
+						 incinerator = 1 
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
@@ -154,7 +155,7 @@ class Wis ( name: String, scope: CoroutineScope, isconfined: Boolean=false  ) : 
 						if( checkMsgContent( Term.createTerm("stateScale(X)"), Term.createTerm("stateScale(X)"), 
 						                        currentMsg.msgContent()) ) { //set msgArgList
 								 	wasteStorageWeight = payloadArg(0).toInt() 
-												var RP = wasteStorageWeight/50  
+												RP = wasteStorageWeight/50  
 								CommUtils.outgreen("[$name] RP quantity updated: $RP")
 						}
 						returnFromInterrupt(interruptedStateTransitions)

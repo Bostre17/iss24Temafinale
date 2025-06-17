@@ -34,13 +34,9 @@ Event burnEnd : burnEnd(BTIME)
 Context ctxwis ip [host="localhost" port=8001]
 Context ctxscale ip [host="localhost" port=8002]
 Context ctxsonar ip [host="localhost" port=8003]
-Context ctxbasicrobot ip [host="localhost" port=8090]
+Context ctxbasicrobot ip [host="127.0.0.1" port=8004]
 
 ExternalQActor basicrobot context ctxbasicrobot
-
-
-
-
 
 
 //--------------------------WIS-----------------------------
@@ -54,7 +50,7 @@ QActor wis context ctxwis {
 	var posY = 0
 	var incinerator = 0
 	var job = ""
-	var RP=0
+	var RP=1
 	#]
 	
 	

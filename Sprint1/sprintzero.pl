@@ -24,7 +24,7 @@ event( burnEnd, burnEnd(BTIME) ).
 context(ctxwis, "localhost",  "TCP", "8001").
 context(ctxscale, "localhost",  "TCP", "8002").
 context(ctxsonar, "localhost",  "TCP", "8003").
-context(ctxbasicrobot, "127.0.0.1",  "TCP", "8001").
+context(ctxbasicrobot, "127.0.0.1",  "TCP", "8004").
  qactor( basicrobot, ctxbasicrobot, "external").
   qactor( wis, ctxwis, "it.unibo.wis.Wis").
  static(wis).
