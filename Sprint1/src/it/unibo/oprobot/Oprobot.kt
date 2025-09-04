@@ -53,7 +53,8 @@ class Oprobot ( name: String, scope: CoroutineScope, isconfined: Boolean=false  
 				state("tryEngage") { //this:State
 					action { //it:State
 						CommUtils.outyellow("[$name] tentativo engage a BasicRobot...")
-						request("engage", "engage($MyName,330)" ,"basicrobot" )  
+						request("engage", "engage($MyName)" ,"basicrobot" )  
+						CommUtils.outgreen("[$name] richiesta di engage inviata al basicrobot")
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
@@ -108,7 +109,7 @@ class Oprobot ( name: String, scope: CoroutineScope, isconfined: Boolean=false  
 						
 									Job = "In WasteIn"
 						emitLocalStreamEvent("position", "position($X,$Y,$Job)" ) 
-						forward("rpTaken", "rpTaken(1)" ,"scale" ) 
+						forward("rpTaken", "rpTaken(1)" ,"scalemock" ) 
 						
 									X = pos["burnin"]!!.get(0)
 									Y = pos["burnin"]!!.get(1)
@@ -192,7 +193,7 @@ class Oprobot ( name: String, scope: CoroutineScope, isconfined: Boolean=false  
 									Job = "Depositing Ashes in AshStorage"
 						emitLocalStreamEvent("position", "position($X,$Y,$Job)" ) 
 						delay(2000) 
-						forward("ashDeposited", "ashDeposited(X)" ,"sonar" ) 
+						forward("ashDeposited", "ashDeposited(X)" ,"sonarmock" ) 
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002

@@ -22,16 +22,14 @@ reply( moverobotfailed, moverobotfailed(X) ).  %%for moverobot
 event( burnEnd, burnEnd(BTIME) ).
 %====================================================================================
 context(ctxwis, "localhost",  "TCP", "8001").
-context(ctxscale, "localhost",  "TCP", "8002").
-context(ctxsonar, "localhost",  "TCP", "8003").
 context(ctxbasicrobot, "127.0.0.1",  "TCP", "8085").
  qactor( basicrobot, ctxbasicrobot, "external").
   qactor( incinerator, ctxwis, "it.unibo.incinerator.Incinerator").
  static(incinerator).
-  qactor( scale, ctxscale, "it.unibo.scale.Scale").
- static(scale).
-  qactor( sonar, ctxsonar, "it.unibo.sonar.Sonar").
- static(sonar).
+  qactor( scalemock, ctxwis, "it.unibo.scalemock.Scalemock").
+ static(scalemock).
+  qactor( sonarmock, ctxwis, "it.unibo.sonarmock.Sonarmock").
+ static(sonarmock).
   qactor( oprobot, ctxwis, "it.unibo.oprobot.Oprobot").
  static(oprobot).
   qactor( wis, ctxwis, "it.unibo.wis.Wis").

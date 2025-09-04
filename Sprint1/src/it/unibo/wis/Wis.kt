@@ -41,10 +41,11 @@ class Wis ( name: String, scope: CoroutineScope, isconfined: Boolean=false  ) : 
 					action { //it:State
 						CommUtils.outgreen("[$name] Initializing system")
 						subscribeToLocalActor("incinerator") 
-						subscribeToLocalActor("scale") 
-						subscribeToLocalActor("sonar") 
+						subscribeToLocalActor("scalemock") 
+						subscribeToLocalActor("sonarmock") 
 						subscribeToLocalActor("oprobot") 
 						forward("act", "act(2)" ,"incinerator" ) 
+						CommUtils.outgreen("[$name] sent act to incinerator")
 						 incinerator = 2  
 						//genTimer( actor, state )
 					}
@@ -55,7 +56,7 @@ class Wis ( name: String, scope: CoroutineScope, isconfined: Boolean=false  ) : 
 				}	 
 				state("waitingRP") { //this:State
 					action { //it:State
-						CommUtils.outgreen("[$name] wa-miting for RP")
+						CommUtils.outgreen("[$name] waiting for RP")
 						forward("goHome", "goHome(X)" ,"oprobot" ) 
 						//genTimer( actor, state )
 					}

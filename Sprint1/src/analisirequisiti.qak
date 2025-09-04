@@ -32,8 +32,6 @@ Event burnEnd : burnEnd(BTIME)
 
 
 Context ctxwis ip [host="localhost" port=8001]
-Context ctxscale ip [host="localhost" port=8002]
-Context ctxsonar ip [host="localhost" port=8003]
 Context ctxbasicrobot ip [host="127.0.0.1" port=8085]
 
 ExternalQActor basicrobot context ctxbasicrobot
@@ -84,7 +82,7 @@ QActor incinerator context ctxwis {
 //--------------------------Scale-----------------------------
 
 
-QActor scale context ctxscale {
+QActor scalemock context ctxwis {
 	State s0 initial {
     }
 }
@@ -94,7 +92,7 @@ QActor scale context ctxscale {
 //--------------------------Sonar-----------------------------
 
 
-QActor sonar context ctxsonar {
+QActor sonarmock context ctxwis {
 	State s0 initial {
     }
 }
@@ -128,7 +126,8 @@ QActor oprobot context ctxwis {
 	// Stato che tenta di stabilire la connessione con il BasicRobot
 	State tryEngage {
 	    println("[$name] tentativo engage a BasicRobot...") color yellow
-	    request basicrobot -m engage : engage($MyName, 330)
+	    request basicrobot -m engage : engage($MyName)
+        println("[$name] richiesta di engage inviata al basicrobot") color green
 	}
 	Transition t1 whenTime 1000         	-> noReply
 	              whenReply engagedone   	-> standby
@@ -169,7 +168,7 @@ QActor oprobot context ctxwis {
 		#]
 		emitlocalstream position : position($X,$Y,$Job)
 		
-		forward scale -m rpTaken : rpTaken(1)
+		forward scalemock -m rpTaken : rpTaken(1)
 		
 		[#
 			X = pos["burnin"]!!.get(0)
@@ -248,7 +247,7 @@ QActor oprobot context ctxwis {
 		
 		delay 2000
 		
-		forward sonar -m ashDeposited : ashDeposited(X)
+		forward sonarmock -m ashDeposited : ashDeposited(X)
 		
 		
 	}
@@ -275,19 +274,20 @@ QActor wis context ctxwis {
         println("[$name] Initializing system") color green
         
         subscribeTo incinerator for burnEnd 
-		subscribeTo scale for stateScale
-		subscribeTo sonar for stateSonar
+		subscribeTo scalemock for stateScale
+		subscribeTo sonarmock for stateSonar
 		subscribeTo oprobot for position
 		
         //incinerator idle (Off = 0, On = 1, Idle = 2)
         forward incinerator -m act : act(2)
+        println("[$name] sent act to incinerator") color green
         [# incinerator = 2 #]
     }
     Goto waitingRP
 
 
     State waitingRP {
-        println("[$name] wa-miting for RP") color green
+        println("[$name] waiting for RP") color green
         forward oprobot -m goHome : goHome(X)
     }
 	Transition t0
