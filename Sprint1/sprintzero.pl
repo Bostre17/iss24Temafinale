@@ -24,10 +24,8 @@ event( burnEnd, burnEnd(BTIME) ).
 context(ctxwis, "localhost",  "TCP", "8001").
 context(ctxscale, "localhost",  "TCP", "8002").
 context(ctxsonar, "localhost",  "TCP", "8003").
-context(ctxbasicrobot, "127.0.0.1",  "TCP", "8004").
+context(ctxbasicrobot, "127.0.0.1",  "TCP", "8085").
  qactor( basicrobot, ctxbasicrobot, "external").
-  qactor( wis, ctxwis, "it.unibo.wis.Wis").
- static(wis).
   qactor( incinerator, ctxwis, "it.unibo.incinerator.Incinerator").
  static(incinerator).
   qactor( scale, ctxscale, "it.unibo.scale.Scale").
@@ -36,3 +34,5 @@ context(ctxbasicrobot, "127.0.0.1",  "TCP", "8004").
  static(sonar).
   qactor( oprobot, ctxwis, "it.unibo.oprobot.Oprobot").
  static(oprobot).
+  qactor( wis, ctxwis, "it.unibo.wis.Wis").
+ static(wis).

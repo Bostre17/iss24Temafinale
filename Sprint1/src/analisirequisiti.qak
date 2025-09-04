@@ -34,144 +34,9 @@ Event burnEnd : burnEnd(BTIME)
 Context ctxwis ip [host="localhost" port=8001]
 Context ctxscale ip [host="localhost" port=8002]
 Context ctxsonar ip [host="localhost" port=8003]
-Context ctxbasicrobot ip [host="127.0.0.1" port=8004]
+Context ctxbasicrobot ip [host="127.0.0.1" port=8085]
 
 ExternalQActor basicrobot context ctxbasicrobot
-
-
-//--------------------------WIS-----------------------------
-
-QActor wis context ctxwis {
-	[#
-	val DLIMT = 5
-	var wasteStorageWeight=0
-	var ashStorageLevel = 0
-	var posX = 0
-	var posY = 0
-	var incinerator = 0
-	var job = ""
-	var RP=1
-	#]
-	
-	
-    State s0 initial {
-        println("[$name] Initializing system") color green
-        
-        subscribeTo incinerator for burnEnd 
-		subscribeTo scale for stateScale
-		subscribeTo sonar for stateSonar
-		subscribeTo oprobot for position
-		
-        //incinerator idle (Off = 0, On = 1, Idle = 2)
-        forward incinerator -m act : act(2)
-        [# incinerator = 2 #]
-    }
-    Goto waitingRP
-
-
-    State waitingRP {
-        println("[$name] wa-miting for RP") color green
-        forward oprobot -m goHome : goHome(X)
-    }
-	Transition t0
-		whenEvent stateScale -> verifyCondition
-		whenEvent stateSonar -> verifyCondition
-	
-	
-	
-	
-	State verifyCondition{
-		printCurrentMessage
-		onMsg( stateSonar : stateSonar(X)){
-			[# ashStorageLevel = payloadArg(0).toInt() #]
-			println("[$name] Ash storage level updated: $ashStorageLevel") color green
-		}
-		onMsg( stateScale : stateScale(X)){
-			[# 	wasteStorageWeight = payloadArg(0).toInt() 
-				 RP = wasteStorageWeight/50 #]
-			println("[$name] RP quantity updated: $RP") color green
-		}
-	}
-	Goto startRoutine if [#RP>0 && incinerator!=1 && ashStorageLevel > DLIMT#] else waitingRP
-			
-    
-    
-    
-    State startRoutine{
-    	println("[$name] start routine") color green
-    	forward oprobot -m bringRP : bringRP(X)
-    }
-    Transition t0
-    	whenMsg atIncinerator -> startIncinerator
-		whenEvent stateScale -> handleStateScale
-		whenEvent stateSonar -> handleStateSonar
-		whenEvent position -> handleRobotPosition
-		
-    
-    State startIncinerator{
-        println("[$name] Incinerator started") color green
-        forward incinerator -m act : act(1)
-        // il robot potrebbe tornare in home da solo senza comando del wis, però se non facessi così tornerebbe ad home istantaneamente, senza scaricare RP (su controllo del WIS)
-        forward oprobot -m goHome : goHome(X)
-        [# incinerator = 1#]
-	}
-	Transition t0
-		whenEvent burnEnd -> endIncinerator
-		whenEvent stateScale -> handleStateScale
-		whenEvent stateSonar -> handleStateSonar
-		whenEvent position -> handleRobotPosition
-	
-	State endIncinerator{
-        println("[$name] incinerator is now idle") color green
-        forward oprobot -m bringAsh : bringAsh(X)
-    	[# 
-    		incinerator = 2
-    	#]
-
-	}
-	Transition t0
-    	whenMsg ashDeposited -> verifyCondition
-		whenEvent stateScale -> handleStateScale
-		whenEvent stateSonar -> handleStateSonar
-		whenEvent position -> handleRobotPosition
-    
-    
-    //State handleStateIncinerator {
-    //    onMsg( stateIncinerator : stateIncinerator(X)){
-	//		[# incinerator = payloadArg(0).toInt() #]
-	//		println("Incinerator state (Off = 0, On = 1, Idle = 2): $incinerator") color green
-	//	}
-	//	returnFromInterrupt
-    //}
-    
-    State handleStateSonar {
-        onMsg( stateSonar : stateSonar(X)){
-			[# ashStorageLevel = payloadArg(0).toInt() #]
-			println("[$name] Ash storage level updated: $ashStorageLevel") color green
-		}
-		returnFromInterrupt
-    }
-    
-    State handleStateScale {
-        onMsg( stateScale : stateScale(X)){
-			[# 	wasteStorageWeight = payloadArg(0).toInt() 
-				RP = wasteStorageWeight/50 #]
-			println("[$name] RP quantity updated: $RP") color green
-		}
-		returnFromInterrupt
-    }
-    
-    State handleRobotPosition {
-        onMsg( position : position(X,Y)){
-			[# 	posX = payloadArg(0).toInt()
-				posY = payloadArg(1).toInt() 
-				job = payloadArg(2)
-			#]
-			println("[$name] OpRobot   position $posX $posY   routine $job") color green
-		}
-		returnFromInterrupt
-    }
-}
 
 
 
@@ -225,9 +90,6 @@ QActor scale context ctxscale {
 }
 	
 	
-
-
-	
 	
 //--------------------------Sonar-----------------------------
 
@@ -236,10 +98,6 @@ QActor sonar context ctxsonar {
 	State s0 initial {
     }
 }
-
-
-
-
 
 
 
@@ -396,4 +254,138 @@ QActor oprobot context ctxwis {
 	}
 	Transition t0 whenMsg goHome -> goHome
 				  
+}
+
+//--------------------------WIS-----------------------------
+
+QActor wis context ctxwis {
+	[#
+	val DLIMT = 5
+	var wasteStorageWeight=0
+	var ashStorageLevel = 0
+	var posX = 0
+	var posY = 0
+	var incinerator = 0
+	var job = ""
+	var RP=1
+	#]
+	
+	
+    State s0 initial {
+        println("[$name] Initializing system") color green
+        
+        subscribeTo incinerator for burnEnd 
+		subscribeTo scale for stateScale
+		subscribeTo sonar for stateSonar
+		subscribeTo oprobot for position
+		
+        //incinerator idle (Off = 0, On = 1, Idle = 2)
+        forward incinerator -m act : act(2)
+        [# incinerator = 2 #]
+    }
+    Goto waitingRP
+
+
+    State waitingRP {
+        println("[$name] wa-miting for RP") color green
+        forward oprobot -m goHome : goHome(X)
+    }
+	Transition t0
+		whenEvent stateScale -> verifyCondition
+		whenEvent stateSonar -> verifyCondition
+	
+	
+	
+	
+	State verifyCondition{
+		printCurrentMessage
+		onMsg( stateSonar : stateSonar(X)){
+			[# ashStorageLevel = payloadArg(0).toInt() #]
+			println("[$name] Ash storage level updated: $ashStorageLevel") color green
+		}
+		onMsg( stateScale : stateScale(X)){
+			[# 	wasteStorageWeight = payloadArg(0).toInt() 
+				 RP = wasteStorageWeight/50 #]
+			println("[$name] RP quantity updated: $RP") color green
+		}
+	}
+	Goto startRoutine if [#RP>0 && incinerator!=1 && ashStorageLevel > DLIMT#] else waitingRP
+			
+    
+    
+    
+    State startRoutine{
+    	println("[$name] start routine") color green
+    	forward oprobot -m bringRP : bringRP(X)
+    }
+    Transition t0
+    	whenMsg atIncinerator -> startIncinerator
+		whenEvent stateScale -> handleStateScale
+		whenEvent stateSonar -> handleStateSonar
+		whenEvent position -> handleRobotPosition
+		
+    
+    State startIncinerator{
+        println("[$name] Incinerator started") color green
+        forward incinerator -m act : act(1)
+        // il robot potrebbe tornare in home da solo senza comando del wis, però se non facessi così tornerebbe ad home istantaneamente, senza scaricare RP (su controllo del WIS)
+        forward oprobot -m goHome : goHome(X)
+        [# incinerator = 1#]
+	}
+	Transition t0
+		whenEvent burnEnd -> endIncinerator
+		whenEvent stateScale -> handleStateScale
+		whenEvent stateSonar -> handleStateSonar
+		whenEvent position -> handleRobotPosition
+	
+	State endIncinerator{
+        println("[$name] incinerator is now idle") color green
+        forward oprobot -m bringAsh : bringAsh(X)
+    	[# 
+    		incinerator = 2
+    	#]
+
+	}
+	Transition t0
+    	whenMsg ashDeposited -> verifyCondition
+		whenEvent stateScale -> handleStateScale
+		whenEvent stateSonar -> handleStateSonar
+		whenEvent position -> handleRobotPosition
+    
+    
+    //State handleStateIncinerator {
+    //    onMsg( stateIncinerator : stateIncinerator(X)){
+	//		[# incinerator = payloadArg(0).toInt() #]
+	//		println("Incinerator state (Off = 0, On = 1, Idle = 2): $incinerator") color green
+	//	}
+	//	returnFromInterrupt
+    //}
+    
+    State handleStateSonar {
+        onMsg( stateSonar : stateSonar(X)){
+			[# ashStorageLevel = payloadArg(0).toInt() #]
+			println("[$name] Ash storage level updated: $ashStorageLevel") color green
+		}
+		returnFromInterrupt
+    }
+    
+    State handleStateScale {
+        onMsg( stateScale : stateScale(X)){
+			[# 	wasteStorageWeight = payloadArg(0).toInt() 
+				RP = wasteStorageWeight/50 #]
+			println("[$name] RP quantity updated: $RP") color green
+		}
+		returnFromInterrupt
+    }
+    
+    State handleRobotPosition {
+        onMsg( position : position(X,Y)){
+			[# 	posX = payloadArg(0).toInt()
+				posY = payloadArg(1).toInt() 
+				job = payloadArg(2)
+			#]
+			println("[$name] OpRobot   position $posX $posY   routine $job") color green
+		}
+		returnFromInterrupt
+    }
 }
