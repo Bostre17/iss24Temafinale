@@ -32,7 +32,8 @@ Event burnEnd : burnEnd(BTIME)
 
 
 Context ctxwis ip [host="localhost" port=8001]
-Context ctxbasicrobot ip [host="127.0.0.1" port=8085]
+//con 8020 qualche messaggio arriva al basicrobot: dovrebbe essere la porta giusta
+Context ctxbasicrobot ip [host="127.0.0.1" port=8020]
 
 ExternalQActor basicrobot context ctxbasicrobot
 
@@ -45,28 +46,33 @@ ExternalQActor basicrobot context ctxbasicrobot
 QActor incinerator context ctxwis {
 	//(Off = 0, On = 1, Idle = 2)
     [#
-    	var Btime = 10L
+    	val Btime = 10L
     	var state = 0
     #]
 	State off initial{
-		delay 100
-		println("[$name] waiting for activation") color green
+		println("[$name] waiting for activation") color magenta
 	}
 	Transition t0 whenMsg act -> handleAct
 	
 	State handleAct{
-		[# state = payloadArg(0).toInt()#]
+		//in ricezione di una forward, deve essere raggruppato da onMsg() altrimenti da errore 
+		//	java.lang.IndexOutOfBoundsException: Index 0 out of bounds for length 0
+		onMsg(act : act(X)) {
+			println("[$name] act ricevuto") color magenta
+			[# state = payloadArg(0).toInt()#]
+			println("[$name] act letto") color magenta
+		}
 	} 
 	Goto burn if [# state == 1 #] else idle
 
 	
 	State idle{
-		println("[$name] idle") color green
+		println("[$name] idle") color magenta
 	}
 	Transition t0 whenMsg act -> handleAct
 			
 	State burn{
-		println("[$name] on") color green
+		println("[$name] on") color magenta
 		[#
 			delay(Btime*1000)
 			state = 2	
@@ -126,8 +132,9 @@ QActor oprobot context ctxwis {
 	// Stato che tenta di stabilire la connessione con il BasicRobot
 	State tryEngage {
 	    println("[$name] tentativo engage a BasicRobot...") color yellow
-	    request basicrobot -m engage : engage($MyName)
-        println("[$name] richiesta di engage inviata al basicrobot") color green
+	    
+	    request basicrobot -m engage : engage(name, 330)
+        println("[$name] richiesta di engage inviata al basicrobot") color yellow
 	}
 	Transition t1 whenTime 1000         	-> noReply
 	              whenReply engagedone   	-> standby
@@ -255,6 +262,14 @@ QActor oprobot context ctxwis {
 				  
 }
 
+
+
+
+
+
+
+
+
 //--------------------------WIS-----------------------------
 
 QActor wis context ctxwis {
@@ -267,6 +282,7 @@ QActor wis context ctxwis {
 	var incinerator = 0
 	var job = ""
 	var RP=1
+	var INC = 2
 	#]
 	
 	
@@ -279,7 +295,8 @@ QActor wis context ctxwis {
 		subscribeTo oprobot for position
 		
         //incinerator idle (Off = 0, On = 1, Idle = 2)
-        forward incinerator -m act : act(2)
+        //le variabili inviate devono essere TUTTE MAIUSCOLE e raggruppare in ricezione con onMsg()
+        forward incinerator -m act : act($INC)
         println("[$name] sent act to incinerator") color green
         [# incinerator = 2 #]
     }
@@ -289,6 +306,7 @@ QActor wis context ctxwis {
     State waitingRP {
         println("[$name] waiting for RP") color green
         forward oprobot -m goHome : goHome(X)
+        println("[$name] inviato goHome ad oprobot.") color green
     }
 	Transition t0
 		whenEvent stateScale -> verifyCondition

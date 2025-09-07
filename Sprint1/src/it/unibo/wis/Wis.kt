@@ -36,6 +36,7 @@ class Wis ( name: String, scope: CoroutineScope, isconfined: Boolean=false  ) : 
 			var incinerator = 0
 			var job = ""
 			var RP=1
+			var INC = 2
 		return { //this:ActionBasciFsm
 				state("s0") { //this:State
 					action { //it:State
@@ -44,7 +45,7 @@ class Wis ( name: String, scope: CoroutineScope, isconfined: Boolean=false  ) : 
 						subscribeToLocalActor("scalemock") 
 						subscribeToLocalActor("sonarmock") 
 						subscribeToLocalActor("oprobot") 
-						forward("act", "act(2)" ,"incinerator" ) 
+						forward("act", "act($INC)" ,"incinerator" ) 
 						CommUtils.outgreen("[$name] sent act to incinerator")
 						 incinerator = 2  
 						//genTimer( actor, state )
@@ -58,6 +59,7 @@ class Wis ( name: String, scope: CoroutineScope, isconfined: Boolean=false  ) : 
 					action { //it:State
 						CommUtils.outgreen("[$name] waiting for RP")
 						forward("goHome", "goHome(X)" ,"oprobot" ) 
+						CommUtils.outgreen("[$name] inviato goHome ad oprobot.")
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002

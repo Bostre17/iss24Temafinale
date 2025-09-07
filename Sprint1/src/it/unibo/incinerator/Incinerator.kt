@@ -28,13 +28,12 @@ class Incinerator ( name: String, scope: CoroutineScope, isconfined: Boolean=fal
 	override fun getBody() : (ActorBasicFsm.() -> Unit){
 		//val interruptedStateTransitions = mutableListOf<Transition>()
 		
-		    	var Btime = 10L
+		    	val Btime = 10L
 		    	var state = 0
 		return { //this:ActionBasciFsm
 				state("off") { //this:State
 					action { //it:State
-						delay(100) 
-						CommUtils.outgreen("[$name] waiting for activation")
+						CommUtils.outmagenta("[$name] waiting for activation")
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
@@ -44,7 +43,12 @@ class Incinerator ( name: String, scope: CoroutineScope, isconfined: Boolean=fal
 				}	 
 				state("handleAct") { //this:State
 					action { //it:State
-						 state = payloadArg(0).toInt() 
+						if( checkMsgContent( Term.createTerm("act(X)"), Term.createTerm("act(X)"), 
+						                        currentMsg.msgContent()) ) { //set msgArgList
+								CommUtils.outmagenta("[$name] act ricevuto")
+								 state = payloadArg(0).toInt() 
+								CommUtils.outmagenta("[$name] act letto")
+						}
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
@@ -57,7 +61,7 @@ class Incinerator ( name: String, scope: CoroutineScope, isconfined: Boolean=fal
 				}	 
 				state("idle") { //this:State
 					action { //it:State
-						CommUtils.outgreen("[$name] idle")
+						CommUtils.outmagenta("[$name] idle")
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
@@ -67,7 +71,7 @@ class Incinerator ( name: String, scope: CoroutineScope, isconfined: Boolean=fal
 				}	 
 				state("burn") { //this:State
 					action { //it:State
-						CommUtils.outgreen("[$name] on")
+						CommUtils.outmagenta("[$name] on")
 						
 									delay(Btime*1000)
 									state = 2	

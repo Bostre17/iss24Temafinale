@@ -53,8 +53,8 @@ class Oprobot ( name: String, scope: CoroutineScope, isconfined: Boolean=false  
 				state("tryEngage") { //this:State
 					action { //it:State
 						CommUtils.outyellow("[$name] tentativo engage a BasicRobot...")
-						request("engage", "engage($MyName)" ,"basicrobot" )  
-						CommUtils.outgreen("[$name] richiesta di engage inviata al basicrobot")
+						request("engage", "engage(name,330)" ,"basicrobot" )  
+						CommUtils.outyellow("[$name] richiesta di engage inviata al basicrobot")
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002

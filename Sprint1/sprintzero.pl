@@ -22,7 +22,7 @@ reply( moverobotfailed, moverobotfailed(X) ).  %%for moverobot
 event( burnEnd, burnEnd(BTIME) ).
 %====================================================================================
 context(ctxwis, "localhost",  "TCP", "8001").
-context(ctxbasicrobot, "127.0.0.1",  "TCP", "8085").
+context(ctxbasicrobot, "127.0.0.1",  "TCP", "8020").
  qactor( basicrobot, ctxbasicrobot, "external").
   qactor( incinerator, ctxwis, "it.unibo.incinerator.Incinerator").
  static(incinerator).
