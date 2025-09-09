@@ -65,14 +65,15 @@ class Wis ( name: String, scope: CoroutineScope, isconfined: Boolean=false  ) : 
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t018",targetState="verifyCondition",cond=whenEvent("stateScale"))
-					transition(edgeName="t019",targetState="verifyCondition",cond=whenEvent("stateSonar"))
+					 transition(edgeName="t019",targetState="verifyCondition",cond=whenEvent("stateScale"))
+					transition(edgeName="t020",targetState="verifyCondition",cond=whenEvent("stateSonar"))
 				}	 
 				state("verifyCondition") { //this:State
 					action { //it:State
 						CommUtils.outcyan("$name in ${currentState.stateName} | $currentMsg | ${Thread.currentThread().getName()} n=${Thread.activeCount()}")
 						 	   
-						if( checkMsgContent( Term.createTerm("stateSonar(x)"), Term.createTerm("stateSonar(X)"), 
+						CommUtils.outblack("[DEBUG $name] RP=$RP, incineratorState=$incinerator, ashStorageLevel=$ashStorageLevel")
+						if( checkMsgContent( Term.createTerm("stateSonar(X)"), Term.createTerm("stateSonar(X)"), 
 						                        currentMsg.msgContent()) ) { //set msgArgList
 								 ashStorageLevel = payloadArg(0).toInt()  
 								CommUtils.outgreen("[$name] Ash storage level updated: $ashStorageLevel")
@@ -83,6 +84,18 @@ class Wis ( name: String, scope: CoroutineScope, isconfined: Boolean=false  ) : 
 												 RP = wasteStorageWeight/50  
 								CommUtils.outgreen("[$name] RP quantity updated: $RP")
 						}
+						if( checkMsgContent( Term.createTerm("ashDeposited(X)"), Term.createTerm("ashDeposited(X)"), 
+						                        currentMsg.msgContent()) ) { //set msgArgList
+								 var LEVEL = payloadArg(0).toInt()  
+								forward("ashDeposited", "ashDeposited($LEVEL)" ,"sonarmock" ) 
+								CommUtils.outgreen("[$name] Ash storage level updated: $ashStorageLevel")
+						}
+						if( RP>0 && incinerator!=1 && ashStorageLevel > DLIMT 
+						 ){CommUtils.outblack("TRUE")
+						}
+						else
+						 {CommUtils.outblack("FALSE")
+						 }
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
@@ -102,10 +115,10 @@ class Wis ( name: String, scope: CoroutineScope, isconfined: Boolean=false  ) : 
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t020",targetState="startIncinerator",cond=whenDispatch("atIncinerator"))
-					transition(edgeName="t021",targetState="handleStateScale",cond=whenEvent("stateScale"))
-					transition(edgeName="t022",targetState="handleStateSonar",cond=whenEvent("stateSonar"))
-					transition(edgeName="t023",targetState="handleRobotPosition",cond=whenEvent("position"))
+					 transition(edgeName="t021",targetState="startIncinerator",cond=whenDispatch("atIncinerator"))
+					transition(edgeName="t022",targetState="handleStateScale",cond=whenEvent("stateScale"))
+					transition(edgeName="t023",targetState="handleStateSonar",cond=whenEvent("stateSonar"))
+					transition(edgeName="t024",targetState="handleRobotPosition",cond=whenEvent("position"))
 				}	 
 				state("startIncinerator") { //this:State
 					action { //it:State
@@ -118,10 +131,10 @@ class Wis ( name: String, scope: CoroutineScope, isconfined: Boolean=false  ) : 
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t024",targetState="endIncinerator",cond=whenEvent("burnEnd"))
-					transition(edgeName="t025",targetState="handleStateScale",cond=whenEvent("stateScale"))
-					transition(edgeName="t026",targetState="handleStateSonar",cond=whenEvent("stateSonar"))
-					transition(edgeName="t027",targetState="handleRobotPosition",cond=whenEvent("position"))
+					 transition(edgeName="t025",targetState="endIncinerator",cond=whenEvent("burnEnd"))
+					transition(edgeName="t026",targetState="handleStateScale",cond=whenEvent("stateScale"))
+					transition(edgeName="t027",targetState="handleStateSonar",cond=whenEvent("stateSonar"))
+					transition(edgeName="t028",targetState="handleRobotPosition",cond=whenEvent("position"))
 				}	 
 				state("endIncinerator") { //this:State
 					action { //it:State
@@ -134,14 +147,14 @@ class Wis ( name: String, scope: CoroutineScope, isconfined: Boolean=false  ) : 
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t028",targetState="verifyCondition",cond=whenDispatch("ashDeposited"))
-					transition(edgeName="t029",targetState="handleStateScale",cond=whenEvent("stateScale"))
-					transition(edgeName="t030",targetState="handleStateSonar",cond=whenEvent("stateSonar"))
-					transition(edgeName="t031",targetState="handleRobotPosition",cond=whenEvent("position"))
+					 transition(edgeName="t029",targetState="verifyCondition",cond=whenDispatch("ashDeposited"))
+					transition(edgeName="t030",targetState="handleStateScale",cond=whenEvent("stateScale"))
+					transition(edgeName="t031",targetState="handleStateSonar",cond=whenEvent("stateSonar"))
+					transition(edgeName="t032",targetState="handleRobotPosition",cond=whenEvent("position"))
 				}	 
 				state("handleStateSonar") { //this:State
 					action { //it:State
-						if( checkMsgContent( Term.createTerm("stateSonar(x)"), Term.createTerm("stateSonar(X)"), 
+						if( checkMsgContent( Term.createTerm("stateSonar(X)"), Term.createTerm("stateSonar(X)"), 
 						                        currentMsg.msgContent()) ) { //set msgArgList
 								 ashStorageLevel = payloadArg(0).toInt()  
 								CommUtils.outgreen("[$name] Ash storage level updated: $ashStorageLevel")

@@ -13,8 +13,9 @@ Dispatch rpTaken : rpTaken(X)			// messaggio per scale
 
 //Observable
 
+Event burnEnd : burnEnd(BTIME)
 Event stateScale : stateScale(X) 			// messaggio observable update valore scale
-Event stateSonar : stateSonar(x)			// messaggio observable update valore sonar
+Event stateSonar : stateSonar(X)			// messaggio observable update valore sonar
 Event position : position(X,Y,J)				// messaggio observable posizione oprobot
 
 // messaggi conversazione engage tra OpRobot e BasicRobot
@@ -27,7 +28,6 @@ Request moverobot : moverobot(X,Y)
 Reply moverobotdone : moverobotdone(X) for moverobot
 Reply moverobotfailed : moverobotfailed(X) for moverobot
 
-Event burnEnd : burnEnd(BTIME)
 
 
 
@@ -86,20 +86,42 @@ QActor incinerator context ctxwis {
 
 
 //--------------------------Scale-----------------------------
-
-
+//è fatto per test interni, poi sicuramente va cambiato.
 QActor scalemock context ctxwis {
+	[#
+		var WEIGHT = 0	
+	#]
+	
 	State s0 initial {
+		println("[$name] inizializzazione.") color red
+		delay 10000
+		[# WEIGHT = 100#]
+		emitlocalstream stateScale : stateScale($WEIGHT)
+		println("[$name] stateScale updated a $WEIGHT.") color red
     }
 }
 	
-	
-	
 //--------------------------Sonar-----------------------------
-
-
+//è fatto per test interni, poi sicuramente va cambiato. Ricordarsi di rimuovere il blocco onMsg su wis
 QActor sonarmock context ctxwis {
+	[#
+		var DISTANCE = 100	
+	#]
 	State s0 initial {
+		println("[$name] inizializzazione.") color red
+		delay 5000
+		emitlocalstream stateSonar : stateSonar($DISTANCE)
+		println("[$name] stateSonar updated a $DISTANCE.") color red
+    }
+    Transition t0 whenMsg ashDeposited -> updateAsh
+    
+    State updateAsh{
+    	onMsg(ashDeposited : ashDeposited(X))
+	    {
+	    	[# DISTANCE = DISTANCE + payloadArg(0).toInt()	#]
+	    	emitlocalstream stateSonar : stateSonar($DISTANCE)
+		println("[$name] stateSonar updated a $DISTANCE.") color red
+    	}
     }
 }
 
@@ -317,6 +339,7 @@ QActor wis context ctxwis {
 	
 	State verifyCondition{
 		printCurrentMessage
+		println("[DEBUG $name] RP=$RP, incineratorState=$incinerator, ashStorageLevel=$ashStorageLevel")
 		onMsg( stateSonar : stateSonar(X)){
 			[# ashStorageLevel = payloadArg(0).toInt() #]
 			println("[$name] Ash storage level updated: $ashStorageLevel") color green
@@ -325,6 +348,21 @@ QActor wis context ctxwis {
 			[# 	wasteStorageWeight = payloadArg(0).toInt() 
 				 RP = wasteStorageWeight/50 #]
 			println("[$name] RP quantity updated: $RP") color green
+		}
+		
+		//queste linee successive sono per incrementare gli ash, sarà poi da togliere
+		onMsg( ashDeposited : ashDeposited(X)){
+			[# var LEVEL = payloadArg(0).toInt() #]
+			forward sonarmock -m ashDeposited : ashDeposited($LEVEL)
+			println("[$name] Ash storage level updated: $ashStorageLevel") color green
+		}
+		if [#RP>0 && incinerator!=1 && ashStorageLevel > DLIMT#]
+		{
+			println("TRUE") 
+		}
+		else
+		{
+			println("FALSE")
 		}
 	}
 	Goto startRoutine if [#RP>0 && incinerator!=1 && ashStorageLevel > DLIMT#] else waitingRP

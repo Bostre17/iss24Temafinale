@@ -27,9 +27,30 @@ class Sonarmock ( name: String, scope: CoroutineScope, isconfined: Boolean=false
 	}
 	override fun getBody() : (ActorBasicFsm.() -> Unit){
 		//val interruptedStateTransitions = mutableListOf<Transition>()
+		
+				var DISTANCE = 100	
 		return { //this:ActionBasciFsm
 				state("s0") { //this:State
 					action { //it:State
+						CommUtils.outred("[$name] inizializzazione.")
+						delay(5000) 
+						emitLocalStreamEvent("stateSonar", "stateSonar($DISTANCE)" ) 
+						CommUtils.outred("[$name] stateSonar updated a $DISTANCE.")
+						//genTimer( actor, state )
+					}
+					//After Lenzi Aug2002
+					sysaction { //it:State
+					}	 	 
+					 transition(edgeName="t02",targetState="updateAsh",cond=whenDispatch("ashDeposited"))
+				}	 
+				state("updateAsh") { //this:State
+					action { //it:State
+						if( checkMsgContent( Term.createTerm("ashDeposited(X)"), Term.createTerm("ashDeposited(X)"), 
+						                        currentMsg.msgContent()) ) { //set msgArgList
+								 DISTANCE = DISTANCE + payloadArg(0).toInt()	 
+								emitLocalStreamEvent("stateSonar", "stateSonar($DISTANCE)" ) 
+								CommUtils.outred("[$name] stateSonar updated a $DISTANCE.")
+						}
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002

@@ -27,9 +27,16 @@ class Scalemock ( name: String, scope: CoroutineScope, isconfined: Boolean=false
 	}
 	override fun getBody() : (ActorBasicFsm.() -> Unit){
 		//val interruptedStateTransitions = mutableListOf<Transition>()
+		
+				var WEIGHT = 0	
 		return { //this:ActionBasciFsm
 				state("s0") { //this:State
 					action { //it:State
+						CommUtils.outred("[$name] inizializzazione.")
+						delay(10000) 
+						 WEIGHT = 100 
+						emitLocalStreamEvent("stateScale", "stateScale($WEIGHT)" ) 
+						CommUtils.outred("[$name] stateScale updated a $WEIGHT.")
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
