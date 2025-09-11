@@ -17,10 +17,6 @@ eventedgeattr = {
     'color': 'red',
     'style': 'dotted'
 }
-evattr = {
-    'color': 'darkgreen',
-    'style': 'dotted'
-}
 with Diagram('sprintzeroArch', show=False, outformat='png', graph_attr=graphattr) as diag:
   with Cluster('env'):
      sys = Custom('','./qakicons/system.png')
@@ -38,9 +34,6 @@ with Diagram('sprintzeroArch', show=False, outformat='png', graph_attr=graphattr
      scalemock >> Edge( label='stateScale', **eventedgeattr, decorate='true', fontcolor='red') >> wis
      sonarmock >> Edge( label='stateSonar', **eventedgeattr, decorate='true', fontcolor='red') >> wis
      oprobot >> Edge( label='position', **eventedgeattr, decorate='true', fontcolor='red') >> wis
-     sys >> Edge( label='stateScale', **evattr, decorate='true', fontcolor='darkgreen') >> wis
-     sys >> Edge( label='stateSonar', **evattr, decorate='true', fontcolor='darkgreen') >> wis
-     sys >> Edge( label='burnEnd', **evattr, decorate='true', fontcolor='darkgreen') >> wis
      oprobot >> Edge(color='magenta', style='solid', decorate='true', label='<engage<font color="darkgreen"> engagedone engagerefused</font> &nbsp; moverobot<font color="darkgreen"> moverobotdone moverobotfailed</font> &nbsp; >',  fontcolor='magenta') >> basicrobot
      oprobot >> Edge(color='blue', style='solid',  decorate='true', label='<atIncinerator &nbsp; >',  fontcolor='blue') >> wis
      wis >> Edge(color='blue', style='solid',  decorate='true', label='<act &nbsp; >',  fontcolor='blue') >> incinerator

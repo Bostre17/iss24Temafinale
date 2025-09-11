@@ -1,0 +1,9 @@
+{"actor":"incinerator", "msgType":"dispatch", "curstate":"off", "nextstate":"handleAct", "msgId":"act"}
+{"actor":"incinerator", "msgType":"dispatch", "curstate":"idle", "nextstate":"handleAct", "msgId":"act"}
+{"actor":"sonarmock", "msgType":"dispatch", "curstate":"s0", "nextstate":"updateAsh", "msgId":"ashDeposited"}
+{"actor":"oprobot", "msgType":"dispatch", "curstate":"standby", "nextstate":"goWasteIn", "msgId":"bringRP"}
+{"actor":"oprobot", "msgType":"dispatch", "curstate":"standby", "nextstate":"goBurnOut", "msgId":"bringAsh"}
+{"actor":"oprobot", "msgType":"dispatch", "curstate":"arrivedToIncinerator", "nextstate":"goHome", "msgId":"goHome"}
+{"actor":"oprobot", "msgType":"dispatch", "curstate":"atAshStorage", "nextstate":"goHome", "msgId":"goHome"}
+{"actor":"wis", "msgType":"dispatch", "curstate":"startRoutine", "nextstate":"startIncinerator", "msgId":"atIncinerator"}
+{"actor":"wis", "msgType":"dispatch", "curstate":"endIncinerator", "nextstate":"verifyCondition", "msgId":"ashDeposited"}
