@@ -11,6 +11,12 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import it.unibo.kactor.sysUtil.createActor   //Sept2023
+//Sept2024
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory 
+import org.json.simple.parser.JSONParser
+import org.json.simple.JSONObject
+
 
 //User imports JAN2024
 
@@ -29,7 +35,7 @@ class Wis ( name: String, scope: CoroutineScope, isconfined: Boolean=false  ) : 
 			var posY = 0
 			var incinerator = 0
 			var job = ""
-			var RP=1
+			var RP=0
 			var INC = 2
 		return { //this:ActionBasciFsm
 				state("s0") { //this:State
@@ -38,7 +44,6 @@ class Wis ( name: String, scope: CoroutineScope, isconfined: Boolean=false  ) : 
 						subscribeToLocalActor("incinerator") 
 						subscribeToLocalActor("scalemock") 
 						subscribeToLocalActor("sonarmock") 
-						subscribeToLocalActor("oprobot") 
 						forward("act", "act($INC)" ,"incinerator" ) 
 						CommUtils.outgreen("[$name] sent act to incinerator")
 						 incinerator = 2  
@@ -59,8 +64,8 @@ class Wis ( name: String, scope: CoroutineScope, isconfined: Boolean=false  ) : 
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t019",targetState="verifyCondition",cond=whenEvent("stateScale"))
-					transition(edgeName="t020",targetState="verifyCondition",cond=whenEvent("stateSonar"))
+					 transition(edgeName="t030",targetState="verifyCondition",cond=whenEvent("stateScale"))
+					transition(edgeName="t031",targetState="verifyCondition",cond=whenEvent("stateSonar"))
 				}	 
 				state("verifyCondition") { //this:State
 					action { //it:State
@@ -78,18 +83,6 @@ class Wis ( name: String, scope: CoroutineScope, isconfined: Boolean=false  ) : 
 												 RP = wasteStorageWeight/50  
 								CommUtils.outgreen("[$name] RP quantity updated: $RP")
 						}
-						if( checkMsgContent( Term.createTerm("ashDeposited(X)"), Term.createTerm("ashDeposited(X)"), 
-						                        currentMsg.msgContent()) ) { //set msgArgList
-								 var LEVEL = payloadArg(0).toInt()  
-								forward("ashDeposited", "ashDeposited($LEVEL)" ,"sonarmock" ) 
-								CommUtils.outgreen("[$name] Ash storage level updated: $ashStorageLevel")
-						}
-						if( RP>0 && incinerator!=1 && ashStorageLevel > DLIMT 
-						 ){CommUtils.outblack("TRUE")
-						}
-						else
-						 {CommUtils.outblack("FALSE")
-						 }
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
@@ -109,10 +102,9 @@ class Wis ( name: String, scope: CoroutineScope, isconfined: Boolean=false  ) : 
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t021",targetState="startIncinerator",cond=whenDispatch("atIncinerator"))
-					transition(edgeName="t022",targetState="handleStateScale",cond=whenEvent("stateScale"))
-					transition(edgeName="t023",targetState="handleStateSonar",cond=whenEvent("stateSonar"))
-					transition(edgeName="t024",targetState="handleRobotPosition",cond=whenEvent("position"))
+					 transition(edgeName="t032",targetState="startIncinerator",cond=whenDispatch("atIncinerator"))
+					interrupthandle(edgeName="t033",targetState="handleStateScale",cond=whenEvent("stateScale"),interruptedStateTransitions)
+					interrupthandle(edgeName="t034",targetState="handleStateSonar",cond=whenEvent("stateSonar"),interruptedStateTransitions)
 				}	 
 				state("startIncinerator") { //this:State
 					action { //it:State
@@ -125,10 +117,9 @@ class Wis ( name: String, scope: CoroutineScope, isconfined: Boolean=false  ) : 
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t025",targetState="endIncinerator",cond=whenEvent("burnEnd"))
-					transition(edgeName="t026",targetState="handleStateScale",cond=whenEvent("stateScale"))
-					transition(edgeName="t027",targetState="handleStateSonar",cond=whenEvent("stateSonar"))
-					transition(edgeName="t028",targetState="handleRobotPosition",cond=whenEvent("position"))
+					 transition(edgeName="t035",targetState="endIncinerator",cond=whenEvent("burnEnd"))
+					interrupthandle(edgeName="t036",targetState="handleStateScale",cond=whenEvent("stateScale"),interruptedStateTransitions)
+					interrupthandle(edgeName="t037",targetState="handleStateSonar",cond=whenEvent("stateSonar"),interruptedStateTransitions)
 				}	 
 				state("endIncinerator") { //this:State
 					action { //it:State
@@ -141,10 +132,9 @@ class Wis ( name: String, scope: CoroutineScope, isconfined: Boolean=false  ) : 
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t029",targetState="verifyCondition",cond=whenDispatch("ashDeposited"))
-					transition(edgeName="t030",targetState="handleStateScale",cond=whenEvent("stateScale"))
-					transition(edgeName="t031",targetState="handleStateSonar",cond=whenEvent("stateSonar"))
-					transition(edgeName="t032",targetState="handleRobotPosition",cond=whenEvent("position"))
+					 transition(edgeName="t038",targetState="verifyCondition",cond=whenDispatch("ashDeposited"))
+					interrupthandle(edgeName="t039",targetState="handleStateScale",cond=whenEvent("stateScale"),interruptedStateTransitions)
+					interrupthandle(edgeName="t040",targetState="handleStateSonar",cond=whenEvent("stateSonar"),interruptedStateTransitions)
 				}	 
 				state("handleStateSonar") { //this:State
 					action { //it:State
@@ -167,22 +157,6 @@ class Wis ( name: String, scope: CoroutineScope, isconfined: Boolean=false  ) : 
 								 	wasteStorageWeight = payloadArg(0).toInt() 
 												RP = wasteStorageWeight/50  
 								CommUtils.outgreen("[$name] RP quantity updated: $RP")
-						}
-						returnFromInterrupt(interruptedStateTransitions)
-						//genTimer( actor, state )
-					}
-					//After Lenzi Aug2002
-					sysaction { //it:State
-					}	 	 
-				}	 
-				state("handleRobotPosition") { //this:State
-					action { //it:State
-						if( checkMsgContent( Term.createTerm("position(X,Y,J)"), Term.createTerm("position(X,Y)"), 
-						                        currentMsg.msgContent()) ) { //set msgArgList
-								 	posX = payloadArg(0).toInt()
-												posY = payloadArg(1).toInt() 
-												job = payloadArg(2)
-								CommUtils.outgreen("[$name] OpRobot   position $posX $posY   routine $job")
 						}
 						returnFromInterrupt(interruptedStateTransitions)
 						//genTimer( actor, state )

@@ -1,82 +1,77 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk-11.0.2">
+	<classpathentry kind="lib" path="C:/Users/loren/Documents/GitHub/issLab24/unibolibs/2p301.jar">
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/s_bst/Desktop/issLab24-main/iss24Temafinale/unibolibs/Facade24Start-1.0.jar">
+	<classpathentry kind="lib" path="C:/Users/loren/Documents/GitHub/issLab24/unibolibs/Facade24Start-1.0.jar">
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/s_bst/Desktop/issLab24-main/iss24Temafinale/unibolibs/Facade24Start-1.0-plain.jar">
+	<classpathentry kind="lib" path="C:/Users/loren/Documents/GitHub/issLab24/unibolibs/Facade24Start-1.0-plain.jar">
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/s_bst/Desktop/issLab24-main/iss24Temafinale/unibolibs/qakdisplaygui24-1.0.jar">
+	<classpathentry kind="lib" path="C:/Users/loren/Documents/GitHub/issLab24/unibolibs/qakdisplaygui24-1.0.jar">
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/s_bst/Desktop/issLab24-main/iss24Temafinale/unibolibs/qakdisplaygui24-1.0-plain.jar">
+	<classpathentry kind="lib" path="C:/Users/loren/Documents/GitHub/issLab24/unibolibs/qakdisplaygui24-1.0-plain.jar">
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/s_bst/Desktop/issLab24-main/iss24Temafinale/unibolibs/radarPojo.jar">
+	<classpathentry kind="lib" path="C:/Users/loren/Documents/GitHub/issLab24/unibolibs/radarPojo.jar">
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/s_bst/Desktop/issLab24-main/iss24Temafinale/unibolibs/robotfacade24-1.0.jar">
+	<classpathentry kind="lib" path="C:/Users/loren/Documents/GitHub/issLab24/unibolibs/robotfacade24-1.0.jar">
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/s_bst/Desktop/issLab24-main/iss24Temafinale/unibolibs/robotfacade24-1.0-plain.jar">
+	<classpathentry kind="lib" path="C:/Users/loren/Documents/GitHub/issLab24/unibolibs/robotfacade24-1.0-plain.jar">
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/s_bst/Desktop/issLab24-main/iss24Temafinale/unibolibs/servicefacade24-1.0.jar">
+	<classpathentry kind="lib" path="C:/Users/loren/Documents/GitHub/issLab24/unibolibs/servicefacade24-1.0.jar">
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/s_bst/Desktop/issLab24-main/iss24Temafinale/unibolibs/servicefacade24-1.0-plain.jar">
+	<classpathentry kind="lib" path="C:/Users/loren/Documents/GitHub/issLab24/unibolibs/servicefacade24-1.0-plain.jar">
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/s_bst/Desktop/issLab24-main/iss24Temafinale/unibolibs/unibo.basicomm23-1.0.jar">
+	<classpathentry kind="lib" path="C:/Users/loren/Documents/GitHub/issLab24/unibolibs/unibo.basicomm23-1.0.jar">
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/s_bst/Desktop/issLab24-main/iss24Temafinale/unibolibs/unibo.planner23-1.0.jar">
+	<classpathentry kind="lib" path="C:/Users/loren/Documents/GitHub/issLab24/unibolibs/unibo.planner23-1.0.jar">
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/s_bst/Desktop/issLab24-main/iss24Temafinale/unibolibs/unibo.qakactor23-5.0.jar">
+	<classpathentry kind="lib" path="C:/Users/loren/Documents/GitHub/issLab24/unibolibs/unibo.qakactor23-5.0.jar">
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/s_bst/Desktop/issLab24-main/iss24Temafinale/unibolibs/uniboInterfaces.jar">
+	<classpathentry kind="lib" path="C:/Users/loren/Documents/GitHub/issLab24/unibolibs/uniboInterfaces.jar">
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/s_bst/Desktop/issLab24-main/iss24Temafinale/unibolibs/unibonoawtsupports.jar">
-		<attributes>
-			<attribute name="module" value="true"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/s_bst/Desktop/issLab24-main/iss24Temafinale/unibolibs/2p301.jar">
+	<classpathentry kind="lib" path="C:/Users/loren/Documents/GitHub/issLab24/unibolibs/unibonoawtsupports.jar">
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>

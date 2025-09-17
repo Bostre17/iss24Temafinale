@@ -11,6 +11,12 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import it.unibo.kactor.sysUtil.createActor   //Sept2023
+//Sept2024
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory 
+import org.json.simple.parser.JSONParser
+import org.json.simple.JSONObject
+
 
 //User imports JAN2024
 
@@ -56,8 +62,8 @@ class Oprobot ( name: String, scope: CoroutineScope, isconfined: Boolean=false  
 				 	 		stateTimer = TimerActor("timer_tryEngage", 
 				 	 					  scope, context!!, "local_tout_"+name+"_tryEngage", 1000.toLong() )  //OCT2023
 					}	 	 
-					 transition(edgeName="t13",targetState="noReply",cond=whenTimeout("local_tout_"+name+"_tryEngage"))   
-					transition(edgeName="t14",targetState="standby",cond=whenReply("engagedone"))
+					 transition(edgeName="t013",targetState="noReply",cond=whenTimeout("local_tout_"+name+"_tryEngage"))   
+					transition(edgeName="t014",targetState="standby",cond=whenReply("engagedone"))
 				}	 
 				state("noReply") { //this:State
 					action { //it:State
@@ -75,17 +81,17 @@ class Oprobot ( name: String, scope: CoroutineScope, isconfined: Boolean=false  
 									X= pos["home"]!!.get(0)
 									Y= pos["home"]!!.get(1)
 									Job="Waiting Home"
-						emitLocalStreamEvent("position", "position($X,$Y,$Job)" ) 
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t15",targetState="goWasteIn",cond=whenDispatch("bringRP"))
-					transition(edgeName="t16",targetState="goBurnOut",cond=whenDispatch("bringAsh"))
+					 transition(edgeName="t115",targetState="goWasteIn",cond=whenDispatch("bringRP"))
+					transition(edgeName="t116",targetState="goBurnOut",cond=whenDispatch("bringAsh"))
 				}	 
 				state("goWasteIn") { //this:State
 					action { //it:State
+						CommUtils.outyellow("[$name] vado in WasteIn.")
 						
 									X = pos["wastein"]!!.get(0)
 									Y = pos["wastein"]!!.get(1)
@@ -95,32 +101,34 @@ class Oprobot ( name: String, scope: CoroutineScope, isconfined: Boolean=false  
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t07",targetState="goBurnIn",cond=whenReply("moverobotdone"))
-					transition(edgeName="t08",targetState="goHome",cond=whenReply("moverobotfailed"))
+					 transition(edgeName="t217",targetState="goBurnIn",cond=whenReply("moverobotdone"))
+					transition(edgeName="t218",targetState="goHome",cond=whenReply("moverobotfailed"))
 				}	 
 				state("goBurnIn") { //this:State
 					action { //it:State
+						CommUtils.outyellow("[$name] arrivato in WasteIn.")
 						
 									Job = "In WasteIn"
-						emitLocalStreamEvent("position", "position($X,$Y,$Job)" ) 
 						forward("rpTaken", "rpTaken(1)" ,"scalemock" ) 
+						CommUtils.outyellow("[$name] RP prelevato.")
 						
 									X = pos["burnin"]!!.get(0)
 									Y = pos["burnin"]!!.get(1)
+						CommUtils.outyellow("[$name] vado in BurnIn.")
 						request("moverobot", "moverobot($X,$Y)" ,"basicrobot" )  
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t09",targetState="arrivedToIncinerator",cond=whenReply("moverobotdone"))
-					transition(edgeName="t010",targetState="goHome",cond=whenReply("moverobotfailed"))
+					 transition(edgeName="t319",targetState="arrivedToIncinerator",cond=whenReply("moverobotdone"))
+					transition(edgeName="t320",targetState="goHome",cond=whenReply("moverobotfailed"))
 				}	 
 				state("arrivedToIncinerator") { //this:State
 					action { //it:State
+						CommUtils.outyellow("[$name] sono arrivato all'incinerator.")
 						
 									Job = "Waiting in BurnIn"
-						emitLocalStreamEvent("position", "position($X,$Y,$Job)" ) 
 						forward("atIncinerator", "atIncinerator(X)" ,"wis" ) 
 						delay(1000) 
 						//genTimer( actor, state )
@@ -128,30 +136,35 @@ class Oprobot ( name: String, scope: CoroutineScope, isconfined: Boolean=false  
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t011",targetState="goHome",cond=whenDispatch("goHome"))
+					 transition(edgeName="t421",targetState="goHome",cond=whenDispatch("goHome"))
 				}	 
 				state("goHome") { //this:State
 					action { //it:State
+						if(  Job != "Waiting Home" 
+						 ){CommUtils.outyellow("[$name] vado in HOME.")
 						
-									Job = "Going Home"
-						emitLocalStreamEvent("position", "position($X,$Y,$Job)" ) 
+										Job = "Going Home"
 						
-									X= pos["home"]!!.get(0)
-									Y= pos["home"]!!.get(1)	
+										X= pos["home"]!!.get(0)
+										Y= pos["home"]!!.get(1)	
 						request("moverobot", "moverobot($X,$Y)" ,"basicrobot" )  
+						}
+						else
+						 {CommUtils.outyellow("[$name] sono gia' in HOME.")
+						 }
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t012",targetState="standby",cond=whenReply("moverobotdone"))
-					transition(edgeName="t013",targetState="goHome",cond=whenReply("moverobotfailed"))
+					 transition(edgeName="t522",targetState="standby",cond=whenReply("moverobotdone"))
+					transition(edgeName="t523",targetState="goHome",cond=whenReply("moverobotfailed"))
 				}	 
 				state("goBurnOut") { //this:State
 					action { //it:State
+						CommUtils.outyellow("[$name] vado a prelevare le ash in BurnOut.")
 						
 									Job = "Going BurnOut"
-						emitLocalStreamEvent("position", "position($X,$Y,$Job)" ) 
 						
 									X= pos["burnout"]!!.get(0)
 									Y= pos["burnout"]!!.get(1)
@@ -161,39 +174,43 @@ class Oprobot ( name: String, scope: CoroutineScope, isconfined: Boolean=false  
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t014",targetState="goAshOut",cond=whenReply("moverobotdone"))
-					transition(edgeName="t015",targetState="goHome",cond=whenReply("moverobotfailed"))
+					 transition(edgeName="t624",targetState="goAshOut",cond=whenReply("moverobotdone"))
+					transition(edgeName="t625",targetState="goHome",cond=whenReply("moverobotfailed"))
 				}	 
 				state("goAshOut") { //this:State
 					action { //it:State
+						CommUtils.outyellow("[$name] sono arrivato in BurnOut.")
 						
 									Job = "In BurnOut"
-						emitLocalStreamEvent("position", "position($X,$Y,$Job)" ) 
 						
 									X= pos["ashout"]!!.get(0)
 									Y= pos["ashout"]!!.get(1)
+						CommUtils.outyellow("[$name] vado a depositare le ash in AshOut.")
 						request("moverobot", "moverobot($X,$Y)" ,"basicrobot" )  
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t016",targetState="atAshStorage",cond=whenReply("moverobotdone"))
-					transition(edgeName="t017",targetState="goHome",cond=whenReply("moverobotfailed"))
+					 transition(edgeName="t726",targetState="atAshStorage",cond=whenReply("moverobotdone"))
+					transition(edgeName="t727",targetState="goHome",cond=whenReply("moverobotfailed"))
 				}	 
 				state("atAshStorage") { //this:State
 					action { //it:State
+						CommUtils.outyellow("[$name] sono arrivato in AshStorage.")
 						
 									Job = "Depositing Ashes in AshStorage"
-						emitLocalStreamEvent("position", "position($X,$Y,$Job)" ) 
 						delay(2000) 
-						forward("ashDeposited", "ashDeposited(X)" ,"sonarmock" ) 
+						forward("newAsh", "newAsh(X)" ,"sonarmock" ) 
+						CommUtils.outyellow("[$name] ho depositato le ash: notifico il wis.")
+						forward("ashDeposited", "ashDeposited(X)" ,"wis" ) 
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t018",targetState="goHome",cond=whenDispatch("goHome"))
+					 transition(edgeName="t828",targetState="goHome",cond=whenDispatch("goHome"))
+					transition(edgeName="t829",targetState="goWasteIn",cond=whenDispatch("bringRP"))
 				}	 
 			}
 		}

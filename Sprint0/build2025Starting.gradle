@@ -154,9 +154,9 @@ task dovesiamo {
 
 distributions {
     main {
-        distributionBaseName = 'incinerator'
+        distributionBaseName = 'sprintzero'
         contents { 
-             from './incinerator.pl'
+             from './sprintzero.pl'
              from './sysRules.pl'
              from './facadeConfig.json'
         }

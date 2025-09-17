@@ -8,11 +8,13 @@ dispatch( act, act(X) ).
 dispatch( ack, ack(X) ).
 dispatch( atIncinerator, atIncinerator(X) ).
 dispatch( ashDeposited, ashDeposited(X) ).
+dispatch( newRp, newRp(X) ).
 dispatch( rpTaken, rpTaken(X) ).
+dispatch( newAsh, newAsh(X) ).
+dispatch( emptyAsh, emptyAsh(X) ).
 event( burnEnd, burnEnd(BTIME) ).
 event( stateScale, stateScale(X) ).
 event( stateSonar, stateSonar(X) ).
-event( position, position(X,Y,J) ).
 request( engage, engage(OWNER,STEPTIME) ).
 reply( engagedone, engagedone(ARG) ).  %%for engage
 reply( engagerefused, engagerefused(ARG) ).  %%for engage

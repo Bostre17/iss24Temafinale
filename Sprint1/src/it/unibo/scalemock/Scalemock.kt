@@ -11,6 +11,12 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import it.unibo.kactor.sysUtil.createActor   //Sept2023
+//Sept2024
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory 
+import org.json.simple.parser.JSONParser
+import org.json.simple.JSONObject
+
 
 //User imports JAN2024
 
@@ -36,6 +42,35 @@ class Scalemock ( name: String, scope: CoroutineScope, isconfined: Boolean=false
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
+					 transition(edgeName="t02",targetState="handleRpTaken",cond=whenDispatch("rpTaken"))
+				}	 
+				state("handleRpTaken") { //this:State
+					action { //it:State
+						 WEIGHT -= 50  
+						if(  WEIGHT < 0 
+						 ){ WEIGHT = 0 
+						}
+						emitLocalStreamEvent("stateScale", "stateScale($WEIGHT)" ) 
+						CommUtils.outred("[$name] stateScale updated a $WEIGHT.")
+						//genTimer( actor, state )
+					}
+					//After Lenzi Aug2002
+					sysaction { //it:State
+					}	 	 
+					 transition(edgeName="t03",targetState="handleRpTaken",cond=whenDispatch("rpTaken"))
+					transition(edgeName="t04",targetState="handleNewRp",cond=whenDispatch("newRp"))
+				}	 
+				state("handleNewRp") { //this:State
+					action { //it:State
+						 WEIGHT += 50 
+						CommUtils.outred("[$name] RP aggiunto. stateScale updated a $WEIGHT.")
+						//genTimer( actor, state )
+					}
+					//After Lenzi Aug2002
+					sysaction { //it:State
+					}	 	 
+					 transition(edgeName="t05",targetState="handleRpTaken",cond=whenDispatch("rpTaken"))
+					transition(edgeName="t06",targetState="handleNewRp",cond=whenDispatch("newRp"))
 				}	 
 			}
 		}

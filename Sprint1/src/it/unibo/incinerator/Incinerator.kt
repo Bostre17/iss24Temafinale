@@ -11,6 +11,12 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import it.unibo.kactor.sysUtil.createActor   //Sept2023
+//Sept2024
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory 
+import org.json.simple.parser.JSONParser
+import org.json.simple.JSONObject
+
 
 //User imports JAN2024
 
@@ -69,7 +75,7 @@ class Incinerator ( name: String, scope: CoroutineScope, isconfined: Boolean=fal
 						
 									delay(Btime*1000)
 									state = 2	
-						emit("burnEnd", "burnend($Btime)" ) 
+						emit("burnEnd", "burnEnd($Btime)" ) 
 						updateResourceRep( "burnEnd(${Btime})"  
 						)
 						//genTimer( actor, state )

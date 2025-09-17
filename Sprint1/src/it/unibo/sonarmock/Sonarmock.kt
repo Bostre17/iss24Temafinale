@@ -11,6 +11,12 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import it.unibo.kactor.sysUtil.createActor   //Sept2023
+//Sept2024
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory 
+import org.json.simple.parser.JSONParser
+import org.json.simple.JSONObject
+
 
 //User imports JAN2024
 
@@ -21,35 +27,49 @@ class Sonarmock ( name: String, scope: CoroutineScope, isconfined: Boolean=false
 	}
 	override fun getBody() : (ActorBasicFsm.() -> Unit){
 		//val interruptedStateTransitions = mutableListOf<Transition>()
-		
-				var DISTANCE = 100	
+		var DISTANCE=200 
 		return { //this:ActionBasciFsm
 				state("s0") { //this:State
 					action { //it:State
 						CommUtils.outred("[$name] inizializzazione.")
 						delay(5000) 
-						emitLocalStreamEvent("stateSonar", "stateSonar($DISTANCE)" ) 
 						CommUtils.outred("[$name] stateSonar updated a $DISTANCE.")
+						emitLocalStreamEvent("stateSonar", "stateSonar($DISTANCE)" ) 
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t02",targetState="updateAsh",cond=whenDispatch("ashDeposited"))
+					 transition(edgeName="t07",targetState="handleNewAsh",cond=whenDispatch("newAsh"))
+					transition(edgeName="t08",targetState="handleEmptyAsh",cond=whenDispatch("emptyAsh"))
 				}	 
-				state("updateAsh") { //this:State
+				state("handleNewAsh") { //this:State
 					action { //it:State
-						if( checkMsgContent( Term.createTerm("ashDeposited(X)"), Term.createTerm("ashDeposited(X)"), 
-						                        currentMsg.msgContent()) ) { //set msgArgList
-								 DISTANCE = DISTANCE + payloadArg(0).toInt()	 
-								emitLocalStreamEvent("stateSonar", "stateSonar($DISTANCE)" ) 
-								CommUtils.outred("[$name] stateSonar updated a $DISTANCE.")
+						DISTANCE = DISTANCE - 60 
+						if(  DISTANCE < 0 
+						 ){ DISTANCE = 0 
 						}
+						CommUtils.outred("[$name] stateSonar updated a $DISTANCE.")
+						emitLocalStreamEvent("stateSonar", "stateSonar($DISTANCE)" ) 
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
+					 transition(edgeName="t09",targetState="handleNewAsh",cond=whenDispatch("newAsh"))
+					transition(edgeName="t010",targetState="handleEmptyAsh",cond=whenDispatch("emptyAsh"))
+				}	 
+				state("handleEmptyAsh") { //this:State
+					action { //it:State
+						DISTANCE = 200 
+						CommUtils.outred("[$name] ashes svuotate. stateSonar updated a $DISTANCE.")
+						//genTimer( actor, state )
+					}
+					//After Lenzi Aug2002
+					sysaction { //it:State
+					}	 	 
+					 transition(edgeName="t011",targetState="handleNewAsh",cond=whenDispatch("newAsh"))
+					transition(edgeName="t012",targetState="handleEmptyAsh",cond=whenDispatch("emptyAsh"))
 				}	 
 			}
 		}
