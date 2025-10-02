@@ -158,12 +158,15 @@ QActor sonarmock context ctxwis{
 }
 
 
-
+//cambiamenti al robot per limitare comunicazione con wis, passo at incinerator senza variabile X ma solo per conferma.
+//giusto per comunicare che l'azione è  stata effettuata
+//se arriva un nuovo lavoro lo esegue subito senza tornare a casa
+//tolto pos da home e tolta logica si conferma engage secondo me ridondante
+//dall'incenerator può effettuare altri ordini in coda senza incepparsi aggiungendo condizioni in t4
 
 //--------------------------OpRobot-----------------------------
 
 QActor oprobot context ctxwis {
-	
 	[#
 		val pos: MutableMap<String, Array<String>> = mutableMapOf()
 	    pos["home"] = arrayOf("0", "0")
@@ -171,175 +174,115 @@ QActor oprobot context ctxwis {
 	    pos["burnout"] = arrayOf("4", "3")
 		pos["ashout"] = arrayOf("5", "4")
 		pos["wastein"] = arrayOf("0", "4")
-		var X="0"
-		var Y="0"
-		var Xfut = "0"
-		var Yfut = "0"
+
 		var Job=""
 	#]
+    
 
     State s0 initial {
-	    println("[$name] inizializzazione.") color yellow
-	}
-	Goto tryEngage
-	
-	
-	// Stato che tenta di stabilire la connessione con il BasicRobot
-	State tryEngage {
-	    println("[$name] tentativo engage a BasicRobot...") color yellow
-	    
-	    request basicrobot -m engage : engage(name, 330)
-        println("[$name] richiesta di engage inviata al basicrobot") color yellow
-	}
-	Transition t0 whenTime 1000         	-> noReply
-	              whenReply engagedone   	-> standby
-	
-	
-	// Stato che gestisce l'assenza di risposta
-	State noReply {
-	    println("[$name] nessuna risposta da BasicRobot: failed.") color yellow
-	}
-	
-	// Stato in attesa di ricevere un compito
-	State standby {
-	    println("[$name] pronto e in attesa in HOME.") color yellow
-	    [#
-			X= pos["home"]!!.get(0)
-			Y= pos["home"]!!.get(1)
-			Job="Waiting Home"
-		#]
-		//emitlocalstream position : position($X,$Y,$Job)
-	}
-	Transition t1 	whenMsg bringRP -> goWasteIn
-					whenMsg bringAsh -> goBurnOut
-	
-	
-	State goWasteIn {
-	    println("[$name] vado in WasteIn.") color yellow
-		[#
-			X = pos["wastein"]!!.get(0)
-			Y = pos["wastein"]!!.get(1)
-		#]
-		request basicrobot -m moverobot : moverobot($X,$Y)
-	} 
-	Transition t2 whenReply moverobotdone -> goBurnIn
-				  whenReply moverobotfailed -> goHome
-	
-	State goBurnIn {
-	    println("[$name] arrivato in WasteIn.") color yellow
-		[#
-			Job = "In WasteIn"
-		#]
-		//emitlocalstream position : position($X,$Y,$Job)
-		
-		forward scalemock -m rpTaken : rpTaken(1)
-	    println("[$name] RP prelevato.") color yellow
-		
-		[#
-			X = pos["burnin"]!!.get(0)
-			Y = pos["burnin"]!!.get(1)
-		#]
-	    println("[$name] vado in BurnIn.") color yellow
-		request basicrobot -m moverobot : moverobot($X,$Y)
-		
-	} 
-	Transition t3 whenReply moverobotdone -> arrivedToIncinerator
-				  whenReply moverobotfailed -> goHome
-	
-	State arrivedToIncinerator {
-	    println("[$name] sono arrivato all'incinerator.") color yellow
-		[#
-			Job = "Waiting in BurnIn"
-		#]
-		//emitlocalstream position : position($X,$Y,$Job)
-		
-		forward wis -m atIncinerator : atIncinerator(X)
-		
-		delay 1000
-	}
-	Transition t4 whenMsg goHome -> goHome
-	
-	State goHome {
-		
-		if [# Job != "Waiting Home"#]
-		{
-		    println("[$name] vado in HOME.") color yellow
-			[#
-				Job = "Going Home"
-			#]
-			//emitlocalstream position : position($X,$Y,$Job)
-			
-			[#
-				X= pos["home"]!!.get(0)
-				Y= pos["home"]!!.get(1)	
-			#]
-			request basicrobot -m moverobot : moverobot($X,$Y)
-		}
-		else
-		{
-		    println("[$name] sono gia' in HOME.") color yellow
-		}
-		
-	} 
-	Transition t5 whenReply moverobotdone -> standby
-				  whenReply moverobotfailed -> goHome
-				  
-	
-	State goBurnOut {
-	    println("[$name] vado a prelevare le ash in BurnOut.") color yellow
-		[#
-			Job = "Going BurnOut"
-		#]
-		//emitlocalstream position : position($X,$Y,$Job)
-		
-		[#
-			X= pos["burnout"]!!.get(0)
-			Y= pos["burnout"]!!.get(1)
-		#]
-		request basicrobot -m moverobot : moverobot($X,$Y)
-	}
-	Transition t6 whenReply moverobotdone -> goAshOut
-				  whenReply moverobotfailed -> goHome
-	
-	State goAshOut {
-	    println("[$name] sono arrivato in BurnOut.") color yellow
-		[#
-			Job = "In BurnOut"
-		#]
-		//emitlocalstream position : position($X,$Y,$Job)
-		
-		[#
-			X= pos["ashout"]!!.get(0)
-			Y= pos["ashout"]!!.get(1)
-		#]
-	    println("[$name] vado a depositare le ash in AshOut.") color yellow
-		request basicrobot -m moverobot : moverobot($X,$Y)
-	}
-	Transition t7 whenReply moverobotdone -> atAshStorage
-				  whenReply moverobotfailed -> goHome
-	
-	State atAshStorage {
-	    println("[$name] sono arrivato in AshStorage.") color yellow
-		[#
-			Job = "Depositing Ashes in AshStorage"
-		#]
-		//emitlocalstream position : position($X,$Y,$Job)
-		
-		delay 2000
-		
-		forward sonarmock -m newAsh : newAsh(X)
-		
-	    println("[$name] ho depositato le ash: notifico il wis.") color yellow
-	    
-	    forward wis -m ashDeposited : ashDeposited(X)
-		
-		
-	} //Quando deposita le ash, in base a verify condition del wis, l'oprobot torna a home o wastein.
-	Transition t8 	whenMsg goHome -> goHome
-					whenMsg bringRP -> goWasteIn
-				  
-}
+        println("[$name] inizializzazione.") color yellow
+        request basicrobot -m engage : engage(name, 330)
+    }
+    Transition t0 whenReply engagedone -> standby
+    
+    State standby {
+        println("[$name] pronto e in attesa in HOME.") color yellow
+        [# Job = "Waiting Home" #]
+    }
+    Transition t1 whenMsg bringRP -> goWasteIn
+                  whenMsg bringAsh -> goBurnOut
+    
+    State goWasteIn {
+        println("[$name] vado in WasteIn.") color yellow
+        [# 
+        	val X = pos["wastein"]!!.get(0); 
+        	val Y = pos["wastein"]!!.get(1)
+        #]
+        request basicrobot -m moverobot : moverobot($X,$Y)
+    } 
+    Transition t2 whenReply moverobotdone -> goBurnIn
+                  whenReply moverobotfailed -> goHome
 
+    State goBurnIn {
+        println("[$name] arrivato in WasteIn, vado in BurnIn.") color yellow
+        [# Job = "In WasteIn" #]
+        forward scalemock -m rpTaken : rpTaken(1)
+        [# 
+        	val X = pos["burnin"]!!.get(0); 
+        	val Y = pos["burnin"]!!.get(1) 
+        #]
+        request basicrobot -m moverobot : moverobot($X,$Y)
+    } 
+    Transition t3 whenReply moverobotdone -> arrivedToIncinerator
+                  whenReply moverobotfailed -> goHome
+    
+    State arrivedToIncinerator {
+        println("[$name] sono arrivato all'inceneritore e notifico.") color yellow
+        [# Job = "Waiting in BurnIn" #]
+        forward wis -m atIncinerator : atIncinerator(1)
+    }
+    Transition t4 whenMsg goHome -> goHome
+                  whenMsg bringAsh -> goBurnOut
+                  whenMsg bringRP -> goWasteIn
+
+   	State goHome {
+   		if [# Job != "Waiting Home"#] {
+        	println("[$name] vado in HOME.") color yellow
+        	[# Job = "Going Home" #]
+        	[# 
+        		val X = pos["home"]!!.get(0); 
+        		val Y = pos["home"]!!.get(1) 
+        	#]
+        	request basicrobot -m moverobot : moverobot($X,$Y)
+    	} else {
+        	println("[$name] sono gia' in HOME.") color yellow
+    	}
+    // Se è già in HOME, deve comunque passare a standby per accettare nuovi comandi
+    // Lo facciamo con un 'Goto' incondizionato DENTRO l'else.
+   	}
+  	Goto standby if [# Job == "Waiting Home" #] else waitForReply
+
+   //stato intermedio per attendere la risposta perchè sennò può essere che non va in standby
+	State waitForReply{
+  		println("[$name] In attesa di arrivare a HOME...") color yellow
+  	}
+	Transition t5 whenReply moverobotdone -> standby
+              whenReply moverobotfailed -> goHome
+                  
+    State goBurnOut {
+        println("[$name] vado a prelevare le ash in BurnOut.") color yellow
+        [# Job = "Going BurnOut" #]
+        [# 
+        	val X = pos["burnout"]!!.get(0); 
+        	val Y = pos["burnout"]!!.get(1) 
+        #]
+        request basicrobot -m moverobot : moverobot($X,$Y)
+    }
+    Transition t6 whenReply moverobotdone -> goAshOut
+                  whenReply moverobotfailed -> goHome
+    
+    State goAshOut {
+        println("[$name] arrivato in BurnOut, vado a depositare in AshOut.") color yellow
+        [# Job = "In BurnOut" #]
+        [# 
+        	val X = pos["ashout"]!!.get(0); 
+        	val Y = pos["ashout"]!!.get(1)
+        	 
+        #]
+        request basicrobot -m moverobot : moverobot($X,$Y)
+    }
+    Transition t7 whenReply moverobotdone -> atAshStorage
+                  whenReply moverobotfailed -> goHome
+    
+    State atAshStorage {
+        println("[$name] arrivato in AshStorage, deposito e notifico.") color yellow
+        [# Job = "Depositing Ashes" #]
+        forward sonarmock -m newAsh : newAsh(1)
+        forward wis -m ashDeposited : ashDeposited(1)
+    }
+    Transition t8 whenMsg goHome -> goHome
+                  whenMsg bringRP -> goWasteIn
+}
 
 
 //--------------------------WIS-----------------------------
