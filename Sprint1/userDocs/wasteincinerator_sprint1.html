@@ -381,6 +381,13 @@ div.imagedesc{
 		Stesso approccio è stato utilizzato per l'attore scale.
 		<h3>Testing</h3>
 		<h3>Deployment</h3>
+		Per poter provare questo primo prototipo del sistema, occorre eseguire i seguenti componenti nel seguente ordine:
+
+    Ambiente di simulazione VirtualRobot: posizionarsi nella cartella "it.unibo.virtualRobot2023", aprire un terminale e lanciare il comando docker compose -f .\virtualRobot23.yaml up;
+    BasicRobot: posizionarsi nella cartella "unibo.basicrobot24", aprire un terminale e lanciare il comando gradlew run;
+    WasteIncineratorService: posizionarsi nella cartella "Sprint1", aprire un terminale e lanciare il comando gradlew run;
+
+	Il risultato sarà la visualizzazione del robot virtuale che si muove nella stanza, seguendo la logica definita nei requisiti.
     </div>
 
     <div style="background-color:rgba(86, 56, 253, 0.9); width:100%;text-align:left;color:white;padding: 30px;">
