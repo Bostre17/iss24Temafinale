@@ -54,10 +54,7 @@ class Incinerator ( name: String, scope: CoroutineScope, isconfined: Boolean=fal
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition( edgeName="goto",targetState="burn", cond=doswitchGuarded({ state == 1  
-					}) )
-					transition( edgeName="goto",targetState="idle", cond=doswitchGuarded({! ( state == 1  
-					) }) )
+					 transition( edgeName="goto",targetState="idle", cond=doswitch() )
 				}	 
 				state("idle") { //this:State
 					action { //it:State
@@ -67,7 +64,22 @@ class Incinerator ( name: String, scope: CoroutineScope, isconfined: Boolean=fal
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t01",targetState="handleAct",cond=whenDispatch("act"))
+					 transition(edgeName="t01",targetState="handleRp",cond=whenDispatch("notifyRp"))
+				}	 
+				state("handleRp") { //this:State
+					action { //it:State
+						if( checkMsgContent( Term.createTerm("act(X)"), Term.createTerm("act(X)"), 
+						                        currentMsg.msgContent()) ) { //set msgArgList
+								CommUtils.outmagenta("[$name] notifyRp ricevuto")
+								 state = payloadArg(0).toInt() 
+								CommUtils.outmagenta("[$name] notifyRp letto")
+						}
+						//genTimer( actor, state )
+					}
+					//After Lenzi Aug2002
+					sysaction { //it:State
+					}	 	 
+					 transition( edgeName="goto",targetState="burn", cond=doswitch() )
 				}	 
 				state("burn") { //this:State
 					action { //it:State

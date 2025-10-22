@@ -1,0 +1,423 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+    <!--
+<link rel="stylesheet" type="text/css" href="../css/issStyle1.css">
+<script type="text/javascript" src="../css/issStyle.js"></script>
+-->
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/foundation-sites@6.7.4/dist/css/foundation.min.css" crossorigin="anonymous">
+		<script src="https://cdn.jsdelivr.net/npm/foundation-sites@6.7.4/dist/js/foundation.min.js"crossorigin="anonymous"></script> 
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" type="text/css" href="./commons/resources/styles/templateISS.css">
+        <link rel="stylesheet" type="text/css" href="./commons/resources/styles/main.css">
+        <link rel="stylesheet" type="text/css" href="./commons/resources/styles/navbar.css">
+        <link rel="stylesheet" type="text/css" href="./commons/resources/styles/table.css">
+        <link rel="stylesheet" type="text/css" href="./commons/resources/styles/code.css">
+        <link rel="stylesheet" type="text/css" href="./commons/resources/styles/custom.css">
+        <!-- <script type="text/javascript" src="./commons/resources/scripts/myScripts.js"></script> -->
+<style type="text/css">
+body
+{
+    margin-left:  50px;
+    margin-right: 50px;
+};
+
+P
+{
+    font-family: Tahoma;
+    font-size: 10pt;
+};
+
+a, a:visited, a:active, a:link, a:hover {
+    text-decoration: underline;
+    color: #545454;
+    background-color: transparent;
+	font-size: 93%;
+}
+
+a:hover {
+    background-color: #cccccc;
+}
+
+
+hr {
+    clear: both;
+    height: 1px;
+    color: #242424;
+    background-color: transparent;
+}
+
+h1, h2, h3 {
+    color: #242424;
+    clear: left;
+    font: 100% Tahoma, Helvetica, Arial, sans-serif;
+    margin-bottom: 0.5em;
+    padding-top: 0.5em;
+	border-radius: 10px;
+	padding: 5px;
+}
+
+top {
+	width: 100%;
+}
+
+
+#i {
+    color: #ff1010;
+}
+tt{
+	font-family: "Arial";
+    font-size: 90%;
+	color: #006600;
+}
+em{
+	font-family: "Arial";
+    font-size: 80%;
+	font-weight: bold;
+	border-style:solid;
+	border-color: #abe876;
+    color: #1632cc;
+}
+bc{
+	font-family: "Arial";
+	font-size: 90%;
+	font-weight: bold;
+    color: #990000;
+	background-color: #fcf8c7;
+}
+ks{
+	font-family: "Arial";
+	font-weight: bold;
+    color: #0000CD	;
+	font-size: 90%;
+}
+kc{
+	font-family: "Arial";
+	font-weight: bold;
+    color: #008000	;
+	font-size: 90%;
+}
+pre, .formula{
+	font-family: "Consolas";
+	font-size: 85%;
+	background-color: #f5f5f5;
+	border: 1.5px solid silver;
+	padding: 5px;
+}
+m{
+	font-family: "Helvetica";
+	line-height: 100%;
+ 	font-size: 75%;
+}
+div.body{
+	 
+    font-size: 18px;
+}
+k{
+    color: #990000;
+	font-weight: bold;
+	font-size: 90%;
+}
+h1 {
+    font-size: 150%;
+    background-color: #b2c0ff;
+	padding: 10px;
+}
+
+h2 {
+    background-color: #9ed8ff;
+    font-size: 130%;
+}
+
+h3 {
+	background-color: #e6ccff;
+    font-size: 100%;
+}
+h4 {
+    background-color: #ccffcc;
+    font-size: 100%;
+	width: 95%;
+	border-radius: 5px;
+	padding: 2px;
+}
+h5 {
+    background-color: #d5ffb0;
+    font-size: 100%;
+
+}
+div.req{
+	background-color: #d9ffb3;
+    font-size: 18px;
+	width: 700px;
+    border: 3px solid green;
+    padding: 15px;
+    margin: 10px;
+}
+div.remark{
+	background-color: #E3F2FD;
+    border: 1.5px solid #d5f2ed;
+    padding: 15px;
+    margin: 10px;
+	border-radius: 25px;
+}
+table, th, td {
+  border: 1px solid black;
+  border-collapse: collapse;
+}
+
+ol, ul, li {
+  margin: 0;
+  margin-left: 10px;
+  padding: 0;
+  padding-bottom: 5px;
+}
+
+table, th, td {
+	border: 1px solid black;
+}
+
+img {
+	border: 1.5px solid #d5f2ed
+
+}
+
+a, a:visited, a:active, a:link, a:hover {
+    text-decoration: underline;
+    color: #545454;
+    background-color: transparent;
+}
+
+div.wrapdesc{
+	width: 90%;
+	margin: auto;
+}
+
+div.imagedesc{
+	width: 85%;
+	margin: auto;
+}
+
+
+.formula {
+    font-family: monospace;
+    font-weight: bold;
+    color: #007bff; 
+    background-color: #cde8ff; 
+    padding: 1px 4px;
+    border-radius: 3px; 
+    display: inline; 
+    line-height: 1;
+}
+</style>
+    
+ 
+   
+</head>
+	
+		
+  
+
+
+   
+<title>WasteIncineratorService Sprint1</title></head>
+    
+<!--
+	<body onload="loadNav();">
+		<div id="openButton" class="openButton" onclick="openNav(true)">&#9776; Menu</div>
+		<div id="sidenav" class="sidenav">
+			<a class="closeButton" href="javascript:void(0)" onclick="closeNav(true)">&times;</a>
+			<a href=".README.html">ReadMe</a>
+			<a class="sprint" href="../../../Sprint0/Codice/userDocs/Cold%20Storage%20Service%20-%20Natali%20V3.html">Sprint0</a>
+			<a class="sprint" href="../../../Sprint1.0/Codice/userDocs/Sprint%201.0%20-%20V3.html">Sprint1.0</a>
+			<a class="sprint" href="../../../Sprint1.1/Codice/userDocs/Sprint%201.1%20-%20V3.html">Sprint1.1</a>
+			<a id="currentSprint" class="sprint" href="#">&#8211;&#8212; Sprint2 &#8212;&#8211;</a>
+			<div class="sidenavSection">
+				<a href="#Goal Sprint 2">Goal Sprint 2</a>
+				<a href="#Requisiti">Requisiti</a>
+				<a href="#Analisi dei Requisiti">Analisi dei Requisiti</a>
+				<a href="#Analisi del Problema">Analisi del Problema</a>
+				<a href="#Test Plan">Test Plan</a>
+				<a href="#Progettazione">Progettazione</a>
+				<a href="#Deployment">Deployment</a>
+			</div>
+			<p class="separator">&mdash;&mdash;&mdash;&ndash;&ndash;&mdash;&mdash;&mdash;</p>
+			<a class="sprint" href="../../../Sprint3/Codice/userDoc/Sprint%203.html">Sprint3</a>
+			<bottom-spacer/>
+		</div>
+-->
+<body>
+    <div id="top">
+        <h1>LABORATORIO DI INGEGNERIA DEI SISTEMI SOFTWARE</h1>
+    </div>  
+
+    <div class="body"> 
+        <h2>Introduction</h2>
+        <p>Questo documento contiene lo Sprint1 del progetto per il tema finale del corso.<br>L'obiettivo dello Sprint1 è lo sviluppo della prima architettura del core business, in particolare ciò che riguarda WIS, OpRobot e Incinerator.</p>
+        
+        <h2>Requirements</h2>
+        <p>Per vedere i requisiti visitare la pagina relativa alla richiesta del committente presso <a href="./TemaFinale24.html">TemaFinale24</a>.</p>
+
+        <h2>Requirement Analysis</h2>
+		<p>
+			L'analisi dei requisiti può essere trovata nello <a href="../../Sprint0/userDocs/wasteincinerator_sprint0v1.html">Sprint0</a>.</p>
+		<h2>Problem Analysis</h2>
+		<h3>OpRobot</h3>
+		<ul>
+			<h4>P1 - Modellazione OpRobot</h4>
+			Come precedentemente anticipato nello sprint0 l'architettura ci permette un'estensione nei concetti di rappresentazione e di implementazione.
+			In questo senso si è deciso di definire l'OpRobot come Attore invece che come POJO: questo porta ad un vantaggio fondamentale, ovvero la possibilità di delegare all'OpRobot la gestione del BasicRobot senza dover passare per il WIS, in modo tale da rendere l'architettura più scalabile e modulare.
+			
+			<h4>P2 - Mappa</h4>
+				Per potersi muovere all'interno dell'ambiente, il robot ha bisogno di una rappresentazione interna della stanza. Questa mappa può essere fornita direttamente, oppure può essere generata in autonomia, nel qual caso è necessario affrontare il problema della sua costruzione.
+				Come visibile in figura, l'area operativa contiene vari ostacoli che devono essere considerati nella creazione della mappa. Una possibile soluzione consiste nell'adottare strategie di esplorazione sistematica, evitando approcci casuali. Tra le modalità di movimento viste a lezione, alcune applicabili sono, ad esempio:
+				<ul>
+					<li>movimento per colonne</li>
+					<li>movimento a onde</li>
+					<li>movimento a spirale</li>
+				</ul>
+
+			<h4>P3 - Accesso alla mappa</h4>
+			Un aspetto da chiarire riguarda chi debba effettivamente accedere alla mappa: il DDRRobot, l'OpRobot o il WIS. 
+			Analizzando il software di base (BasicRobot), si osserva che il modulo planner ha già una conoscenza interna della mappa.
+			Per evitare modifiche al codice esistente, si è deciso che la gestione della mappa rimarrà a carico del planner.
+			Tuttavia, l'Oprobot continuerà a conoscere le posizioni chiave come WASTEIN, WASTEOUT, BURNIN etc.
+
+			<h4>P4 - Planner</h4>
+			Dato un punto di partenza, il robot deve individuare un percorso che lo conduca alla posizione di destinazione sulla mappa.
+			E' necessario definire una logica che consenta di determinare dinamicamente la sequenza di mosse da compiere a partire dalla posizione corrente del robot: questa logica è implementata all'interno di un modulo denominato planner, il quale viene interrogato dall'OpRobot per calcolare il percorso corretto verso la destinazione.
+			
+			<h4>P5 - Interazione con il WIS</h4>
+				Dall'analisi dei requisiti emerge la necessità di un sistema di comunicazione basato su messaggi per assegnare compiti specifici all'OpRobot.<br>
+				A primo impatto sorge l'idea di proporre un'architettura Request-Reply: il WIS invia una "Request" all'OpRobot per avviare un'attività, e l'OpRobot risponde con una "Reply" 
+				a compito ultimato. Questo approccio con una singola Reply finale eliminerebbe la necessità per il WIS di monitorare continuamente lo stato del task (polling).
+				Questo approccio però, nel complesso, non è conveniente in quanto sincrono: quando il WIS invia una richiesta all'OpRobot, esso deve fermarsi in attesa di risposta di quest'ultimo.
+				Una soluzione a questo problema è quella di renderla asincrona attraverso una comunicazione di tipo "Dispatch" in modo tale che il WIS possa continuare ad effettuare altre operazioni.
+				Dato che questi scambi avvengono tra componenti specifici del sistema, l'uso di Eventi generalizzati non è considerato vantaggioso. 
+				Si raccomanda quindi l'adozione del Dispatch per tutte le interazioni tra WIS e OpRobot relative alle operazioni di recupero e deposito di 
+				RP e Ash, nonché per il comando di ritorno alla postazione "HOME".
+				A tal proposito, dato che la mappa risiede nell'OpRobot, basterebbe che il WIS comunichi ad esso di andare in un determinato luogo della service area tramite l'utilizzo di appositi comandi, nello specifico:
+				<ul>
+					<li>go_home</li>
+					<li>go_wastein</li>
+					<li>go_burnin</li>
+					<li>go_burnout</li>
+					<li>go_ashout</li>
+				</ul>
+
+		</ul>
+
+
+		<h3>Incenerator</h3>
+		<ul>
+		<h4>P6 - Inizio timer fase di incenerimento</h4>
+		L'inceneritore ha un tempo di combustione fisso (BTIME) e notifica la fine del processo. 
+		Il punto critico è come l'incinerator rilevi del nuovo materiale presente nella porta BURNIN per avviare il ciclo.
+		Due le ipotesi:
+			<ul>
+				<li>Un sensore di presenza materiale</li>
+				<li>Una notifica che il robot ha consegnato il materiale.</li>
+			</ul>
+		In assenza di un sensore che rilevi la presenza di un nuovo materiale da smaltire (come specificato nei requisiti) e assumendo di non poterlo aggiungere, è stata considerata la seconda opzione, dato che, l'arrivo del robot alla porta BURNIN (che per definizione trasporta un RP) funge da segnale di presenza materiale.
+
+		<h4>P7 - Chi notifica l'incenerator?</h4>
+		Una volta deciso come avviare la fase di incenerimento, sorge il problema sul chi notifichi l'incinerator dell'arrivo di un RP.
+		Viene logico pensare che sia l'OpRobot a notificare l'incinerator una volta che porta un RP presso la porta BurnIn: dopo un'attenta analisi, per rispettare il SRP (Single Responsibility Principle) è stato deciso che sarà il WIS ad interagire con il robot per comunicare la presenza di un RP all'incinerator.
+
+		<h4>P8 - Gestione messaggi</h4>
+		Dobbiamo ora determinare la tipologia adeguata per il messaggio di notifica inviato dal WIS all'Inceneritore. 
+		Poiché si tratta di una comunicazione diretta, punto-punto, l'utilizzo di un 'Evento' non risulta appropriato in questo contesto.
+		La natura di questo messaggio prevede esclusivamente l'invio del comando di inizio, senza che sia richiesta o attesa alcuna risposta dall'Inceneritore. Valutando i possibili modelli di comunicazione:
+			<ul>
+    			<li>Request: Questo schema implica tipicamente la necessità di una risposta da parte del destinatario. 
+					Dato che il nostro obiettivo è semplicemente inviare un comando unidirezionale di avvio, il modello 'Request' non soddisfa i requisiti.</li>
+   				 <li>Dispatch: Questa modalità è concepita per inviare messaggi punto-punto senza prevedere un messaggio di risposta obbligatorio. 
+					Ciò la rende perfettamente adatta per impartire il comando di inizio all'Inceneritore, 
+					rispettando l'esigenza di una comunicazione non bloccante e senza feedback atteso.</li>
+			</ul>
+		Alla luce di queste considerazioni funzionali, il modello 'Dispatch' si configura come la scelta più idonea per la gestione del 
+		messaggio di avvio tra il WIS e l'Inceneritore.
+
+		</ul>
+
+
+		<h3>WIS</h3>
+		<ul>
+			<h4>P9 - Stato </h4>
+				Il punto principale dell'architettura del WIS si basa sulla definizione di uno stato tratto dalle informazioni specificate nello Sprint0: per poter dare un valore allo stato, è necessario reperire le informazioni dalle varie entità coinvolte.<br>
+				Per mantenere lo stato del WIS aggiornato, invece che richiedere ogni volta le informazioni alle entità coinvolte e quindi evitare sovraccarico generale, è stato scelto di modellare il WIS come Observer di:
+				<ul>
+					<li><b>Incinerator</b>: per essere avvisato nel momento in cui l'RP termina di bruciare;</li>
+					<li><b>Scale</b>: per ottenerne il peso misurato;</li>
+					<li><b>Sonar</b>: per ottenerne il valore misurato;</li>
+				</ul>
+			<h4>P10 - Interazione con OpRobot </h4>
+				Come già detto in precedenza, il ruolo del WIS ne i confronti dell'OpRobot è quello, in base allo stato attuale del sistema, di fornirgli indicazioni sulle operazioni da eseguire.<br>
+				Abbiamo detto che la comunicazione tra WIS e OpRobot avviene in modalità Dispatch: affinchè il WIS non invierà un comando all'OpRobot, esso è consapevole che quest'ultimo si troverà in idle. 
+				Sono stati quindi individuati 3 situazioni in cui il WIS invia dei comandi all'OpRobot:
+				<ul>
+					<li>1. Attimo in cui il robot è in HOME e si verifica la <a href="link all'ancora sulla condizione nella descrizione del tema finale">condizione di attivazione</a>;</li>
+					<li>2. Attimo in cui il robot è in attesa dell'Incinerator e quest'ultimo ha terminato il suo compito;</li>
+					<li>3. Attimo in cui il robot ha scaricato le ceneri nell'AshStorage.</li>
+				</ul>
+				Riprendendo i comandi descritti in P5 ed essendo alcuni di loro continuativi, ovvero:
+				<ul>
+					<li>go_burnin si verifica sempre dopo go_wastein</li>
+					<li>go_ashout si verifica sempre dopo go_burnout</li>
+				</ul>
+				potrebbe essere conveniente raggruppare queste coppie di comandi per diminuire l'interazione WIS-OpRobot.
+			<h4>P11 - Interazione con Incenerator </h4>
+				Il WIS, all'avvio del sistema, è incaricato di attivare l'incinerator, inviando il messaggio apposito di attivazione <b>act</b>. E' stato deciso di modellare il messaggio come Dispatch dato che non ci si deve aspettare risposta da parte dell'incinerator.
+				<br>
+				Inoltre, già anticipato in P7, l'Incinerator deve essere notificato dal WIS tramite un apposito comando di notifica in quanto sa quando l'OpRobot ha depositato un RP nella porta BURNIN.<br>
+				Il comando che verrà inviato all'incinerator sarà quindi <b>notifyRp</b>, per indicare che è presente un RP presso la porta BurnIn.
+		</ul>
+		<h3>Logical architecture</h3>
+		<ul>
+			L'attore sonar viene introdotto per simulare il comportamento del vero sonar, senza la sua effettiva realizzazione, che verrà affrontata in SPRINT successivi,
+			In questo modello ha il solo compito di notificare al WIS il livello della cenere nel AshStorage, il wis si aggiornerà di conseguenza, in quanto observer.
+			Stesso approccio è stato utilizzato per l'attore scale.
+		</ul>
+		<h3>Testing</h3>
+		<h3>Deployment</h3>
+		<ul>
+			Per poter provare questo primo prototipo del sistema, occorre eseguire i seguenti componenti nel seguente ordine:
+			<ul>
+				<li><b>VirtualRobot</b>: posizionarsi nella cartella "it.unibo.virtualRobot2023", aprire un terminale e lanciare il comando <i>docker compose -f .\virtualRobot23.yaml up</i></li>
+				<li><b>BasicRobot</b>: posizionarsi nella cartella "unibo.basicrobot24", aprire un terminale e lanciare il comando <i>gradlew run</i></li>
+				<li><b>WasteIncineratorService</b>: posizionarsi nella cartella "Sprint1", aprire un terminale e lanciare il comando <i>gradlew run</i></li>
+			</ul>
+			Il risultato sarà la visualizzazione del robot virtuale che si muove nella stanza, seguendo la logica definita nei requisiti.
+		</ul>
+    </div>
+
+    <div style="background-color:rgba(86, 56, 253, 0.9); width:100%;text-align:left;color:white;padding: 30px;">
+		<div style="display: flex; justify-content: center; gap: 40px; align-items: center; flex-wrap: wrap;">
+			<div>
+				<p><strong>Bostrenghi Matteo</strong><br>
+					matteo.bostrenghi@studio.unibo.it</p>
+				
+				<p><strong>Severini Lorenzo</strong><br>
+					lorenzo.severini5@studio.unibo.it</p>
+			</div>
+			<div>
+				<img src="./img/bostrenghi.png" alt="bostrenghi" style="width:150px; height:auto">
+			</div>
+		
+			<div>
+				<img src="./img/severini.png" alt="severini" style="width:150px; height:auto;">
+			</div>
+
+			<p style="margin-top:20px;">Repository: 
+				<a href="https://github.com/Bostre17/iss24Temafinale" style="color:white;">
+					https://github.com/Bostre17/iss24Temafinale
+				</a>
+			</p>
+		</div>
+		
+		
+		
+	</div>
+
+</body>
+</html>
+

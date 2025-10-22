@@ -154,9 +154,9 @@ task dovesiamo {
 
 distributions {
     main {
-        distributionBaseName = 'sprintzero'
+        distributionBaseName = 'oprobot'
         contents { 
-             from './sprintzero.pl'
+             from './oprobot.pl'
              from './sysRules.pl'
              from './facadeConfig.json'
         }

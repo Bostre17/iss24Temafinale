@@ -5,6 +5,7 @@ dispatch( goHome, goHome(X) ).
 dispatch( bringRP, bringRP(X) ).
 dispatch( bringAsh, bringAsh(X) ).
 dispatch( act, act(X) ).
+dispatch( notifyRp, notifyRp(x) ).
 dispatch( ack, ack(X) ).
 dispatch( atIncinerator, atIncinerator(X) ).
 dispatch( ashDeposited, ashDeposited(X) ).

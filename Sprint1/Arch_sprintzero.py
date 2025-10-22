@@ -41,7 +41,7 @@ with Diagram('sprintzeroArch', show=False, outformat='png', graph_attr=graphattr
      sys >> Edge( label='burnEnd', **evattr, decorate='true', fontcolor='darkgreen') >> wis
      oprobot >> Edge(color='magenta', style='solid', decorate='true', label='<engage<font color="darkgreen"> engagedone engagerefused</font> &nbsp; moverobot<font color="darkgreen"> moverobotdone moverobotfailed</font> &nbsp; >',  fontcolor='magenta') >> basicrobot
      oprobot >> Edge(color='blue', style='solid',  decorate='true', label='<atIncinerator &nbsp; ashDeposited &nbsp; >',  fontcolor='blue') >> wis
-     wis >> Edge(color='blue', style='solid',  decorate='true', label='<act &nbsp; >',  fontcolor='blue') >> incinerator
+     wis >> Edge(color='blue', style='solid',  decorate='true', label='<act &nbsp; notifyRp &nbsp; >',  fontcolor='blue') >> incinerator
      oprobot >> Edge(color='blue', style='solid',  decorate='true', label='<newAsh &nbsp; >',  fontcolor='blue') >> sonarmock
      oprobot >> Edge(color='blue', style='solid',  decorate='true', label='<rpTaken &nbsp; >',  fontcolor='blue') >> scalemock
      wis >> Edge(color='blue', style='solid',  decorate='true', label='<goHome &nbsp; bringRP &nbsp; bringAsh &nbsp; >',  fontcolor='blue') >> oprobot

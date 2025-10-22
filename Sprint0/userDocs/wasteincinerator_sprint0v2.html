@@ -1,0 +1,479 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+    <!--
+<link rel="stylesheet" type="text/css" href="../css/issStyle1.css">
+<script type="text/javascript" src="../css/issStyle.js"></script>
+-->
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/foundation-sites@6.7.4/dist/css/foundation.min.css" crossorigin="anonymous">
+		<script src="https://cdn.jsdelivr.net/npm/foundation-sites@6.7.4/dist/js/foundation.min.js"crossorigin="anonymous"></script> 
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" type="text/css" href="./commons/resources/styles/templateISS.css">
+        <link rel="stylesheet" type="text/css" href="./commons/resources/styles/main.css">
+        <link rel="stylesheet" type="text/css" href="./commons/resources/styles/navbar.css">
+        <link rel="stylesheet" type="text/css" href="./commons/resources/styles/table.css">
+        <link rel="stylesheet" type="text/css" href="./commons/resources/styles/code.css">
+        <link rel="stylesheet" type="text/css" href="./commons/resources/styles/custom.css">
+        <!-- <script type="text/javascript" src="./commons/resources/scripts/myScripts.js"></script> -->
+<style type="text/css">
+body
+{
+    margin-left:  50px;
+    margin-right: 50px;
+};
+
+P
+{
+    font-family: Tahoma;
+    font-size: 10pt;
+};
+
+a, a:visited, a:active, a:link, a:hover {
+    text-decoration: underline;
+    color: #545454;
+    background-color: transparent;
+	font-size: 93%;
+}
+
+a:hover {
+    background-color: #cccccc;
+}
+
+
+hr {
+    clear: both;
+    height: 1px;
+    color: #242424;
+    background-color: transparent;
+}
+
+h1, h2, h3 {
+    color: #242424;
+    clear: left;
+    font: 100% Tahoma, Helvetica, Arial, sans-serif;
+    margin-bottom: 0.5em;
+    padding-top: 0.5em;
+	border-radius: 10px;
+	padding: 5px;
+}
+
+top {
+	width: 100%;
+}
+
+
+#i {
+    color: #ff1010;
+}
+tt{
+	font-family: "Arial";
+    font-size: 90%;
+	color: #006600;
+}
+em{
+	font-family: "Arial";
+    font-size: 80%;
+	font-weight: bold;
+	border-style:solid;
+	border-color: #abe876;
+    color: #1632cc;
+}
+bc{
+	font-family: "Arial";
+	font-size: 90%;
+	font-weight: bold;
+    color: #990000;
+	background-color: #fcf8c7;
+}
+ks{
+	font-family: "Arial";
+	font-weight: bold;
+    color: #0000CD	;
+	font-size: 90%;
+}
+kc{
+	font-family: "Arial";
+	font-weight: bold;
+    color: #008000	;
+	font-size: 90%;
+}
+pre, .formula{
+	font-family: "Consolas";
+	font-size: 85%;
+	background-color: #f5f5f5;
+	border: 1.5px solid silver;
+	padding: 5px;
+}
+m{
+	font-family: "Helvetica";
+	line-height: 100%;
+ 	font-size: 75%;
+}
+div.body{
+	 
+    font-size: 18px;
+}
+k{
+    color: #990000;
+	font-weight: bold;
+	font-size: 90%;
+}
+h1 {
+    font-size: 150%;
+    background-color: #b2c0ff;
+	padding: 10px;
+}
+
+h2 {
+    background-color: #9ed8ff;
+    font-size: 130%;
+}
+
+h3 {
+	background-color: #e6ccff;
+    font-size: 100%;
+}
+h4 {
+    background-color: #ccffcc;
+    font-size: 100%;
+	width: 95%;
+	border-radius: 5px;
+	padding: 2px;
+}
+h5 {
+    background-color: #d5ffb0;
+    font-size: 100%;
+
+}
+div.req{
+	background-color: #d9ffb3;
+    font-size: 18px;
+	width: 700px;
+    border: 3px solid green;
+    padding: 15px;
+    margin: 10px;
+}
+div.remark{
+	background-color: #E3F2FD;
+    border: 1.5px solid #d5f2ed;
+    padding: 15px;
+    margin: 10px;
+	border-radius: 25px;
+}
+table, th, td {
+  border: 1px solid black;
+  border-collapse: collapse;
+}
+
+ol, ul, li {
+  margin: 0;
+  margin-left: 10px;
+  padding: 0;
+  padding-bottom: 5px;
+}
+
+table, th, td {
+	border: 1px solid black;
+}
+
+img {
+	border: 1.5px solid #d5f2ed
+
+}
+
+a, a:visited, a:active, a:link, a:hover {
+    text-decoration: underline;
+    color: #545454;
+    background-color: transparent;
+}
+
+div.wrapdesc{
+	width: 90%;
+	margin: auto;
+}
+
+div.imagedesc{
+	width: 85%;
+	margin: auto;
+}
+
+
+.formula {
+    font-family: monospace;
+    font-weight: bold;
+    color: #007bff; 
+    background-color: #cde8ff; 
+    padding: 1px 4px;
+    border-radius: 3px; 
+    display: inline; 
+    line-height: 1;
+}
+</style>
+    
+ 
+   
+</head>
+	
+		
+  
+
+
+   
+<title>WasteIncineratorService Sprint0.1</title></head>
+    
+<!--
+	<body onload="loadNav();">
+		<div id="openButton" class="openButton" onclick="openNav(true)">&#9776; Menu</div>
+		<div id="sidenav" class="sidenav">
+			<a class="closeButton" href="javascript:void(0)" onclick="closeNav(true)">&times;</a>
+			<a href=".README.html">ReadMe</a>
+			<a class="sprint" href="../../../Sprint0/Codice/userDocs/Cold%20Storage%20Service%20-%20Natali%20V3.html">Sprint0</a>
+			<a class="sprint" href="../../../Sprint1.0/Codice/userDocs/Sprint%201.0%20-%20V3.html">Sprint1.0</a>
+			<a class="sprint" href="../../../Sprint1.1/Codice/userDocs/Sprint%201.1%20-%20V3.html">Sprint1.1</a>
+			<a id="currentSprint" class="sprint" href="#">&#8211;&#8212; Sprint2 &#8212;&#8211;</a>
+			<div class="sidenavSection">
+				<a href="#Goal Sprint 2">Goal Sprint 2</a>
+				<a href="#Requisiti">Requisiti</a>
+				<a href="#Analisi dei Requisiti">Analisi dei Requisiti</a>
+				<a href="#Analisi del Problema">Analisi del Problema</a>
+				<a href="#Test Plan">Test Plan</a>
+				<a href="#Progettazione">Progettazione</a>
+				<a href="#Deployment">Deployment</a>
+			</div>
+			<p class="separator">&mdash;&mdash;&mdash;&ndash;&ndash;&mdash;&mdash;&mdash;</p>
+			<a class="sprint" href="../../../Sprint3/Codice/userDoc/Sprint%203.html">Sprint3</a>
+			<bottom-spacer/>
+		</div>
+-->
+<body>
+    <div id="top">
+        <h1>LABORATORIO DI INGEGNERIA DEI SISTEMI SOFTWARE</h1>
+    </div>  
+
+    <div class="body"> 
+        <h2>Introduction</h2>
+        <p>Il progetto prevede lo sviluppo di un sistema di gestione per un servizio di incenerimento rifiuti (Waste Incinerator Service - WIS),
+        che coordina il movimento dei rifiuti e delle ceneri tramite un robot operatore (OpRobot). <br>
+        Il sistema sarà organizzato in una Service Area con una serie di elementi chiave per la gestione del processo.</p>
+        
+        <h2>Requirements</h2>
+        <p>Per vedere i requisiti visitare la pagina relativa alla richiesta del committente presso <a href="./TemaFinale24.html">TemaFinale24</a>.</p>
+
+        <h2>Requirement Analysis</h2>
+		<p>
+			Per modellare il sistema, avendo la necessità di scambiare messaggi in un ambiente distribuito, è stato scelto di adottare le funzionalità offerte dal linguaggio qak che, grazie al concetto di attore, permette una semplice e agile implementazione.<br>
+			Per approfondire le funzionalità di un attore qak, si rimanda a <a href="./QakActors24.html">QakActors24</a>.</p>
+		<ul>
+		<h3>Service Area</h3>
+		<ul style="padding-left: 30px; padding-right: 30px;">
+			<li>La <b>Service Area</b> è un rettangolo situato in un piano euclideo.</li>
+			<li>All'interno della Service Area sono presenti ostacoli.</li>
+			<li>Il bordo perimetrale ha una lunghezza totale data da <span class="formula">lf + ld + lr + lu</span>, come mostrato in figura.</li>
+			<div style="text-align: center; padding-top: 10px; padding-bottom: 10px;">
+				<img src="_images/ModelloStanza.png" alt="Modello stanza" width="15%">
+			</div>
+			<li>Poiché la stanza ha una forma rettangolare, si ha <span class="formula">lf = lr</span> e <span class="formula">ld = lu</span>. Per comodità, i lati orizzontali verranno indicati con <span class="formula">LO</span> e quelli verticali con <span class="formula">LV</span>.</li>
+			<li>Il DDR robot fornito dal committente ha un ingombro tale da poter essere racchiuso in un cerchio di raggio <span class="formula">R</span>, quindi il suo diametro risulta <span class="formula">DR = 2R</span>.</li>
+		</ul>
+		<div style="text-align: center; padding-top: 10px; padding-bottom: 10px;">
+			<img src="img/WasteIncineratorGrid.jpg" alt="Mappa" width="50%">
+        </div>
+		
+		<ul style="padding-left: 30px; padding-right: 30px;">
+			<li>La service area può essere rappresentata come un sistema cartesiano di coordinate (X, Y) i cui vertici partendo da in alto a sinistra andando in senso orario sono:</li>
+				<ul style="list-style-type: circle; padding-left: 20px;">
+					<li><b>V0(0, 0)</b></li>
+					<li><b>V1(0, LO)</b></li>
+					<li><b>V2(LV, LO)</b></li>
+					<li><b>V3(LV, 0)</b></li>
+				</ul>
+
+		</ul>
+
+		Nella Service Area, sono presenti diverse aree funzionali in cui vengono svolte attività specifiche. Ogni area ha un ruolo definito nel processo di gestione e incenerimento dei rifiuti.<br>
+		Di seguito sono descritti i dettagli relativi a ciascuna area:
+
+		<ul style="padding-left: 30px; padding-right: 30px;">
+			<li><h4>HOME</h4> area di partenza del robot, definita nel piano come uno spazio delimitato dai seguenti quattro punti:
+				<ul style="list-style-type: circle; padding-left: 20px;">
+					<li><b>H0(0, 0)</b></li>
+					<li><b>H1(LHO, 0)</b></li>
+					<li><b>H2(LHO, LHV)</b></li>
+					<li><b>H3(0, LHV)</b></li>
+				</ul>
+				In questa area, il robot è inizialmente in standby, pronto per l'attività.
+			</li>
+			<li><h4>WASTEIN</h4>segmento situato lungo il lato <span class="formula">ld</span>, definito dai vertici:
+				<ul style="list-style-type: circle; padding-left: 20px;">
+					<li><b>(0, LV)</b></li>
+					<li><b>(LW, LV)</b></li>
+				</ul>
+				Dove <span class="formula">LW</span> rappresenta la lunghezza del <b>WasteIn Port</b>, l'ingresso dei rifiuti nella Service Area.
+			</li>
+			<li><h4>ASHOUT</h4> area situata lungo il lato <span class="formula">ld</span>, delimitata dai vertici:
+				<ul style="list-style-type: circle; padding-left: 20px;">
+					<li><b>(LA, LV)</b></li>
+					<li><b>(LO, LV)</b></li>
+				</ul>
+				Questo è il punto di accesso per lo scarico delle ceneri, e la lunghezza della porta di uscita è definita dalla distanza <span class="formula">LO - LA</span>.
+			</li>
+			<li><h4>INCINERATOR</h4> area dove avviene l'incenerimento dei rifiuti. È rappresentata come un rettangolo all'interno della Service Area, definito dai seguenti vertici:
+				<ul style="list-style-type: circle; padding-left: 20px;">
+					<li><b>I0(x1, y1)</b></li>
+					<li><b>I1(x2, y1)</b></li>
+					<li><b>I2(x2, y2)</b></li>
+					<li><b>I3(x1, y2)</b></li>
+				</ul>
+				L'inceneritore ha due ingressi: il <b>BurnIn Port</b>, definito dai vertici I0=(x1, y1) e I3=(x2, y1), e il <b>BurnOut Port</b>, definito dai vertici I1=(x2, y2) e I2=(x1, y2), attraverso i quali i rifiuti vengono trasferiti e le ceneri vengono rilasciate.
+			</li>
+			<li><h4>OBSTACLE</h4> Un ostacolo nel piano, delimitato dai seguenti 4 vertici:
+				<ul style="list-style-type: circle; padding-left: 20px;">
+					<li><b>O0(xo1, yo1)</b></li>
+					<li><b>O1(xo2, yo1)</b></li>
+					<li><b>O2(xo2, yo2)</b></li>
+					<li><b>O3(xo1, yo2)</b></li>
+				</ul>
+				Sebbene non esplicitamente menzionato dal committente, questo ostacolo è visibile nella figura e si trova nelle aree indicate.
+			</li>
+		</ul>
+
+		<br>
+		<h3>WasteStorage e AshStorage</h3>
+		<ul>
+			Nel sistema, WasteStorage e AshStorage rappresentano rispettivamente il magazzino della spazzatura e il deposito delle ceneri.<br>
+			WasteStorage è collegato a Scale, che ne misura la quantità di spazzatura, mentre AshStorage è collegato al Sonar, che ne misura la quantità di cenere. Conoscendo la quantità di spazzatura presente nel WasteStorage ed il peso unitario di un RP è possibile calcolarne le unità presenti.<br>
+			Attraverso un apposito supporto software, sarebbe possibile ottenere lo stato di ogni sensore, il quale verrà registrato dal WIS.
+		</ul>
+		<h3>Incinerator</h3>
+		<ul>
+			L'<b>Incinerator</b> è un'entità che si occupa di bruciare i rifiuti che vengono portati nella WasteIn port.<br>
+			Dalla richiesta del committente si evince che:
+			<ul>
+				<li>Lo stato dell'Incinerator può essere <i>On</i>, <i>Off</i> e <i>Idle</i>.</li>
+				<li>L'inceneritore può trattare un RP alla volta.</li>
+				<li>Il processo di combustione richiede BTIME secondi.</li>
+				<li>WIS e OpRobot dovranno essere notificati a fine incenerimento.</li>
+			Analizzando la richiesta del committente, è obbligo considerare l'Incinerator come entità attiva 
+			in quanto ha necessità, a fine incenerimento, di dover emettere un segnale (acustico o di altro tipo) che può essere percepito dall'OpRobot e dal WIS.<br>
+			Essendo un'entità attiva è quindi modellabile come un attore QAK che, a fine incenermento, notifica le altre entità attraverso un Evento.<br>
+			Inoltre, l'Incinerator deve essere anche in grado di ricevere un segnale di attivazione,  il quale non è stato correttamente definito dal committente, quindi non è possibile un analisi più approfondita. 
+			<!-- mettere link ai file qak-->
+			<div style="text-align: center; padding-top: 10px; padding-bottom: 10px;">
+				<img src="./img/incineratorarch.png" alt="Incinerator arch" width="30%" height="30%">
+			</div>
+			
+			</ul>
+		</ul>
+		<h3>MonitoringDevice</h3>
+		<ul>
+			Il <b>MonitoringDevice</b> è un'entità attiva, quindi modellabile come attore QAK, composta da due componenti:
+			<ul>
+				<li><strong>Sonar:</strong> si occupa di misurare i livelli di cenere dell'AshStorage, utilizzando il sonar fisico fornito dal committente.</li>
+				<li><strong>WarningDevice:</strong> si occupa di allarmare visivamente attraverso l'utilizzo di un led secondo le regole definite dal committente.</li>
+			</ul>
+			Come specificato dai requisiti, sia il sonar che il led sono montati su un RaspberryPI, quindi in un contesto separato da quello del sistema.
+			Esso deve essere in grado di comunicare al WIS lo stato del Sonar, la cui modalità non è stata definito dal committente, quindi non è possibile fare un'analisi più approfondita.
+		</ul>
+		<br>
+		<h3>DDRRobot</h3>
+		<ul>
+			Il <b>DDRRobot</b> è il robot fornito dal committente che permette la rappresentazione fisica dell'OpRobot. Viene rappresentato come un attore autonomo che opera all'interno di un proprio contesto esecutivo. 
+			Per approfondire le sue modalità di interazione e i dettagli tecnici, si può fare riferimento a <a href="BasicRobot24.html">BasicRobot</a>.
+		</ul>
+		<h3>OpRobot</h3>
+		<ul>
+		<p> L'<b>OpRobot</b> esegue nel DDR robot fornito dal committente: è un entità attiva in quanto ha la necessità di ricevere un segnale da parte del ripetitore e, quindi, modellabile come attore QAK.<br>
+			Conosce il concetto di ServiceArea, quindi conosce le posizioni e grandezze dei punti di interesse presenti.<br>
+			Deve essere in grado di ricevere una notifica di fine incenerimento da parte dell'Incinerator in modo da poter adattare il proprio comportamento in funzione dello stato corrente del robot e delle operazioni in corso. 
+			
+			<div style="text-align: center; padding-top: 10px; padding-bottom: 10px;">
+				<img src="./img/oprobotarch.png" alt="OpRobot arch" width="30%" height="30%">
+			</div>
+			<br>
+		</ul>
+		<h3>WasteIncineratorService</h3>
+        <ul>
+			Il <b>WasteIncineratorService (WIS)</b> è un'entità incaricata di mantenere le informazioni sullo stato del sistema.<br>
+			Può essere considerato un'entità attiva, quindi modellabile come attore QAK, in quanto deve:
+			<ul>
+				<li>ricevere informazioni dall'Incinerator riguardo la terminazione dell'incenerimento;</li>
+				<li>comunicare con i supporti software di sonar e scale, ricevendo lo stato di riempimento dell'AshStorage e del peso del WasteStorage.</li>
+			</ul>
+			Il WIS è incaricato, inoltre, di fornire alla ServiceStatusGUI (SSGUI) le informazioni specificate dal committente, quindi:
+			<ul>
+				<li><strong>Stato Incineritor:</strong> il WIS, come già descritto precedentemente, riceve una notifica tramite evento la terminazione dell'incenerimento, ma non è chiaro di come venga a conoscenza dell'azione di inizio.</li>
+				<li><strong>Stato WasteStorage:</strong> numero di RP presenti che, conoscendone il peso unitario ed il peso complessivo, è facilmente calcolabile;</li>
+				<li><strong>Stato AshStorage:</strong> deducibile dalla distanza fornita dal sonar;</li>
+				<li><strong>Stato OpRobot:</strong> come definito dai requisiti, il WIS conosce la posizione esatta dell'OpRobot in qualunque momento e l'azione che esso sta svolgendo.</li>
+			</ul>
+        </ul>
+		<h3>ServiceStatusGUI</h3>
+        <ul>
+			La <b>ServiceStatusGUI</b> rappresenta un componente del sistema dedicato alla visualizzazione dello stato dei principali elementi coinvolti nel processo: WasteStorage, AshStorage, Incinerator e OpRobot.<br>
+			La posizione e l'attività corrente del Robot operativo, informazioni che dai requisiti risultano sempre disponibili, sebbene non sia stata ancora definita in dettaglio la modalità di interazione.<br>
+			In questa fase, la ServiceStatusGUI può essere modellata come un attore che interagisce direttamente con il WIS, lasciando spazio a una successiva formalizzazione più completa nei prossimi Sprint.<br>
+		</ul>
+		<div style="text-align: center; padding-top: 10px; padding-bottom: 10px;">
+			<img src="./img/sprintzeroarch.png" alt="Sprint0 arch" width="30%" height="30%">
+		</div>
+
+		<h3>Test Plan</h3>
+		<ul>
+			L'obiettivo è verificare il corretto comportamento del sistema unicamente osservando le sue interfacce di I/O.
+			<br>
+			In particolare, il test deve accertare che, in presenza di pacchetti in ingresso, dopo un intervallo di tempo superiore a <b>BTIME</b>, venga rilevata cenere in uscita.
+			<br>
+			Nello specifico, se il <B>WasteStorage</b> contiene un numero arbitrario di RP, la quantità di cenere presente nell'<b>AshStorage</b> (supponendo che non ci siano svuotamenti intermedi) deve corrispondere alla quantità equivalente di quei RP.
+			<br>
+			Poiché la documentazione dei requisiti è incompleta, non è stato possibile creare un modello operativo completo e testabile. Di conseguenza, la verifica sperimentale di quanto descritto non è ancora fattibile.
+			Pertanto, la fase di testing effettivo viene posticipata agli stadi successivi del ciclo di progetto.
+		</ul>
+		
+		<h3>Colloquio con committente in data 11/04/2025</h3>
+        <ul>
+			Durante il colloquio con il committente è stato chiarito il ruolo del DDR Robot come entità attiva e quella del WIS come responsabile del core business.
+		</ul>
+
+		<h3>Assegnamento obiettivi Sprint</h3>
+        <ul>
+			Vista la divisione concettuale delineata dallo Sprint0 e confermata dal committente, è stato deciso di organizzare gli Sprint successivi nel seguente modo:
+			<li><b>Sprint 1</b>: sviluppo della prima architettura del core business, in particolare ciò che riguarda WIS, OpRobot e Incinerator.</li>
+			<li><b>Sprint 2</b>: gestione dei dispositivi fisici Sonar, Scale e LED.</li>
+			<li><b>Sprint 3</b>: sviluppo GUI.</li>
+		</ul>
+	</ul>
+		
+		
+    </div>
+
+    <div style="background-color:rgba(86, 56, 253, 0.9); width:100%;text-align:left;color:white;padding: 30px;">
+		<div style="display: flex; justify-content: center; gap: 40px; align-items: center; flex-wrap: wrap;">
+			<div>
+				<p><strong>Bostrenghi Matteo</strong><br>
+					matteo.bostrenghi@studio.unibo.it</p>
+				
+				<p><strong>Severini Lorenzo</strong><br>
+					lorenzo.severini5@studio.unibo.it</p>
+			</div>
+			<div>
+				<img src="./img/bostrenghi.png" alt="bostrenghi" style="width:150px; height:auto">
+			</div>
+		
+			<div>
+				<img src="./img/severini.png" alt="severini" style="width:150px; height:auto;">
+			</div>
+
+			<p style="margin-top:20px;">Repository: 
+				<a href="https://github.com/Bostre17/iss24Temafinale" style="color:white;">
+					https://github.com/Bostre17/iss24Temafinale
+				</a>
+			</p>
+		</div>
+		
+		
+		
+	</div>
+
+</body>
+</html>
+

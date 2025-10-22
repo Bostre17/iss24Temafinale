@@ -3,7 +3,8 @@ System sprintzero
 Dispatch goHome : goHome(X)				// comando da WIS per OpRobot di andare a HOME
 Dispatch bringRP : bringRP(X)			// comando da WIS per OpRobot di andare a prendere RP in WASTEIN e portarlo in BURNIN
 Dispatch bringAsh : bringAsh(X)			// comando da WIS per OpRobot di andare a prendere Ash in BURNOUT e portarlo in ASHOUT
-Dispatch act : act(X)					// comando da WIS a Incinerator (Off = 0, On = 1, Idle = 2)
+Dispatch act : act(X)					// comando di accensione iniziale dell'incinerator
+Dispatch notifyRp : notifyRp(x)			// messaggio di notifica presenza RP presso BURNIN
 Dispatch ack : ack(X)					// messaggio di ack
 
 Dispatch atIncinerator : atIncinerator(X) // messaggio da OpRobot a WIS quando arriva all'incinerator
@@ -67,14 +68,24 @@ QActor incinerator context ctxwis {
 			println("[$name] act letto") color magenta
 		}
 	} 
-	Goto burn if [# state == 1 #] else idle
+	Goto idle
 
-	
 	State idle{
 		println("[$name] idle") color magenta
 	}
-	Transition t0 whenMsg act -> handleAct
+	Transition t0 whenMsg notifyRp -> handleRp
 			
+	State handleRp{
+		//in ricezione di una forward, deve essere raggruppato da onMsg() altrimenti da errore 
+		//	java.lang.IndexOutOfBoundsException: Index 0 out of bounds for length 0
+		onMsg(act : act(X)) {
+			println("[$name] notifyRp ricevuto") color magenta
+			[# state = payloadArg(0).toInt()#]
+			println("[$name] notifyRp letto") color magenta
+		}
+	} 
+	Goto burn
+	
 	State burn{
 		println("[$name] on") color magenta
 		[#
@@ -297,7 +308,6 @@ QActor wis context ctxwis {
 	var incinerator = 0
 	var job = ""
 	var RP=0
-	var INC = 2
 	#]
 	
 	
@@ -309,9 +319,8 @@ QActor wis context ctxwis {
 		subscribeTo sonarmock for stateSonar
 		//subscribeTo oprobot for position
 		
-        //incinerator idle (Off = 0, On = 1, Idle = 2)
         //le variabili inviate devono essere TUTTE MAIUSCOLE e raggruppare in ricezione con onMsg()
-        forward incinerator -m act : act($INC)
+        forward incinerator -m act : act(2)
         println("[$name] sent act to incinerator") color green
         [# incinerator = 2 #]
     }
@@ -361,7 +370,7 @@ QActor wis context ctxwis {
     
     State startIncinerator{
         println("[$name] Incinerator started") color green
-        forward incinerator -m act : act(1)
+        forward incinerator -m notifyRp : notifyRp(X)
         // il robot potrebbe tornare in home da solo senza comando del wis, però se non facessi così tornerebbe ad home istantaneamente, senza scaricare RP (su controllo del WIS)
         forward oprobot -m goHome : goHome(X)
         [# incinerator = 1#]
