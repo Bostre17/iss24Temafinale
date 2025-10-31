@@ -1,14 +1,14 @@
 %====================================================================================
-% sprintzero description   
+% sprintone description   
 %====================================================================================
 dispatch( goHome, goHome(X) ).
-dispatch( bringRP, bringRP(X) ).
-dispatch( bringAsh, bringAsh(X) ).
+request( bringRP, bringRP(X) ).
+request( bringAsh, bringAsh(X) ).
 dispatch( act, act(X) ).
 dispatch( notifyRp, notifyRp(x) ).
 dispatch( ack, ack(X) ).
-dispatch( atIncinerator, atIncinerator(X) ).
-dispatch( ashDeposited, ashDeposited(X) ).
+reply( atIncinerator, atIncinerator(X) ).  %%for bringRP
+reply( ashDeposited, ashDeposited(X) ).  %%for bringAsh
 dispatch( newRp, newRp(X) ).
 dispatch( rpTaken, rpTaken(X) ).
 dispatch( newAsh, newAsh(X) ).

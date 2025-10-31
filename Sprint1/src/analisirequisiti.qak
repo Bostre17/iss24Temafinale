@@ -1,14 +1,14 @@
 System sprintzero
 
 Dispatch goHome : goHome(X)				// comando da WIS per OpRobot di andare a HOME
-Dispatch bringRP : bringRP(X)			// comando da WIS per OpRobot di andare a prendere RP in WASTEIN e portarlo in BURNIN
-Dispatch bringAsh : bringAsh(X)			// comando da WIS per OpRobot di andare a prendere Ash in BURNOUT e portarlo in ASHOUT
+Request bringRP : bringRP(X)			// request da WIS per OpRobot di andare a prendere RP in WASTEIN e portarlo in BURNIN
+Request bringAsh : bringAsh(X)			// comando da WIS per OpRobot di andare a prendere Ash in BURNOUT e portarlo in ASHOUT
 Dispatch act : act(X)					// comando di accensione iniziale dell'incinerator
 Dispatch notifyRp : notifyRp(x)			// messaggio di notifica presenza RP presso BURNIN
 Dispatch ack : ack(X)					// messaggio di ack
 
-Dispatch atIncinerator : atIncinerator(X) // messaggio da OpRobot a WIS quando arriva all'incinerator
-Dispatch ashDeposited : ashDeposited(X)
+Reply atIncinerator : atIncinerator(X)for bringRP // messaggio da OpRobot a WIS quando arriva all'incinerator
+Reply ashDeposited : ashDeposited(X) for bringAsh
 
 Dispatch newRp : newRp(X)
 Dispatch rpTaken : rpTaken(X)			// messaggio per scale
@@ -21,7 +21,7 @@ Dispatch emptyAsh : emptyAsh(X)
 Event burnEnd : burnEnd(BTIME)
 Event stateScale : stateScale(X) 			// messaggio observable update valore scale
 Event stateSonar : stateSonar(X)			// messaggio observable update valore sonar
-//Event position : position(X,Y,J)				// messaggio observable posizione oprobot
+//Event position : position(X,Y,J)			// messaggio observable posizione oprobot
 
 // messaggi conversazione engage tra OpRobot e BasicRobot
 Request  engage : engage(OWNER, STEPTIME)
@@ -200,8 +200,8 @@ QActor oprobot context ctxwis {
         println("[$name] pronto e in attesa in HOME.") color yellow
         [# Job = "Waiting Home" #]
     }
-    Transition t1 whenMsg bringRP -> goWasteIn
-                  whenMsg bringAsh -> goBurnOut
+    Transition t1 whenRequest bringRP -> goWasteIn
+                  whenRequest bringAsh -> goBurnOut
     
     State goWasteIn {
         println("[$name] vado in WasteIn.") color yellow
@@ -230,11 +230,11 @@ QActor oprobot context ctxwis {
     State arrivedToIncinerator {
         println("[$name] sono arrivato all'inceneritore e notifico.") color yellow
         [# Job = "Waiting in BurnIn" #]
-        forward wis -m atIncinerator : atIncinerator(1)
+        replyTo bringRP with atIncinerator : atIncinerator(1)
     }
     Transition t4 whenMsg goHome -> goHome
-                  whenMsg bringAsh -> goBurnOut
-                  whenMsg bringRP -> goWasteIn
+                  whenRequest bringAsh -> goBurnOut
+                  whenRequest bringRP -> goWasteIn
 
    	State goHome {
    		if [# Job != "Waiting Home"#] {
@@ -289,10 +289,10 @@ QActor oprobot context ctxwis {
         println("[$name] arrivato in AshStorage, deposito e notifico.") color yellow
         [# Job = "Depositing Ashes" #]
         forward sonarmock -m newAsh : newAsh(1)
-        forward wis -m ashDeposited : ashDeposited(1)
+        replyTo bringAsh with ashDeposited : ashDeposited(1)
     }
     Transition t8 whenMsg goHome -> goHome
-                  whenMsg bringRP -> goWasteIn
+                  whenRequest bringRP -> goWasteIn
 }
 
 
@@ -359,10 +359,10 @@ QActor wis context ctxwis {
     
     State startRoutine{
     	println("[$name] start routine") color green
-    	forward oprobot -m bringRP : bringRP(X)
+    	request oprobot -m bringRP : bringRP(X)
     }
     Transition t0
-    	whenMsg atIncinerator -> startIncinerator
+    	whenReply atIncinerator -> startIncinerator
 		whenInterruptEvent stateScale -> handleStateScale
 		whenInterruptEvent stateSonar -> handleStateSonar
 		//whenInterruptEvent position -> handleRobotPosition
@@ -383,14 +383,14 @@ QActor wis context ctxwis {
 	
 	State endIncinerator{
         println("[$name] incinerator is now idle") color green
-        forward oprobot -m bringAsh : bringAsh(X)
+        request oprobot -m bringAsh : bringAsh(X)
     	[# 
     		incinerator = 2
     	#]
 
 	}
 	Transition t0
-		whenMsg ashDeposited -> verifyCondition
+		whenReply ashDeposited -> verifyCondition
 		whenInterruptEvent stateScale -> handleStateScale
 		whenInterruptEvent stateSonar -> handleStateSonar
 		//whenInterruptEvent position -> handleRobotPosition

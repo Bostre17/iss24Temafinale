@@ -57,8 +57,8 @@ class Oprobot ( name: String, scope: CoroutineScope, isconfined: Boolean=false  
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t114",targetState="goWasteIn",cond=whenDispatch("bringRP"))
-					transition(edgeName="t115",targetState="goBurnOut",cond=whenDispatch("bringAsh"))
+					 transition(edgeName="t114",targetState="goWasteIn",cond=whenRequest("bringRP"))
+					transition(edgeName="t115",targetState="goBurnOut",cond=whenRequest("bringAsh"))
 				}	 
 				state("goWasteIn") { //this:State
 					action { //it:State
@@ -96,15 +96,15 @@ class Oprobot ( name: String, scope: CoroutineScope, isconfined: Boolean=false  
 					action { //it:State
 						CommUtils.outyellow("[$name] sono arrivato all'inceneritore e notifico.")
 						 Job = "Waiting in BurnIn"  
-						forward("atIncinerator", "atIncinerator(1)" ,"wis" ) 
+						answer("bringRP", "atIncinerator", "atIncinerator(1)"   )  
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
 					 transition(edgeName="t420",targetState="goHome",cond=whenDispatch("goHome"))
-					transition(edgeName="t421",targetState="goBurnOut",cond=whenDispatch("bringAsh"))
-					transition(edgeName="t422",targetState="goWasteIn",cond=whenDispatch("bringRP"))
+					transition(edgeName="t421",targetState="goBurnOut",cond=whenRequest("bringAsh"))
+					transition(edgeName="t422",targetState="goWasteIn",cond=whenRequest("bringRP"))
 				}	 
 				state("goHome") { //this:State
 					action { //it:State
@@ -178,14 +178,14 @@ class Oprobot ( name: String, scope: CoroutineScope, isconfined: Boolean=false  
 						CommUtils.outyellow("[$name] arrivato in AshStorage, deposito e notifico.")
 						 Job = "Depositing Ashes"  
 						forward("newAsh", "newAsh(1)" ,"sonarmock" ) 
-						forward("ashDeposited", "ashDeposited(1)" ,"wis" ) 
+						answer("bringAsh", "ashDeposited", "ashDeposited(1)"   )  
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
 					 transition(edgeName="t829",targetState="goHome",cond=whenDispatch("goHome"))
-					transition(edgeName="t830",targetState="goWasteIn",cond=whenDispatch("bringRP"))
+					transition(edgeName="t830",targetState="goWasteIn",cond=whenRequest("bringRP"))
 				}	 
 			}
 		}

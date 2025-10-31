@@ -278,24 +278,22 @@ div.imagedesc{
 
 			<h4>P3 - Accesso alla mappa</h4>
 			Un aspetto da chiarire riguarda chi debba effettivamente accedere alla mappa: il DDRRobot, l'OpRobot o il WIS. 
-			Analizzando il software di base (BasicRobot), si osserva che il modulo planner ha già una conoscenza interna della mappa.
+			Analizzando il software di base (BasicRobot), si osserva che uno specifico attore, denominato "Planner", ha già una conoscenza interna della mappa.
 			Per evitare modifiche al codice esistente, si è deciso che la gestione della mappa rimarrà a carico del planner.
 			Tuttavia, l'Oprobot continuerà a conoscere le posizioni chiave come WASTEIN, WASTEOUT, BURNIN etc.
 
 			<h4>P4 - Planner</h4>
 			Dato un punto di partenza, il robot deve individuare un percorso che lo conduca alla posizione di destinazione sulla mappa.
-			E' necessario definire una logica che consenta di determinare dinamicamente la sequenza di mosse da compiere a partire dalla posizione corrente del robot: questa logica è implementata all'interno di un modulo denominato planner, il quale viene interrogato dall'OpRobot per calcolare il percorso corretto verso la destinazione.
+			E' necessario definire una logica che consenta di determinare dinamicamente la sequenza di mosse da compiere a partire dalla posizione corrente del robot: questa logica è implementata dunque dall'attore introdotto precedentemente, ovvero il planner, il quale viene interrogato dall'OpRobot per calcolare il percorso corretto verso la destinazione.
 			
-			<h4>P5 - Interazione con il WIS</h4>
-				Dall'analisi dei requisiti emerge la necessità di un sistema di comunicazione basato su messaggi per assegnare compiti specifici all'OpRobot.<br>
-				A primo impatto sorge l'idea di proporre un'architettura Request-Reply: il WIS invia una "Request" all'OpRobot per avviare un'attività, e l'OpRobot risponde con una "Reply" 
-				a compito ultimato. Questo approccio con una singola Reply finale eliminerebbe la necessità per il WIS di monitorare continuamente lo stato del task (polling).
-				Questo approccio però, nel complesso, non è conveniente in quanto sincrono: quando il WIS invia una richiesta all'OpRobot, esso deve fermarsi in attesa di risposta di quest'ultimo.
-				Una soluzione a questo problema è quella di renderla asincrona attraverso una comunicazione di tipo "Dispatch" in modo tale che il WIS possa continuare ad effettuare altre operazioni.
-				Dato che questi scambi avvengono tra componenti specifici del sistema, l'uso di Eventi generalizzati non è considerato vantaggioso. 
-				Si raccomanda quindi l'adozione del Dispatch per tutte le interazioni tra WIS e OpRobot relative alle operazioni di recupero e deposito di 
-				RP e Ash, nonché per il comando di ritorno alla postazione "HOME".
-				A tal proposito, dato che la mappa risiede nell'OpRobot, basterebbe che il WIS comunichi ad esso di andare in un determinato luogo della service area tramite l'utilizzo di appositi comandi, nello specifico:
+			<h4>P5 - Meccanismo di comunicazione WIS-OpRobot</h4>
+			
+				Dall'analisi dei requisiti emerge la necessità di un sistema di comunicazione basato su messaggi per assegnare compiti specifici all'OpRobot.
+				A primo impatto potrebbe sorgere l'idea di proporre un'architettura Request-Reply. Questo approccio, tuttavia, non è conveniente in quanto aggiungerebbe una ulteriore complessità: richiederebbe che l'OpRobot invii una Reply al completamento del compito e che il WIS sia predisposto a gestire sempre tale messaggio di risposta, anche quando l'esito non è cruciale per il suo flusso di lavoro immediato.
+				Si propone l'adozione di un paradigma di comunicazione asincrono e "Fire and Forget", implementato tramite il meccanismo di Dispatch.
+				Il modello "Fire and Forget" è ideale per le operazioni di delega in cui il WIS ha la sola responsabilità di avviare l'azione. Questo garantisce la massima de-accoppiamento tra i due componenti e semplifica notevolmente il protocollo di comunicazione. Il WIS invia il comando e può immediatamente continuare ad effettuare altre operazioni.
+				Dato che questi scambi avvengono tra componenti specifici del sistema (WIS e OpRobot), l'uso di Eventi generalizzati non è considerato vantaggioso.
+				Si raccomanda, in prima analisi, l'adozione del Dispatch per tutte le interazioni tra WIS e OpRobot, utilizzando comandi che specificano la destinazione finale, data la residenza della mappa nell'OpRobot. I comandi di movimento proposti sono:				
 				<ul>
 					<li>go_home</li>
 					<li>go_wastein</li>
@@ -303,7 +301,6 @@ div.imagedesc{
 					<li>go_burnout</li>
 					<li>go_ashout</li>
 				</ul>
-
 		</ul>
 
 
@@ -350,21 +347,29 @@ div.imagedesc{
 					<li><b>Scale</b>: per ottenerne il peso misurato;</li>
 					<li><b>Sonar</b>: per ottenerne il valore misurato;</li>
 				</ul>
-			<h4>P10 - Interazione con OpRobot </h4>
-				Come già detto in precedenza, il ruolo del WIS ne i confronti dell'OpRobot è quello, in base allo stato attuale del sistema, di fornirgli indicazioni sulle operazioni da eseguire.<br>
-				Abbiamo detto che la comunicazione tra WIS e OpRobot avviene in modalità Dispatch: affinchè il WIS non invierà un comando all'OpRobot, esso è consapevole che quest'ultimo si troverà in idle. 
-				Sono stati quindi individuati 3 situazioni in cui il WIS invia dei comandi all'OpRobot:
+			<h4>P10 - Analisi delle sequenze di comunicazione WIS-OpRobot</h4>
+				Come già detto, il ruolo del WIS nei confronti dell'OpRobot è quello, in base allo stato attuale del sistema, di fornirgli indicazioni sulle operazioni da eseguire.
+				Abbiamo stabilito che la comunicazione tra WIS e OpRobot avviene primariamente in modalità Dispatch ("Fire and Forget"). Affinché il WIS invii un comando all'OpRobot, esso è consapevole che quest'ultimo si troverà in idle.
+				Sono stati individuati tre momenti critici in cui il WIS invia dei comandi all'OpRobot per avviare nuove attività:
 				<ul>
 					<li>1. Attimo in cui il robot è in HOME e si verifica la <a href="link all'ancora sulla condizione nella descrizione del tema finale">condizione di attivazione</a>;</li>
 					<li>2. Attimo in cui il robot è in attesa dell'Incinerator e quest'ultimo ha terminato il suo compito;</li>
 					<li>3. Attimo in cui il robot ha scaricato le ceneri nell'AshStorage.</li>
 				</ul>
-				Riprendendo i comandi descritti in P5 ed essendo alcuni di loro continuativi, ovvero:
+				Riprendendo i comandi descritti in P5 ed essendo alcuni di loro continuativi, potrebbe essere conveniente raggruppare queste coppie di comandi per diminuire l'interazione WIS-OpRobot, ovvero:
 				<ul>
-					<li>go_burnin si verifica sempre dopo go_wastein</li>
-					<li>go_ashout si verifica sempre dopo go_burnout</li>
+					<li><b>go_burnin</b> si verifica sempre dopo <b>go_wastein</b> -> <b>bring_rp</b></li>
+					<li><b>go_ashout</b> si verifica sempre dopo <b>go_burnout</b> -> <b>bring_ash</b></li>
 				</ul>
-				potrebbe essere conveniente raggruppare queste coppie di comandi per diminuire l'interazione WIS-OpRobot.
+				Inoltre, dall'analisi del problema, sono emersi dei momenti in cui il WIS si aspetta un messaggio da parte dell'OpRobot a compito terminato: questi messaggi coincidono con la fine delle operazioni che sono state raggruppate e descritte sopra.
+				Per queste operazioni, avendo la necessità di una risposta da parte dell'OpRobot, è stato deciso di abbandonare il modello Dispatche e adottare il paradigma Request-Reply, garantendo che il WIS riceva la conferma di completamento necessaria per la sua logica.
+				Il set di comandi che il WIS invia all'OpRobot è quindi qualificato come segue:
+				<ul>
+					<li><b>go_home:</b> mantiene il paradigma <b>Dispatch</b>, poiché il ritorno alla postazione base è un comando terminale che non richiede una risposta specifica per il coordinamento;</li>
+					<li><b>bring_rp:</b> cambio in paradigma <b>Request-Reply</b> in quanto il WIS si aspetta una notifica da parte dell'OpRobot alla consegna dell'RP all'Incinerator;</li>
+					<li><b>bring_ash:</b> cambio in paradigma <b>Request-Reply</b> in quanto il WIS si aspetta una notifica da parte dell'OpRobot al deposito di Ashes.</li>
+				</ul>
+				
 			<h4>P11 - Interazione con Incenerator </h4>
 				Il WIS, all'avvio del sistema, è incaricato di attivare l'incinerator, inviando il messaggio apposito di attivazione <b>act</b>. E' stato deciso di modellare il messaggio come Dispatch dato che non ci si deve aspettare risposta da parte dell'incinerator.
 				<br>

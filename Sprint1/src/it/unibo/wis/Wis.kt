@@ -95,13 +95,13 @@ class Wis ( name: String, scope: CoroutineScope, isconfined: Boolean=false  ) : 
 				state("startRoutine") { //this:State
 					action { //it:State
 						CommUtils.outgreen("[$name] start routine")
-						forward("bringRP", "bringRP(X)" ,"oprobot" ) 
+						request("bringRP", "bringRP(X)" ,"oprobot" )  
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t033",targetState="startIncinerator",cond=whenDispatch("atIncinerator"))
+					 transition(edgeName="t033",targetState="startIncinerator",cond=whenReply("atIncinerator"))
 					interrupthandle(edgeName="t034",targetState="handleStateScale",cond=whenEvent("stateScale"),interruptedStateTransitions)
 					interrupthandle(edgeName="t035",targetState="handleStateSonar",cond=whenEvent("stateSonar"),interruptedStateTransitions)
 				}	 
@@ -123,7 +123,7 @@ class Wis ( name: String, scope: CoroutineScope, isconfined: Boolean=false  ) : 
 				state("endIncinerator") { //this:State
 					action { //it:State
 						CommUtils.outgreen("[$name] incinerator is now idle")
-						forward("bringAsh", "bringAsh(X)" ,"oprobot" ) 
+						request("bringAsh", "bringAsh(X)" ,"oprobot" )  
 						 
 						    		incinerator = 2
 						//genTimer( actor, state )
@@ -131,7 +131,7 @@ class Wis ( name: String, scope: CoroutineScope, isconfined: Boolean=false  ) : 
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t039",targetState="verifyCondition",cond=whenDispatch("ashDeposited"))
+					 transition(edgeName="t039",targetState="verifyCondition",cond=whenReply("ashDeposited"))
 					interrupthandle(edgeName="t040",targetState="handleStateScale",cond=whenEvent("stateScale"),interruptedStateTransitions)
 					interrupthandle(edgeName="t041",targetState="handleStateSonar",cond=whenEvent("stateSonar"),interruptedStateTransitions)
 				}	 
