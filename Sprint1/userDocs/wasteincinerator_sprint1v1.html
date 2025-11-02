@@ -386,6 +386,14 @@ div.imagedesc{
 			</div>
 		</ul>
 		<h3>Test Plan</h3>
+		<p>
+			Per poter effettuare un piano di testing automatizzato si è deciso di sfruttare JUnit avviabile atttraverso Gradle.
+			Di seguito sono elencati i test implementati per verificare il corretto funzionamento del sistema secondo i requisiti specificati
+			<ul>
+				<li>Il primo test, testSuccessfulRun, è un test di pura osservazione. In pratica, si fida del fatto che il tuo sistema QAK sia progettato per funzionare da solo (come in effetti è).</li>
+				<li>Il secondo test, testAshStorageFull, è un test attivo che simula uno scenario problematico. Vuole verificare che il wis sia abbastanza intelligente da non avviare il lavoro se il deposito delle ceneri è pieno.</li>
+				Il tutto attraverso dei "mock" che simulano il comportamento di componenti esterni.
+			</ul>
 		<h3>Deployment</h3>
 		<ul>
 			Per poter provare questo primo prototipo del sistema, occorre eseguire i seguenti componenti nel seguente ordine:
