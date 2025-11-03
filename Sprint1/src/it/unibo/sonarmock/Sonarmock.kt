@@ -27,7 +27,7 @@ class Sonarmock ( name: String, scope: CoroutineScope, isconfined: Boolean=false
 	}
 	override fun getBody() : (ActorBasicFsm.() -> Unit){
 		//val interruptedStateTransitions = mutableListOf<Transition>()
-		var DISTANCE=200 
+			var DISTANCE=200
 		return { //this:ActionBasciFsm
 				state("s0") { //this:State
 					action { //it:State
@@ -46,9 +46,6 @@ class Sonarmock ( name: String, scope: CoroutineScope, isconfined: Boolean=false
 				state("handleNewAsh") { //this:State
 					action { //it:State
 						DISTANCE = DISTANCE - 60 
-						if(  DISTANCE < 0 
-						 ){ DISTANCE = 0 
-						}
 						CommUtils.outred("[$name] stateSonar updated a $DISTANCE.")
 						emitLocalStreamEvent("stateSonar", "stateSonar($DISTANCE)" ) 
 						//genTimer( actor, state )

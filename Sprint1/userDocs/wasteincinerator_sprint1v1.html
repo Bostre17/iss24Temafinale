@@ -386,14 +386,16 @@ div.imagedesc{
 			</div>
 		</ul>
 		<h3>Test Plan</h3>
-		<p>
+		<ul>
 			Per poter effettuare un piano di testing automatizzato si è deciso di sfruttare JUnit avviabile atttraverso Gradle.
 			Di seguito sono elencati i test implementati per verificare il corretto funzionamento del sistema secondo i requisiti specificati
 			<ul>
-				<li>Il primo test, testSuccessfulRun, è un test di pura osservazione. In pratica, si fida del fatto che il tuo sistema QAK sia progettato per funzionare da solo (come in effetti è).</li>
-				<li>Il secondo test, testAshStorageFull, è un test attivo che simula uno scenario problematico. Vuole verificare che il wis sia abbastanza intelligente da non avviare il lavoro se il deposito delle ceneri è pieno.</li>
+				<!--<ol><b>testSuccessfulRun</b>, è un test di pura osservazione. In pratica, si fida del fatto che il tuo sistema QAK sia progettato per funzionare da solo (come in effetti è).</ol>-->
+				<ol><b>testSingleRp:</b> verifica che all'ingresso nel sistema di un RP, consista nell'uscita di una certa quantità fissa di Ashes, corrispondenti ad un RP.</ol>
+				<ol><b>testLimitRp:</b> il WIS deve bloccare l'avvio del ciclo di incenerimento per ogni unità di RP che eccederebbe la capacità massima dell'Ash Storage (simulata come satura dopo N RP incenerite), mantenendo tale RP in stato di attesa.</ol>
 				Il tutto attraverso dei "mock" che simulano il comportamento di componenti esterni.
 			</ul>
+		</ul>
 		<h3>Deployment</h3>
 		<ul>
 			Per poter provare questo primo prototipo del sistema, occorre eseguire i seguenti componenti nel seguente ordine:

@@ -84,10 +84,11 @@ public class WISSprint1Test {
 			CommUtils.outcyan("CONNECTED to wis " + connSupport);
 		}
 	}
-
 	@Test
 	public void testSuccessfulRun() {
 		try {
+
+			IApplMessage reqNewRp  = CommUtils.buildDispatch("tester", "newRp", "newRp(1)", "scalemock");
 			
 			CommUtils.outmagenta("testSuccessfulRun =======================================");
 			CommUtils.outmagenta("Test is observational: waiting for the autonomous QAK system to run...");

@@ -28,7 +28,7 @@ class Wis ( name: String, scope: CoroutineScope, isconfined: Boolean=false  ) : 
 	override fun getBody() : (ActorBasicFsm.() -> Unit){
 		//val interruptedStateTransitions = mutableListOf<Transition>()
 		
-			val DLIMT = 5
+			val DLIMT = 40
 			var wasteStorageWeight=0
 			var ashStorageLevel = 0
 			var posX = 0

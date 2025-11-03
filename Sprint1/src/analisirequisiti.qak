@@ -138,7 +138,8 @@ QActor scalemock context ctxwis {
 
 //-------------------------- Mocks --------------------------
 QActor sonarmock context ctxwis{
-    [#var DISTANCE=200#]
+    [#	var DISTANCE=200
+    	 	#]
     State s0 initial{
         println("[$name] inizializzazione.") color red
 		delay 5000
@@ -150,10 +151,6 @@ QActor sonarmock context ctxwis{
 
     State handleNewAsh{
         [#DISTANCE = DISTANCE - 60#]
-        if [# DISTANCE < 0#]
-        {
-            [# DISTANCE = 0#]
-        }
 		println("[$name] stateSonar updated a $DISTANCE.") color red
         emitlocalstream stateSonar : stateSonar($DISTANCE)
     }
@@ -300,7 +297,7 @@ QActor oprobot context ctxwis {
 
 QActor wis context ctxwis {
 	[#
-	val DLIMT = 5
+	val DLIMT = 40
 	var wasteStorageWeight=0
 	var ashStorageLevel = 0
 	var posX = 0
