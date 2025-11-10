@@ -37,7 +37,7 @@ public class WISSprint1Test {
 						if ( s != null ) ColorsOut.outappl( s, color );
 					}
 				} catch (IOException e) {
-					// e.printStackTrace();
+					// e.printStackTrace(); // Rimosso per non sporcare il log quando si chiude il processo
 				}
 			}
 		}.start();
@@ -84,11 +84,44 @@ public class WISSprint1Test {
 			CommUtils.outcyan("CONNECTED to wis " + connSupport);
 		}
 	}
+
+	@Test(timeout = 40000) // Timeout di 40 secondi
+    public void testSuccessfulRunAndAshProduction() {
+        CommUtils.outmagenta("--- TEST: testSuccessfulRunAndAshProduction (con Timeout 40s) ---");
+        try {
+            connect();
+            CommUtils.outmagenta("Invio richiesta al testobserver: aspetto che la distanza diventi 140...");
+
+            // Valore iniziale 200, dopo 1 ciclo -60 = 140
+            String expectedDistance = "140"; 
+            IApplMessage req = CommUtils.buildRequest("junit", "startTest", "startTest(" + expectedDistance + ")", "testobserver");
+
+            // Invio la richiesta e rimango bloccato in attesa della risposta
+            // Se il QAK non risponde (a causa di un bug) il timeout scadrà.
+            IApplMessage reply = connSupport.request(req);
+
+            CommUtils.outmagenta("Risposta ricevuta: " + reply.msgContent());
+
+            // ASSERT: Verifico che il testobserver abbia confermato il risultato
+            assertEquals("testReply(ok)", reply.msgContent());
+
+        } catch (Exception e) {
+            CommUtils.outred("testSuccessfulRun ERROR " + e.getMessage());
+            // Se il timeout scade, l'eccezione sarà org.junit.runners.model.TestTimedOutException
+            fail("Test fallito (possibile timeout o errore QAK): " + e.getMessage());
+        }
+    }
+	
 	@Test
 	public void testSuccessfulRun() {
 		try {
-
-			IApplMessage reqNewRp  = CommUtils.buildDispatch("tester", "newRp", "newRp(1)", "scalemock");
+			// MODIFICA: Questo test ora è puramente osservazionale.
+			// Il sistema QAK è autonomo: i mock 'scalemock' e 'sonarmock'
+			// si attiveranno da soli dopo i loro delay (10s e 5s) e 
+			// invieranno gli eventi a cui il 'wis' è iscritto.
+			
+			// Le condizioni (RP=2, AshLevel=200, DLIMT=5) saranno
+			// verificate e la routine dovrebbe partire da sola.
 			
 			CommUtils.outmagenta("testSuccessfulRun =======================================");
 			CommUtils.outmagenta("Test is observational: waiting for the autonomous QAK system to run...");
@@ -101,9 +134,11 @@ public class WISSprint1Test {
 			CommUtils.outred("testSuccessfulRun ERROR " + e.getMessage());
 		}
 	}
-
+	
 	@Test
 	public void testAshStorageFull() {
+		// MODIFICA: Questo test ora interagisce con il 'sonarmock' per 
+		// forzare lo stato di "Ash Storage Pieno" prima che il 'scalemock' si attivi.
 		
 		// Il DLIMT è 5. Il sonarmock parte da 200. Ogni 'newAsh' toglie 60.
 		// 200 -> 140 -> 80 -> 20 -> -40 (poi 0).
@@ -140,4 +175,6 @@ public class WISSprint1Test {
 			fail("testRequest " + e.getMessage());
 		}
 	}
+	
+	
 }

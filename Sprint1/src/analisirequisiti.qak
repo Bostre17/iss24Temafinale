@@ -33,7 +33,8 @@ Request moverobot : moverobot(X,Y)
 Reply moverobotdone : moverobotdone(X) for moverobot
 Reply moverobotfailed : moverobotfailed(X) for moverobot
 
-
+Request startTest : startTest(PAYLOAD)
+Reply testReply : testReply(RESULT) for startTest
 
 
 Context ctxwis ip [host="localhost" port=8001]
@@ -429,4 +430,37 @@ QActor wis context ctxwis {
 		returnFromInterrupt
     }
     */
+    
+    
+}QActor testobserver context ctxwis {
+    [# var ExpectedDistance = -1 #]
+
+    State s0 initial {
+        println("[$name] in attesa di comandi di test...") color cyan
+        subscribeTo sonarmock for stateSonar
+    }
+    Transition t0 whenRequest startTest -> handleTestRequest
+
+    State handleTestRequest {
+        onMsg(startTest : startTest(PAYLOAD)) {
+            [# ExpectedDistance = payloadArg(0).toInt() #]
+            println("[$name] Test avviato. Attendo che la distanza diventi $ExpectedDistance") color cyan
+        }
+    }
+    Transition t1 whenEvent stateSonar -> checkSonarValue
+
+    State checkSonarValue {
+        printCurrentMessage
+        onMsg(stateSonar : stateSonar(D)) {
+            [# val CurrentDistance = payloadArg(0).toInt() #]
+            println("[$name] Ricevuto evento sonar: $CurrentDistance. Atteso: $ExpectedDistance") color cyan
+
+            if [# CurrentDistance == ExpectedDistance #] {
+                replyTo startTest with testReply : testReply(ok)
+            } else {
+                replyTo startTest with testReply : testReply(ko)
+            }
+        }
+    }
+    Goto s0 
 }
