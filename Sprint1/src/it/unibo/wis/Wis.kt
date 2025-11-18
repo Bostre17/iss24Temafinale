@@ -63,14 +63,14 @@ class Wis ( name: String, scope: CoroutineScope, isconfined: Boolean=false  ) : 
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t031",targetState="verifyCondition",cond=whenEvent("stateScale"))
-					transition(edgeName="t032",targetState="verifyCondition",cond=whenEvent("stateSonar"))
+					 transition(edgeName="t033",targetState="verifyCondition",cond=whenEvent("stateScale"))
+					transition(edgeName="t034",targetState="verifyCondition",cond=whenEvent("stateSonar"))
 				}	 
 				state("verifyCondition") { //this:State
 					action { //it:State
 						CommUtils.outcyan("$name in ${currentState.stateName} | $currentMsg | ${Thread.currentThread().getName()} n=${Thread.activeCount()}")
 						 	   
-						CommUtils.outblack("[DEBUG $name] RP=$RP, incineratorState=$incinerator, ashStorageLevel=$ashStorageLevel")
+						CommUtils.outblack("[$name] RP=$RP, incineratorState=$incinerator, ashStorageLevel=$ashStorageLevel")
 						if( checkMsgContent( Term.createTerm("stateSonar(X)"), Term.createTerm("stateSonar(X)"), 
 						                        currentMsg.msgContent()) ) { //set msgArgList
 								 ashStorageLevel = payloadArg(0).toInt()  
@@ -101,9 +101,9 @@ class Wis ( name: String, scope: CoroutineScope, isconfined: Boolean=false  ) : 
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t033",targetState="startIncinerator",cond=whenReply("atIncinerator"))
-					interrupthandle(edgeName="t034",targetState="handleStateScale",cond=whenEvent("stateScale"),interruptedStateTransitions)
-					interrupthandle(edgeName="t035",targetState="handleStateSonar",cond=whenEvent("stateSonar"),interruptedStateTransitions)
+					 transition(edgeName="t035",targetState="startIncinerator",cond=whenReply("atIncinerator"))
+					interrupthandle(edgeName="t036",targetState="handleStateScale",cond=whenEvent("stateScale"),interruptedStateTransitions)
+					interrupthandle(edgeName="t037",targetState="handleStateSonar",cond=whenEvent("stateSonar"),interruptedStateTransitions)
 				}	 
 				state("startIncinerator") { //this:State
 					action { //it:State
@@ -116,9 +116,9 @@ class Wis ( name: String, scope: CoroutineScope, isconfined: Boolean=false  ) : 
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t036",targetState="endIncinerator",cond=whenEvent("burnEnd"))
-					interrupthandle(edgeName="t037",targetState="handleStateScale",cond=whenEvent("stateScale"),interruptedStateTransitions)
-					interrupthandle(edgeName="t038",targetState="handleStateSonar",cond=whenEvent("stateSonar"),interruptedStateTransitions)
+					 transition(edgeName="t038",targetState="endIncinerator",cond=whenEvent("burnEnd"))
+					interrupthandle(edgeName="t039",targetState="handleStateScale",cond=whenEvent("stateScale"),interruptedStateTransitions)
+					interrupthandle(edgeName="t040",targetState="handleStateSonar",cond=whenEvent("stateSonar"),interruptedStateTransitions)
 				}	 
 				state("endIncinerator") { //this:State
 					action { //it:State
@@ -131,9 +131,9 @@ class Wis ( name: String, scope: CoroutineScope, isconfined: Boolean=false  ) : 
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t039",targetState="verifyCondition",cond=whenReply("ashDeposited"))
-					interrupthandle(edgeName="t040",targetState="handleStateScale",cond=whenEvent("stateScale"),interruptedStateTransitions)
-					interrupthandle(edgeName="t041",targetState="handleStateSonar",cond=whenEvent("stateSonar"),interruptedStateTransitions)
+					 transition(edgeName="t041",targetState="verifyCondition",cond=whenReply("ashDeposited"))
+					interrupthandle(edgeName="t042",targetState="handleStateScale",cond=whenEvent("stateScale"),interruptedStateTransitions)
+					interrupthandle(edgeName="t043",targetState="handleStateSonar",cond=whenEvent("stateSonar"),interruptedStateTransitions)
 				}	 
 				state("handleStateSonar") { //this:State
 					action { //it:State

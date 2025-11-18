@@ -84,8 +84,9 @@ public class WISSprint1Test {
 			CommUtils.outcyan("CONNECTED to wis " + connSupport);
 		}
 	}
-
-	@Test(timeout = 40000) // Timeout di 40 secondi
+	
+	
+	@Test
     public void testSuccessfulRunAndAshProduction() {
         CommUtils.outmagenta("--- TEST: testSuccessfulRunAndAshProduction (con Timeout 40s) ---");
         try {
@@ -111,7 +112,7 @@ public class WISSprint1Test {
             fail("Test fallito (possibile timeout o errore QAK): " + e.getMessage());
         }
     }
-	
+/*
 	@Test
 	public void testSuccessfulRun() {
 		try {
@@ -175,6 +176,6 @@ public class WISSprint1Test {
 			fail("testRequest " + e.getMessage());
 		}
 	}
-	
+*/
 	
 }

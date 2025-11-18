@@ -47,6 +47,7 @@ ExternalQActor basicrobot context ctxbasicrobot
 
 
 
+
 //--------------------------Incinerator-----------------------------
 
 QActor incinerator context ctxwis {
@@ -166,6 +167,39 @@ QActor sonarmock context ctxwis{
                     whenMsg emptyAsh -> handleEmptyAsh
 }
 
+
+QActor testobserver context ctxwis {
+    [# var ExpectedDistance = -1 #]
+
+    State s0 initial {
+        println("[$name] in attesa di comandi di test...") color cyan
+        subscribeTo sonarmock for stateSonar
+    }
+    Transition t0 whenRequest startTest -> handleTestRequest
+
+    State handleTestRequest {
+        onMsg(startTest : startTest(PAYLOAD)) {
+            [# ExpectedDistance = payloadArg(0).toInt() #]
+            println("[$name] Test avviato. Attendo che la distanza diventi $ExpectedDistance") color cyan
+        }
+    }
+    Transition t1 whenEvent stateSonar -> checkSonarValue
+
+    State checkSonarValue {
+        printCurrentMessage
+        onMsg(stateSonar : stateSonar(D)) {
+            [# val CurrentDistance = payloadArg(0).toInt() #]
+            println("[$name] Ricevuto evento sonar: $CurrentDistance. Atteso: $ExpectedDistance") color cyan
+
+            if [# CurrentDistance == ExpectedDistance #] {
+                replyTo startTest with testReply : testReply(ok)
+            } else {
+                replyTo startTest with testReply : testReply(ko)
+            }
+        }
+    }
+    Goto s0 
+}
 
 //cambiamenti al robot per limitare comunicazione con wis, passo at incinerator senza variabile X ma solo per conferma.
 //giusto per comunicare che l'azione è  stata effettuata
@@ -339,7 +373,7 @@ QActor wis context ctxwis {
 	
 	State verifyCondition{
 		printCurrentMessage
-		println("[DEBUG $name] RP=$RP, incineratorState=$incinerator, ashStorageLevel=$ashStorageLevel")
+		println("[$name] RP=$RP, incineratorState=$incinerator, ashStorageLevel=$ashStorageLevel")
 		onMsg( stateSonar : stateSonar(X)){
 			[# ashStorageLevel = payloadArg(0).toInt() #]
 			println("[$name] Ash storage level updated: $ashStorageLevel") color green
@@ -432,35 +466,4 @@ QActor wis context ctxwis {
     */
     
     
-}QActor testobserver context ctxwis {
-    [# var ExpectedDistance = -1 #]
-
-    State s0 initial {
-        println("[$name] in attesa di comandi di test...") color cyan
-        subscribeTo sonarmock for stateSonar
-    }
-    Transition t0 whenRequest startTest -> handleTestRequest
-
-    State handleTestRequest {
-        onMsg(startTest : startTest(PAYLOAD)) {
-            [# ExpectedDistance = payloadArg(0).toInt() #]
-            println("[$name] Test avviato. Attendo che la distanza diventi $ExpectedDistance") color cyan
-        }
-    }
-    Transition t1 whenEvent stateSonar -> checkSonarValue
-
-    State checkSonarValue {
-        printCurrentMessage
-        onMsg(stateSonar : stateSonar(D)) {
-            [# val CurrentDistance = payloadArg(0).toInt() #]
-            println("[$name] Ricevuto evento sonar: $CurrentDistance. Atteso: $ExpectedDistance") color cyan
-
-            if [# CurrentDistance == ExpectedDistance #] {
-                replyTo startTest with testReply : testReply(ok)
-            } else {
-                replyTo startTest with testReply : testReply(ko)
-            }
-        }
-    }
-    Goto s0 
 }

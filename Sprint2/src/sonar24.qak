@@ -1,0 +1,261 @@
+System sonarqak24
+ 
+/*
+ * Sistema che funziona su RaspberryPi
+ * Delega i comandi start/stop a sonardevice
+ */
+Event sonardata : distance(D)   //emitted  by sonardevice or (better) by datacleaner
+Event updateAS : updateAS(D)
+
+Dispatch sonarstart : sonarstart(X)
+Dispatch sonarwork : sonarwork(X)
+Dispatch sonarstop  : sonarstop(X)
+
+Dispatch doread : doread(X)
+
+Context ctxsonarqak24 ip [host= "localhost" port=8128]
+Context ctxwis ip [host="192.168.1.27" port=8001]
+
+ExternalQActor wis context ctxwis
+  
+QActor sonar24 context ctxsonarqak24{   
+	[#	var DISTANCE=0
+			var DLIMT= 0	
+			var FULL= false	
+		#]
+	
+	State s0 initial{  
+		println("sonar24 | ready") 
+		//[# subscribeToLocalActor("sonar") #]
+		delay 1000 //give time to create sonardevice
+		//subscribeTo sonardevice for sonardata
+		subscribeTo datacleaner for sonardata
+		//println("$name subscribed to datacleaner") color magenta
+		//delegate sonarstart to sonardevice
+		delegate sonarstop  to sonardevice		
+	}
+	Transition t0 whenMsg	sonarstart -> initializing
+	              whenMsg   sonarstop -> endwork
+	              
+	State initializing{
+		onMsg( sonarstart : sonarstart(X) ){
+			printCurrentMessage
+			[# DLIMT=payloadArg(0).toInt() #]
+			println("$name Starting: DLIMT=$DLIMT")
+			
+			forward sonardevice -m sonarstart : sonarstart(1)
+		}
+	}
+	Transition t0 whenEvent sonardata -> handlesonardata
+	              whenMsg   sonarstop -> endwork
+	
+//	State work{
+//		//println("sonar24 | waits ... ") 		
+//	}
+//	Transition t0 whenEvent sonardata -> handlesonardata
+//	              whenMsg   sonarstop -> endwork
+	 
+	State handlesonardata{
+		printCurrentMessage color yellow
+		onMsg( sonardata : distance(D) ){
+//			println("$name | distance=${payloadArg(0)}") color magenta
+				[# DISTANCE = payloadArg(0).toInt() #]
+				println("All'inizio il sonar misura $DISTANCE") color yellow
+				
+				if [# DISTANCE <= DLIMT #]{
+					[#	FULL= true	#]
+				}
+				
+				emit updateAS : updateAS($FULL)
+		}
+		
+	}
+	Goto workAsEmpty if [# DISTANCE > DLIMT #] else workAsFull
+	//all'inizio differenziamo se è vuoto o pieno
+	
+	State workAsEmpty{
+		
+	}
+	Transition t0 whenEvent sonardata -> handleDataEmpty
+	              whenMsg   sonarstop -> endwork
+	              
+  State handleDataEmpty{
+  	onMsg( sonardata : distance(D) ){
+				[# DISTANCE = payloadArg(0).toInt() #]
+				println("[EMPTY]: $DISTANCE") color green
+		}
+  }
+  Goto stopWis if [# DISTANCE <= DLIMT #] else workAsEmpty
+	
+	State stopWis{
+		[#	FULL= true	#]
+		emit updateAS : updateAS($FULL)	//notifichiamo il Wis che AS è FULL!!!
+		println("AshStorage è diventato pieno") color magenta		
+	}
+	Goto workAsFull
+	
+	State workAsFull{
+		
+	}
+	Transition t0 whenEvent sonardata -> handleDataFull
+	              whenMsg   sonarstop -> endwork
+	              
+  State handleDataFull{
+  	onMsg( sonardata : distance(D) ){
+				[# DISTANCE = payloadArg(0).toInt() #]
+				println("[FULL]: $DISTANCE") color green
+		}
+  }
+  Goto startWis if [# DISTANCE > DLIMT #] else workAsFull
+	
+	State startWis{
+		[#	FULL= false	#]
+		emit updateAS : updateAS($FULL)	//notifichiamo il Wis che AS è EMPTY!!!
+		println("AshStorage è diventato vuoto") color magenta
+	}
+	Goto workAsEmpty
+	
+	State endwork{
+		println("sonar24 | ENDS") color magenta
+		//forward sonar -m sonarstop : sonarstop(1)   
+		forward sonardevice -m sonarstop : sonarstop(1)
+	}
+	Transition t0 whenMsg sonarstart -> initializing
+}   
+
+ 
+QActor datacleaner context ctxsonarqak24 {
+	[# var D = 0; #]
+	State s0 initial {
+		delay 1000
+		subscribeTo sonardevice for sonardata		
+		println("$name subscribed to sonardevice") color blue
+	}
+	Transition t0 whenEvent sonardata -> filter
+	
+	State filter {
+		 println("$name D=$D") color black	
+		onMsg(sonardata : distance(D)) {
+	      	[#  D = payloadArg(0).toInt() #]	      	
+	      	 println("$name D=$D") color black	
+	      	if [# D < 300 #] {
+	 			emitlocalstream  sonardata : distance($D)
+	     	}
+     	}
+	}	
+	Transition t0 whenEvent sonardata -> filter
+}
+ 
+
+QActor sonardevice context ctxsonarqak24{
+[# 
+	lateinit var reader : java.io.BufferedReader
+	var working = false
+    lateinit var p : Process	
+    var Distance = 0
+#]	
+	State s0 initial{
+		println("$name | sonarstart") 
+	}	
+	Transition t0 
+		whenMsg sonarstart -> startTheSonar
+		whenMsg sonarstop  -> stopTheSonar
+	
+	State stopTheSonar{
+     	[# working = false	#]	
+	}
+	Transition t0 
+		whenMsg sonarstart -> startTheSonar
+		whenMsg sonarstop  -> stopTheSonar
+		whenMsg doread and [# ! working #] -> endOfRead  //potrebbe arrivare
+	
+	State startTheSonar{
+	[#
+    	working = true		
+    	val CurrentDirectory = System.getProperty("user.dir")
+    	println("cartella corrente: $CurrentDirectory")
+		p       = Runtime.getRuntime().exec("python3 sonar.py")		
+		reader  = java.io.BufferedReader(  java.io.InputStreamReader(p.getInputStream() ))
+		
+		
+//		// Ottenere il ProcessHandle e stampare il PID
+//		val handle = p.toHandle()
+//		println("Processo creato con PID: ${handle.pid()}")
+//		println("Il processo è attivo? ${handle.isAlive}")	
+	#]		
+		delay 3000
+	}
+	Goto readSonarData
+	
+	State readSonarData{
+	[# 
+//		// Verifica se il processo è ancora vivo
+//		val handle = p.toHandle()
+//		println("Processo creato con PID: ${handle.pid()}")
+//		println("Il processo è attivo? ${handle.isAlive}")
+		
+		var data = reader.readLine()
+		//CommUtils.outyellow("$name with python: data = $data"   ) 
+		if( data != null ){
+		try{ 
+			val vd = data.toFloat()
+			val v  = vd.toInt()
+			if( v <= 100 ){	//A first filter ...
+				Distance = v				
+			}else Distance = 0
+		}catch(e: Exception){
+				CommUtils.outred("$name readSonarDataERROR: $e "   )
+		}
+		}//if
+		
+	#]	
+		if [# Distance > 0 #] { 
+		    println("$name with python: data = $data"   ) color yellow
+			emitlocalstream sonardata : distance($Distance)
+			//emit  sonardata : distance($Distance)
+		}
+		autodispatch doread : doread(1)
+	}
+	Transition t0 
+	    whenMsg sonarstop  -> stopTheSonar
+		whenMsg doread and [# working   #]   -> readSonarData 
+		whenMsg doread and [# ! working #] -> endOfRead
+		
+	State endOfRead{
+		[#
+			
+   	    p.destroy()
+    	if (p.isAlive()) {
+    	    p.destroyForcibly();
+    	}
+       	CommUtils.outred("$tt $name | endOfRead"  )
+			
+		#]
+	}
+	Transition t0 
+		whenMsg sonarstart -> startTheSonar
+		whenMsg sonarstop  -> stopTheSonar    //non dovrebbe arrivare, ma ...
+	
+}//sonardevice
+
+/* 
+QActor sonarusagemock context ctxsonarqak24{
+	State s0 initial{
+		println("$name |    START") color blue
+		forward sonar24 -m sonarstart : sonarstart(1)
+		delay 10000
+		println("$name |    STOP") color blue
+		forward sonar24 -m sonarstop : sonarstop(1)
+		delay 2000
+		println("$name |   RESTART") color blue
+		forward sonar24 -m sonarstart : sonarstart(1)
+//		delay 10000
+//		println("$name |    RESTOP") color blue
+//		forward sonar24 -m sonarstop : sonarstop(1)
+//		delay 2000
+//		println("$name | BYE") color blue
+//		[# System.exit(0) #]
+	}
+}
+*/
+  

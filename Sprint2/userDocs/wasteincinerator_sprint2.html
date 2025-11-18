@@ -1,0 +1,385 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+    <!--
+<link rel="stylesheet" type="text/css" href="../css/issStyle1.css">
+<script type="text/javascript" src="../css/issStyle.js"></script>
+-->
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/foundation-sites@6.7.4/dist/css/foundation.min.css" crossorigin="anonymous">
+		<script src="https://cdn.jsdelivr.net/npm/foundation-sites@6.7.4/dist/js/foundation.min.js"crossorigin="anonymous"></script> 
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" type="text/css" href="./commons/resources/styles/templateISS.css">
+        <link rel="stylesheet" type="text/css" href="./commons/resources/styles/main.css">
+        <link rel="stylesheet" type="text/css" href="./commons/resources/styles/navbar.css">
+        <link rel="stylesheet" type="text/css" href="./commons/resources/styles/table.css">
+        <link rel="stylesheet" type="text/css" href="./commons/resources/styles/code.css">
+        <link rel="stylesheet" type="text/css" href="./commons/resources/styles/custom.css">
+        <!-- <script type="text/javascript" src="./commons/resources/scripts/myScripts.js"></script> -->
+<style type="text/css">
+body
+{
+    margin-left:  50px;
+    margin-right: 50px;
+};
+
+P
+{
+    font-family: Tahoma;
+    font-size: 10pt;
+};
+
+a, a:visited, a:active, a:link, a:hover {
+    text-decoration: underline;
+    color: #545454;
+    background-color: transparent;
+	font-size: 93%;
+}
+
+a:hover {
+    background-color: #cccccc;
+}
+
+
+hr {
+    clear: both;
+    height: 1px;
+    color: #242424;
+    background-color: transparent;
+}
+
+h1, h2, h3 {
+    color: #242424;
+    clear: left;
+    font: 100% Tahoma, Helvetica, Arial, sans-serif;
+    margin-bottom: 0.5em;
+    padding-top: 0.5em;
+	border-radius: 10px;
+	padding: 5px;
+}
+
+top {
+	width: 100%;
+}
+
+
+#i {
+    color: #ff1010;
+}
+tt{
+	font-family: "Arial";
+    font-size: 90%;
+	color: #006600;
+}
+em{
+	font-family: "Arial";
+    font-size: 80%;
+	font-weight: bold;
+	border-style:solid;
+	border-color: #abe876;
+    color: #1632cc;
+}
+bc{
+	font-family: "Arial";
+	font-size: 90%;
+	font-weight: bold;
+    color: #990000;
+	background-color: #fcf8c7;
+}
+ks{
+	font-family: "Arial";
+	font-weight: bold;
+    color: #0000CD	;
+	font-size: 90%;
+}
+kc{
+	font-family: "Arial";
+	font-weight: bold;
+    color: #008000	;
+	font-size: 90%;
+}
+pre, .formula{
+	font-family: "Consolas";
+	font-size: 85%;
+	background-color: #f5f5f5;
+	border: 1.5px solid silver;
+	padding: 5px;
+}
+m{
+	font-family: "Helvetica";
+	line-height: 100%;
+ 	font-size: 75%;
+}
+div.body{
+	 
+    font-size: 18px;
+}
+k{
+    color: #990000;
+	font-weight: bold;
+	font-size: 90%;
+}
+h1 {
+    font-size: 150%;
+    background-color: #b2c0ff;
+	padding: 10px;
+}
+
+h2 {
+    background-color: #9ed8ff;
+    font-size: 130%;
+}
+
+h3 {
+	background-color: #e6ccff;
+    font-size: 100%;
+}
+h4 {
+    background-color: #ccffcc;
+    font-size: 100%;
+	width: 95%;
+	border-radius: 5px;
+	padding: 2px;
+}
+h5 {
+    background-color: #d5ffb0;
+    font-size: 100%;
+
+}
+div.req{
+	background-color: #d9ffb3;
+    font-size: 18px;
+	width: 700px;
+    border: 3px solid green;
+    padding: 15px;
+    margin: 10px;
+}
+div.remark{
+	background-color: #E3F2FD;
+    border: 1.5px solid #d5f2ed;
+    padding: 15px;
+    margin: 10px;
+	border-radius: 25px;
+}
+table, th, td {
+  border: 1px solid black;
+  border-collapse: collapse;
+}
+
+ol, ul, li {
+  margin: 0;
+  margin-left: 10px;
+  padding: 0;
+  padding-bottom: 5px;
+}
+
+table, th, td {
+	border: 1px solid black;
+}
+
+img {
+	border: 1.5px solid #d5f2ed
+
+}
+
+a, a:visited, a:active, a:link, a:hover {
+    text-decoration: underline;
+    color: #545454;
+    background-color: transparent;
+}
+
+div.wrapdesc{
+	width: 90%;
+	margin: auto;
+}
+
+div.imagedesc{
+	width: 85%;
+	margin: auto;
+}
+
+
+.formula {
+    font-family: monospace;
+    font-weight: bold;
+    color: #007bff; 
+    background-color: #cde8ff; 
+    padding: 1px 4px;
+    border-radius: 3px; 
+    display: inline; 
+    line-height: 1;
+}
+</style>
+    
+ 
+   
+</head>
+	
+		
+  
+
+
+   
+<title>WasteIncineratorService Sprint1</title></head>
+    
+<!--
+	<body onload="loadNav();">
+		<div id="openButton" class="openButton" onclick="openNav(true)">&#9776; Menu</div>
+		<div id="sidenav" class="sidenav">
+			<a class="closeButton" href="javascript:void(0)" onclick="closeNav(true)">&times;</a>
+			<a href=".README.html">ReadMe</a>
+			<a class="sprint" href="../../../Sprint0/Codice/userDocs/Cold%20Storage%20Service%20-%20Natali%20V3.html">Sprint0</a>
+			<a class="sprint" href="../../../Sprint1.0/Codice/userDocs/Sprint%201.0%20-%20V3.html">Sprint1.0</a>
+			<a class="sprint" href="../../../Sprint1.1/Codice/userDocs/Sprint%201.1%20-%20V3.html">Sprint1.1</a>
+			<a id="currentSprint" class="sprint" href="#">&#8211;&#8212; Sprint2 &#8212;&#8211;</a>
+			<div class="sidenavSection">
+				<a href="#Goal Sprint 2">Goal Sprint 2</a>
+				<a href="#Requisiti">Requisiti</a>
+				<a href="#Analisi dei Requisiti">Analisi dei Requisiti</a>
+				<a href="#Analisi del Problema">Analisi del Problema</a>
+				<a href="#Test Plan">Test Plan</a>
+				<a href="#Progettazione">Progettazione</a>
+				<a href="#Deployment">Deployment</a>
+			</div>
+			<p class="separator">&mdash;&mdash;&mdash;&ndash;&ndash;&mdash;&mdash;&mdash;</p>
+			<a class="sprint" href="../../../Sprint3/Codice/userDoc/Sprint%203.html">Sprint3</a>
+			<bottom-spacer/>
+		</div>
+-->
+<body>
+    <div id="top">
+        <h1>LABORATORIO DI INGEGNERIA DEI SISTEMI SOFTWARE</h1>
+    </div>  
+
+    <div class="body"> 
+        <h2>Introduzione</h2>
+			<p>Un'azienda intende sviluppare un WasteIncineratorService per il trattamento dei rifiuti tramite incenerimento e necessita di un servizio di sistema software (WIS) per controllare un robot (chiamato OpRobot) per lo spostamento dei rifiuti. <br>
+			Questo documento contiene lo Sprint2 del progetto, che si concentra sull'interazione con l'ambiente fisico: l'obiettivo principale è la corretta gestione e simulazione dei dispositivi esterni, in particolare Scale, Sonar e LED dove, gli ultimi due fanno parte del MonitoringDevice.</p>
+        
+        <h2>Sprint precedente</h2>
+			Il seguente link rimanda allo sprint precedente, ovvero lo <a href="../../Sprint1/userDocs/wasteincinerator_sprint1v1.html">Sprint1</a>, in cui è stata sviluppata la prima architettura del core business, definendo il modello di interazione e la struttura dei componenti (WIS-OpRobot-Incinerator),
+			permettendoci di modellare la logica operativa iniziale del sistema.<br>
+		<h2>Sprint2</h2>		
+			<h3>Analisi del Problema</h3>
+				<ul>
+					<h4>P2.1 - Come modelliamo il sistema relativo al Monitoring Device?</h4>
+						Il contesto del Monitoring Device (MD) nel suo complesso contiene varie entità attive:
+						<ol>
+						<li><b>MonitoringDevice</b>: è un attore QAK responsabile di essere al corrente sullo stato dell’incinerator per gestire la logica del WarningDevice e comunicare al WIS lo stato logico dell’AshStorage</li>
+						<li><b>SonarDevice</b>: è un Attore QAK che incapsula la logica del sonar fisico. Incorpora l'oggetto POJO <i>sonar24.py</i> che legge il dato grezzo di distanza. La sua responsabilità principale è monitorare il livello di AshStorage ed inviare le misurazioni fatte al DataCleaner</li>
+						<li><b>DataCleaner</b>: è un attore QAK responsabile di filtrare le misurazioni fatte dal SonarDevice e convertire le distanze filtrate (significative) in uno stato logico (pieno/non pieno) da inviare al Monitoring Device</li>
+						<li><b>WarningDevice</b>: È un Attore QAK che gestisce il LED. La sua responsabilità è ricevere i comandi logici (acceso, spento, lampeggiante) e tradurli nell'interazione con l'hardware LED fisico.
+							Come stabilito nell'analisi, per coerenza e per la natura di output, dovrebbe ricevere istruzioni dal WIS</li>
+						</ol>
+					
+					
+					
+					<h4>P2.2 - Come modelliamo Scale?</h4>
+						La <b>Scale</b> deve misurare il peso del WasteStorage e notificarlo. È modellato come un Attore QAK dedicato: la sua responsabilità è simulare (o leggere) il peso attuale del WasteStorage e notificarlo al WIS.</li>
+					
+					
+					
+					<h4>P2.3 - Quando l’AshStorage viene considerato pieno/non pieno?</h4>
+						<ul>
+							<li>L’AshStorage viene considerato <b>pieno</b> quando la <b>distanza</b> misurata dal sonar è <b>minore o uguale</b> del valore costante <b>DLIMT</b>.</li>
+							<li>L’AshStorage viene considerato <b>vuoto</b> quando la <b>distanza</b> misurata dal sonar è <b>maggiore</b> del valore costante <b>DLIMT</b>.</li>
+						</ul>
+						
+						
+						
+					<h4>P2.4 - Come fa il MonitoringDevice a notificare il WIS che l'ashstorage è pieno o vuoto?</h4>
+						Come già detto, notificare il WIS sullo stato dell’AshStorage è compito dell'attore MonitoringDevice, che monitora lo stato di AshOut e notifica i cambiamenti P2.3. 
+						Il tipo di interazione scelto è un <b>Evento (Event)</b>, inviato tramite un <b>messaggio di update</b>.
+						
+						
+						
+					<h4>P2.5 - Lo stato dei componenti gestiti dal WIS è direttamente conosciuto dal Monitoring Device (con interazione diretta con i sotto-componenti) o l’informazione deve passare per il WIS?</h4>
+						L'informazione deve passare per il WIS. L'Attore WarningDevice è l'entità che esegue fisicamente l'azione (ON/OFF/BLINK), ma lo fa esclusivamente su comando diretto (Dispatch) del WIS.
+						<ul>
+							<li>Il WarningDevice mantiene la responsabilità unica di gestire l'hardware LED, mentre il WIS mantiene la responsabilità unica della logica decisionale del Core Business.</li>
+							<li>La logica del LED è complessa, richiedendo la combinazione di due stati critici:
+								lo stato di combustione dell'Incinerator (informazione interna al Core Business) e lo stato di pienezza/vuoto dell'AshStorage (informazione fornita al WIS dal MonitoringDevice).</li>
+							<li><b>Solo il WIS riceve e coordina entrambi questi stati.</b>
+								Pertanto, è il WIS che applica la logica di precedenza e invia un comando di azione finale al WarningDevice.</li>
+							<li>Questo modello garantisce che il WarningDevice riceva un comando stabile e già deciso, riducendo la dipendenza da flussi multipli di Eventi concorrenti e rimuovendo il rischio di inconsistenza di stato dovuto a potenziali ritardi di rete.</li>
+						</ul>
+					
+					
+					
+					<h4>P2.6 - Filtraggio e Stabilizzazione delle Misurazioni del Sonar</h4>
+						I sensori fisici, come il Sonar che misura la distanza delle ceneri, generano dati intrinsecamente "rumorosi" (con piccole fluttuazioni dovute a vibrazioni o fattori ambientali) e molto frequenti.
+						Inviare ogni singola misurazione al sistema centrale (WIS) intaserebbe la comunicazione e provocherebbe decisioni instabili (ad esempio, uno stato "Pieno" che oscilla continuamente).
+						
+						Per risolvere questo problema, la responsabilità di gestione dei dati grezzi viene divisa tra due attori:
+						<ul>
+							<li>SonarDevice: Come già anticipato in P2.1, legge la misurazione grezza (distanza) e la invia al DataCleaner.</li>
+
+							<li><b>DataCleaner</b>: Agisce come <b>filtro</b>. La sua unica responsabilità è di ricevere le misurazioni e trasformare i dati instabili in informazione logica stabile.
+								Il DataCleaner deve ignorare le piccole fluttuazioni e applicare un criterio di stabilizzazione (ad esempio, richiedere che una condizione di soglia si mantenga per un certo periodo di tempo o numero di letture).</li>
+						</ul>
+						Il DataCleaner notifica quindi l'Attore MonitoringDevice (che poi notificherà il WIS) solo ed esclusivamente quando viene rilevato un cambio di stato logico stabile (ad esempio, la transizione definitiva da uno stato "Non Pieno" a "Pieno").
+					
+					
+					<h4>P2.7 - Come viene comunicato al WIS il peso fornito da SCALE?</h4>
+						La comunicazione tra l'Attore <b>Scale</b> e l'Attore <b>WIS</b> deve avvenire tramite il paradigma <b>Observer/Event</b> per garantire un flusso asincrono ed efficiente dell'informazione.
+						<ul>
+							<li>L'Attore Scale funge da Subject (o notificatore). Esso è responsabile di leggere o simulare periodicamente il peso totale del WasteStorage.</li>
+
+							<li>Ogni volta che PesoTotale​ subisce un cambiamento significativo (ad esempio, quando un RP viene aggiunto o rimosso), Scale emette un Evento che include il nuovo valore di peso.</li>
+
+							<li>L'Attore WIS funge da Observer: intercetta l'Evento emesso da Scale ed utilizza il dato ricevuto per aggiornare lo stato interno del sistema e per eseguire il calcolo del numero di RP.</li>
+						</ul>
+					
+					<h4>P2.8 - Calcolo del Numero di Roll Packets (RP)</h4>
+						Il calcolo del numero di RP presenti nel WasteStorage spetta interamente all'Attore WIS, poiché è il responsabile di mantenere e coordinare lo stato del Core Business.
+						<ul>
+							<li>Il WIS, dopo aver ricevuto il PesoTotale​ aggiornato dalla Scale (P2.7), calcola il numero stimato di RP utilizzando il peso unitario di ciascun pacchetto, come definito nei requisiti:
+							<br><div align="center"><span class="formula">NumeroRP​ = PesoTotale​​ / PesoUnitario</span></div>
+							</li>
+							<li><b>Valore Standard</b>: Si adotta il valore di 50 Kg(approssimativo) per il peso di un singolo RP, come fornito dalla richiesta del committente.</li>
+							<li>È necessario implementare una soglia di tolleranza o una logica di arrotondamento all'interno del WIS per gestire le approssimazioni
+								e le letture che si discostano leggermente da multipli interi, al fine di determinare in modo affidabile il numero intero di RP presenti (e di identificare se il contenitore è "Vuoto", ovvero PesoTotale​≈0).</li>
+						</ul>
+				</ul>
+				<h3>Progettazione</h3>
+					<ul>
+					</ul>
+				<h3>Test Plan</h3>
+					<ul>
+					</ul>
+				<h3>Deployment</h3>
+					<ul>
+						
+					</ul>
+    </div>
+
+    <div style="background-color:rgba(86, 56, 253, 0.9); width:100%;text-align:left;color:white;padding: 30px;">
+		<div style="display: flex; justify-content: center; gap: 40px; align-items: center; flex-wrap: wrap;">
+			<div>
+				<p><strong>Bostrenghi Matteo</strong><br>
+					matteo.bostrenghi@studio.unibo.it</p>
+				
+				<p><strong>Severini Lorenzo</strong><br>
+					lorenzo.severini5@studio.unibo.it</p>
+			</div>
+			<div>
+				<img src="./img/bostrenghi.png" alt="bostrenghi" style="width:150px; height:auto">
+			</div>
+		
+			<div>
+				<img src="./img/severini.png" alt="severini" style="width:150px; height:auto;">
+			</div>
+
+			<p style="margin-top:20px;">Repository: 
+				<a href="https://github.com/Bostre17/iss24Temafinale" style="color:white;">
+					https://github.com/Bostre17/iss24Temafinale
+				</a>
+			</p>
+		</div>
+		
+		
+		
+	</div>
+
+</body>
+</html>
+

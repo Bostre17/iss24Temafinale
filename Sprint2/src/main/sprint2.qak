@@ -1,0 +1,10 @@
+System sprinttwo
+
+Context ctxwis ip [host="localhost" port=8001]
+
+QActor oprobot context ctxwis {
+
+    State s0 initial {
+    }
+
+}

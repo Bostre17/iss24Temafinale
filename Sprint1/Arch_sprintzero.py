@@ -29,11 +29,13 @@ with Diagram('sprintzeroArch', show=False, outformat='png', graph_attr=graphattr
           incinerator=Custom('incinerator','./qakicons/symActorSmall.png')
           scalemock=Custom('scalemock','./qakicons/symActorSmall.png')
           sonarmock=Custom('sonarmock','./qakicons/symActorSmall.png')
+          testobserver=Custom('testobserver','./qakicons/symActorSmall.png')
           oprobot=Custom('oprobot','./qakicons/symActorSmall.png')
           wis=Custom('wis','./qakicons/symActorSmall.png')
      with Cluster('ctxbasicrobot', graph_attr=nodeattr):
           basicrobot=Custom('basicrobot(ext)','./qakicons/externalQActor.png')
      incinerator >> Edge( label='burnEnd', **eventedgeattr, decorate='true', fontcolor='red') >> sys
+     sonarmock >> Edge( label='stateSonar', **eventedgeattr, decorate='true', fontcolor='red') >> testobserver
      incinerator >> Edge( label='burnEnd', **eventedgeattr, decorate='true', fontcolor='red') >> wis
      scalemock >> Edge( label='stateScale', **eventedgeattr, decorate='true', fontcolor='red') >> wis
      sonarmock >> Edge( label='stateSonar', **eventedgeattr, decorate='true', fontcolor='red') >> wis

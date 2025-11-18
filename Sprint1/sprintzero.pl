@@ -23,6 +23,8 @@ dispatch( disengage, disengage(ARG) ).
 request( moverobot, moverobot(X,Y) ).
 reply( moverobotdone, moverobotdone(X) ).  %%for moverobot
 reply( moverobotfailed, moverobotfailed(X) ).  %%for moverobot
+request( startTest, startTest(PAYLOAD) ).
+reply( testReply, testReply(RESULT) ).  %%for startTest
 %====================================================================================
 context(ctxwis, "localhost",  "TCP", "8001").
 context(ctxbasicrobot, "127.0.0.1",  "TCP", "8020").
@@ -33,6 +35,8 @@ context(ctxbasicrobot, "127.0.0.1",  "TCP", "8020").
  static(scalemock).
   qactor( sonarmock, ctxwis, "it.unibo.sonarmock.Sonarmock").
  static(sonarmock).
+  qactor( testobserver, ctxwis, "it.unibo.testobserver.Testobserver").
+ static(testobserver).
   qactor( oprobot, ctxwis, "it.unibo.oprobot.Oprobot").
  static(oprobot).
   qactor( wis, ctxwis, "it.unibo.wis.Wis").
