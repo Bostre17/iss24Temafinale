@@ -38,7 +38,7 @@ class Testobserver ( name: String, scope: CoroutineScope, isconfined: Boolean=fa
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t042",targetState="handleTestRequest",cond=whenRequest("startTest"))
+					 transition(edgeName="t013",targetState="handleTestRequest",cond=whenRequest("startTest"))
 				}	 
 				state("handleTestRequest") { //this:State
 					action { //it:State
@@ -52,7 +52,7 @@ class Testobserver ( name: String, scope: CoroutineScope, isconfined: Boolean=fa
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t143",targetState="checkSonarValue",cond=whenEvent("stateSonar"))
+					 transition(edgeName="t114",targetState="checkSonarValue",cond=whenEvent("stateSonar"))
 				}	 
 				state("checkSonarValue") { //this:State
 					action { //it:State

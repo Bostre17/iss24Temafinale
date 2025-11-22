@@ -1,445 +1,441 @@
-System sprint2
+System sprinttwo
 
+Dispatch goHome : goHome(X)				// comando da WIS per OpRobot di andare a HOME
+Request bringRP : bringRP(X)			// request da WIS per OpRobot di andare a prendere RP in WASTEIN e portarlo in BURNIN
+Request bringAsh : bringAsh(X)			// comando da WIS per OpRobot di andare a prendere Ash in BURNOUT e portarlo in ASHOUT
+Dispatch act : act(X)					// comando di accensione iniziale dell'incinerator
+Dispatch notifyRp : notifyRp(x)			// messaggio di notifica presenza RP presso BURNIN
+Dispatch ack : ack(X)					// messaggio di ack
 
-//comandi Incenerator
-Dispatch burn : burn(X) //inizio btuciatura mandato dal WIS
+Reply atIncinerator : atIncinerator(X)for bringRP // messaggio da OpRobot a WIS quando arriva all'incinerator
+Reply ashDeposited : ashDeposited(X) for bringAsh
+
+Dispatch newRp : newRp(X)
+Dispatch rpTaken : rpTaken(X)			// messaggio per scale
+
+//Observable
+
 Event burnEnd : burnEnd(BTIME)
+Event stateScale : stateScale(X) 			// messaggio observable update valore scale
+Event stateSonar : stateSonar(X)			// messaggio observable update valore sonar
+//Event position : position(X,Y,J)			// messaggio observable posizione oprobot
 
-Request cmd : on(CMD)		//comando di accensione da parte del WIS
-Reply ack : ack(ACK)		//risposta dell'incenerator al WIS
+// messaggi conversazione engage tra OpRobot e BasicRobot
+Request  engage : engage(OWNER, STEPTIME)
+Reply engagedone : engagedone(ARG) for engage
+Reply engagerefused : engagerefused(ARG) for engage
+Dispatch disengage    : disengage(ARG)
 
+Request moverobot : moverobot(X,Y)
+Reply moverobotdone : moverobotdone(X) for moverobot
+Reply moverobotfailed : moverobotfailed(X) for moverobot
 
+Request startTest : startTest(PAYLOAD)
+Reply testReply : testReply(RESULT) for startTest
 
-//messaggi wis-opRobot
-Dispatch goWasteIn : go(X) 
-Dispatch goBurnOut : go(X)
-Dispatch goHome : go(X) "messaggio da parte di WIS per ordinare al robot di tornare a casa"
-Event updateStateRobot : update(POSX,POSY,JOB)
-
-//messaggi oprobot-basicrobot
-Request engage        : engage(OWNER, STEPTIME)	
-Reply   engagedone    : engagedone(ARG)    for engage
-Reply   engagerefused : engagerefused(ARG) for engage
-
-Request moverobot    :  moverobot(TARGETX, TARGETY)  
-Reply moverobotdone  :  moverobotok(ARG)                    for moverobot
-Reply moverobotfailed:  moverobotfailed(PLANDONE, PLANTODO) for moverobot
- 
-//scale
-Event updateWS : updateWS(WEIGHT)
-//sonar
-Event updateAS : updateAS(STATE)
-
-//utility wis
-Dispatch robotArrived : robotArrived(X)
-Dispatch endRoutine : endRoutine(X)
-
-//scale prova
-Dispatch arrivoRobot : p(X)
-
-//sonar prova
-Dispatch newAsh : ash(X)
-
-//tester
-Request testASreq : test(WEIGHT)
-Reply testAS : test(DISTANCE) for testASreq
-Dispatch newRP : newRP(WEIGHT)
 
 Dispatch sonarstart : sonarstart(X)
-Dispatch sonarwork : sonarwork(X)
 Dispatch sonarstop  : sonarstop(X)
 
+
 Context ctxwis ip [host="localhost" port=8001]
-Context ctxddr ip [host="127.0.0.1" port=8020]
-Context ctxmd ip [host= "192.168.1.15" port= 8128] //successivamente verrrà sostituito da ctxmd, il contesto del monitoring device
-//Context ctxmd ip [host="localhost" port=8002] 
+Context ctxbasicrobot ip [host="127.0.0.1" port=8020]
+Context ctxmd ip [host= "192.168.1.15" port= 8128]
 
-ExternalQActor basicrobot context ctxddr
-ExternalQActor sonar24 context ctxmd
+ExternalQActor basicrobot context ctxbasicrobot
+ExternalQActor monitoringdevice context ctxmd
 
-QActor incenerator context ctxwis{
-	[#val Btime = 5L #]
+
+//--------------------------Incinerator-----------------------------
+
+QActor incinerator context ctxwis {
+	//(Off = 0, On = 1, Idle = 2)
+    [#
+    	val Btime = 10L
+    	var state = 0
+    #]
 	State off initial{
-		delay 100
-		println("waiting for activation") color blue
+		println("[$name] waiting for activation") color magenta
 	}
-	Transition t0 whenRequest cmd -> response
+	Transition t0 whenMsg act -> handleAct
 	
-	State response{
-		replyTo cmd with ack : ack(1)
+	State handleAct{
+		//in ricezione di una forward, deve essere raggruppato da onMsg() altrimenti da errore 
+		//	java.lang.IndexOutOfBoundsException: Index 0 out of bounds for length 0
+		onMsg(act : act(X)) {
+			println("[$name] act ricevuto") color magenta
+			[# state = payloadArg(0).toInt()#]
+			println("[$name] act letto") color magenta
+		}
 	} 
 	Goto idle
-	
+
 	State idle{
-		println("$name is waiting for RP") color blue
+		println("[$name] idle") color magenta
 	}
-	Transition t1 whenMsg burn -> burn
+	Transition t0 whenMsg notifyRp -> handleRp
 			
+	State handleRp{
+		//in ricezione di una forward, deve essere raggruppato da onMsg() altrimenti da errore 
+		//	java.lang.IndexOutOfBoundsException: Index 0 out of bounds for length 0
+		onMsg(act : act(X)) {
+			println("[$name] notifyRp ricevuto") color magenta
+			[# state = payloadArg(0).toInt()#]
+			println("[$name] notifyRp letto") color magenta
+		}
+	} 
+	Goto burn
+	
 	State burn{
-		println("$name is BURNING (on)") color blue
-		[#delay(Btime*1000)#]
-		emit burnEnd : burnend($Btime)
+		println("[$name] on") color magenta
+		[#
+			delay(Btime*1000)
+			state = 2	
+		#]
+		emit burnEnd : burnEnd($Btime)
+		updateResource [# "burnEnd(${Btime})" #]
 	}
 	Goto idle
 }
 
 
-QActor oprobot context ctxwis{
+
+//--------------------------Scale-----------------------------
+//è fatto per test interni, poi sicuramente va cambiato.
+QActor scalemock context ctxwis {
 	[#
-	    val Posizioni: MutableMap<String, Array<String>> = mutableMapOf()
-	    Posizioni["Home"] = arrayOf("0", "0")
-	    Posizioni["BurnIn"] = arrayOf("2", "1")
-	    Posizioni["BurnOut"] = arrayOf("4", "3")
-		Posizioni["AshOut"] = arrayOf("5", "4")
-		Posizioni["WasteIn"] = arrayOf("0", "4")
-		var X="0"
-		var Y="0"
+		var WEIGHT = 0	
+	#]
+	
+	State s0 initial {
+		println("[$name] inizializzazione.") color red
+		delay 10000
+		[# WEIGHT = 100#]
+		emitlocalstream stateScale : stateScale($WEIGHT)
+		println("[$name] stateScale updated a $WEIGHT.") color red
+    }
+    Transition t0 whenMsg rpTaken -> handleRpTaken
+    
+    State handleRpTaken{
+    	[# WEIGHT -= 50 #]
+    	if [# WEIGHT < 0#]
+        {
+            [# WEIGHT = 0#]
+        }
+		emitlocalstream stateScale : stateScale($WEIGHT)
+		println("[$name] stateScale updated a $WEIGHT.") color red
+    }
+    Transition t0	whenMsg rpTaken -> handleRpTaken
+    				whenMsg newRp -> handleNewRp
+    				
+    State handleNewRp{
+        [# WEIGHT += 50#]
+		println("[$name] RP aggiunto. stateScale updated a $WEIGHT.") color red
+    }
+    Transition t0	whenMsg rpTaken -> handleRpTaken
+    				whenMsg newRp -> handleNewRp
+}
+
+
+
+/* 
+QActor testobserver context ctxwis {
+    [# var ExpectedDistance = -1 #]
+
+    State s0 initial {
+        println("[$name] in attesa di comandi di test...") color cyan
+        subscribeTo sonarmock for stateSonar
+    }
+    Transition t0 whenRequest startTest -> handleTestRequest
+
+    State handleTestRequest {
+        onMsg(startTest : startTest(PAYLOAD)) {
+            [# ExpectedDistance = payloadArg(0).toInt() #]
+            println("[$name] Test avviato. Attendo che la distanza diventi $ExpectedDistance") color cyan
+        }
+    }
+    Transition t1 whenEvent stateSonar -> checkSonarValue
+
+    State checkSonarValue {
+        printCurrentMessage
+        onMsg(stateSonar : stateSonar(D)) {
+            [# val CurrentDistance = payloadArg(0).toInt() #]
+            println("[$name] Ricevuto evento sonar: $CurrentDistance. Atteso: $ExpectedDistance") color cyan
+
+            if [# CurrentDistance == ExpectedDistance #] {
+                replyTo startTest with testReply : testReply(ok)
+            } else {
+                replyTo startTest with testReply : testReply(ko)
+            }
+        }
+    }
+    Goto s0 
+}
+
+//cambiamenti al robot per limitare comunicazione con wis, passo at incinerator senza variabile X ma solo per conferma.
+//giusto per comunicare che l'azione è  stata effettuata
+//se arriva un nuovo lavoro lo esegue subito senza tornare a casa
+//tolto pos da home e tolta logica si conferma engage secondo me ridondante
+//dall'incenerator può effettuare altri ordini in coda senza incepparsi aggiungendo condizioni in t4
+*/
+//--------------------------OpRobot-----------------------------
+
+QActor oprobot context ctxwis {
+	[#
+		val pos: MutableMap<String, Array<String>> = mutableMapOf()
+	    pos["home"] = arrayOf("0", "0")
+	    pos["burnin"] = arrayOf("2", "1")
+	    pos["burnout"] = arrayOf("4", "3")
+		pos["ashout"] = arrayOf("5", "4")
+		pos["wastein"] = arrayOf("0", "4")
+
 		var Job=""
 	#]
-	State s0 initial {
-		delay 100
-		println("Hello i'm $name") color red
-		request basicrobot -m engage : engage(name, 325)
-	}
-	Transition t0 whenReply engagedone -> home
-	
-	State home{
-		println("$name, i'm in HOME") color red
-		[#
-			X= Posizioni["Home"]!!.get(0)
-			Y= Posizioni["Home"]!!.get(1)
-			Job="Waiting_in_HOME"
-		#]
-		emitlocalstream updateStateRobot : update($X,$Y,$Job)
-	}
-	Transition t0 	whenMsg goBurnOut -> goemptyincenerator
-    				whenMsg goWasteIn -> gowastestorage    				
-	
-	State gowastestorage{
-		//direttive per arrivare al waste storage
-		[#
-			X= Posizioni["WasteIn"]!!.get(0)
-			Y= Posizioni["WasteIn"]!!.get(1)
-		#]
-		request basicrobot -m moverobot : moverobot($X,$Y)
-	}
-	Transition t0 whenReply moverobotdone -> goburnin
-				  whenReply moverobotfailed -> gohome
-	
-	State goburnin{
-		println("$name: arrivato al WASTEIN") color red
-		[#
-			X= Posizioni["WasteIn"]!!.get(0)
-			Y= Posizioni["WasteIn"]!!.get(1)
-			Job="in_WASTEIN"
-		#]
-		emitlocalstream updateStateRobot : update($X,$Y,$Job)
-		forward scale -m arrivoRobot : p(X)
-		[#
-			X= Posizioni["BurnIn"]!!.get(0)
-			Y= Posizioni["BurnIn"]!!.get(1)
-		#]
-		request basicrobot -m moverobot : moverobot($X,$Y)
-		
-		delay 1500
-	}
-	Transition t0 whenReply moverobotdone -> arrivedburnin
-			      whenReply moverobotfailed -> gohome
-	
-	State arrivedburnin{
-		println("$name: arrivato al BURNIN") color red
-		[#
-			X= Posizioni["BurnIn"]!!.get(0)
-			Y= Posizioni["BurnIn"]!!.get(1)
-			Job="in_BURNIN"
-		#]
-		emitlocalstream updateStateRobot : update($X,$Y,$Job)
-		forward wis -m robotArrived : robotArrived(X)
-		
-		delay 1500
-	}
-	Goto gohome
-	
-	State goemptyincenerator{
-		//direttive per andare a BURNOUT
-		[#
-			X= Posizioni["BurnOut"]!!.get(0)
-			Y= Posizioni["BurnOut"]!!.get(1)
-		#]
-		request basicrobot -m moverobot : moverobot($X,$Y)
-		
-	}
-	Transition t0 whenReply moverobotdone -> goashout
-				  			whenReply moverobotfailed -> gohome
-				  
-	State goashout{
-		println("$name: arrivato a BURNOUT") color red
-		[#
-			X= Posizioni["BurnOut"]!!.get(0)
-			Y= Posizioni["BurnOut"]!!.get(1)
-			Job="withdraw_ash"
-		#]
-		emitlocalstream updateStateRobot : update($X,$Y,$Job)
-		delay 1500
-		//direttive per ashOUT
-		[#
-			X= Posizioni["AshOut"]!!.get(0)
-			Y= Posizioni["AshOut"]!!.get(1)
-		#]
-		request basicrobot -m moverobot : moverobot($X,$Y)
+    
 
-	}
-	Transition t0 whenReply moverobotdone -> waitinginstruction
-	              whenReply moverobotfailed -> gohome
-	
-	
-	
-	State waitinginstruction{
-		
-		delay 2000
-		
-		forward wis -m endRoutine : endRoutine(X)
-		forward tester -m endRoutine : endRoutine(X) //solo per il test, da eliminare
-		
-		println("$name arrivato a ASHOUT") color red
-		[#
-			X= Posizioni["AshOut"]!!.get(0)
-			Y= Posizioni["AshOut"]!!.get(1)
-			Job="ash_dropped"
-		#]
-		emitlocalstream updateStateRobot : update($X,$Y,$Job)
-		
-		delay 2000
-	}
-	Transition t0 whenMsg goWasteIn -> gowastestorage
-				  whenMsg goHome -> gohome				  
-	
-	State gohome{
-		//direttive al robot per tornare a casa
-		[#
-			X= Posizioni["Home"]!!.get(0)
-			Y= Posizioni["Home"]!!.get(1)
-		#]
-		request basicrobot -m moverobot : moverobot($X,$Y)
-	}
-	Transition t0 whenReply moverobotdone -> home
-				  whenReply moverobotfailed -> gohome
-}   
+    State s0 initial {
+        println("[$name] inizializzazione.") color yellow
+        request basicrobot -m engage : engage(name, 330)
+    }
+    Transition t0 whenReply engagedone -> standby
+    
+    State standby {
+        println("[$name] pronto e in attesa in HOME.") color yellow
+        [# Job = "Waiting Home" #]
+    }
+    Transition t1 whenRequest bringRP -> goWasteIn
+                  whenRequest bringAsh -> goBurnOut
+    
+    State goWasteIn {
+        println("[$name] vado in WasteIn.") color yellow
+        [# 
+        	val X = pos["wastein"]!!.get(0); 
+        	val Y = pos["wastein"]!!.get(1)
+        #]
+        request basicrobot -m moverobot : moverobot($X,$Y)
+    } 
+    Transition t2 whenReply moverobotdone -> goBurnIn
+                  whenReply moverobotfailed -> goHome
 
-QActor wis context ctxwis{
-	[#	var RP = 0;
-		//var ASHVALUE = 100
-		var FULL= false
-		var INCENERATOR = false
-		var ROUTINE = false
-		val DLIMT = 30
-		var RobotState = "HOME"
-		var WEIGHT=0
-		var RobotX=""
-		var RobotY=""
-	#]	//DLIMT a 60 come 60 cm (valore scelto da noi)
-	State s0 initial{
-		delay 1000
-		println("[WIS]$name started") color green
-		subscribeTo incenerator for burnEnd 
-		subscribeTo scale for updateWS
-		//subscribeTo sonar24 for updateAS
-		//observeResource sonar24 msgid updateAS
-		subscribeTo oprobot for updateStateRobot
+    State goBurnIn {
+        println("[$name] arrivato in WasteIn, vado in BurnIn.") color yellow
+        [# Job = "In WasteIn" #]
+        forward scalemock -m rpTaken : rpTaken(1)
+        [# 
+        	val X = pos["burnin"]!!.get(0); 
+        	val Y = pos["burnin"]!!.get(1) 
+        #]
+        request basicrobot -m moverobot : moverobot($X,$Y)
+    } 
+    Transition t3 whenReply moverobotdone -> arrivedToIncinerator
+                  whenReply moverobotfailed -> goHome
+    
+    State arrivedToIncinerator {
+        println("[$name] sono arrivato all'inceneritore e notifico.") color yellow
+        [# Job = "Waiting in BurnIn" #]
+        replyTo bringRP with atIncinerator : atIncinerator(1)
+    }
+    Transition t4 whenMsg goHome -> goHome
+                  whenRequest bringAsh -> goBurnOut
+                  whenRequest bringRP -> goWasteIn
+
+   	State goHome {
+   		if [# Job != "Waiting Home"#] {
+        	println("[$name] vado in HOME.") color yellow
+        	[# Job = "Going Home" #]
+        	[# 
+        		val X = pos["home"]!!.get(0); 
+        		val Y = pos["home"]!!.get(1) 
+        	#]
+        	request basicrobot -m moverobot : moverobot($X,$Y)
+    	} else {
+        	println("[$name] sono gia' in HOME.") color yellow
+    	}
+    // Se è già in HOME, deve comunque passare a standby per accettare nuovi comandi
+    // Lo facciamo con un 'Goto' incondizionato DENTRO l'else.
+   	}
+  	Goto standby if [# Job == "Waiting Home" #] else waitForReply
+
+   //stato intermedio per attendere la risposta perchè sennò può essere che non va in standby
+	State waitForReply{
+  		println("[$name] In attesa di arrivare a HOME...") color yellow
+  	}
+	Transition t5 whenReply moverobotdone -> standby
+              whenReply moverobotfailed -> goHome
+                  
+    State goBurnOut {
+        println("[$name] vado a prelevare le ash in BurnOut.") color yellow
+        [# Job = "Going BurnOut" #]
+        [# 
+        	val X = pos["burnout"]!!.get(0); 
+        	val Y = pos["burnout"]!!.get(1) 
+        #]
+        request basicrobot -m moverobot : moverobot($X,$Y)
+    }
+    Transition t6 whenReply moverobotdone -> goAshOut
+                  whenReply moverobotfailed -> goHome
+    
+    State goAshOut {
+        println("[$name] arrivato in BurnOut, vado a depositare in AshOut.") color yellow
+        [# Job = "In BurnOut" #]
+        [# 
+        	val X = pos["ashout"]!!.get(0); 
+        	val Y = pos["ashout"]!!.get(1)
+        	 
+        #]
+        request basicrobot -m moverobot : moverobot($X,$Y)
+    }
+    Transition t7 whenReply moverobotdone -> atAshStorage
+                  whenReply moverobotfailed -> goHome
+    
+    State atAshStorage {
+        println("[$name] arrivato in AshStorage, deposito e notifico.") color yellow
+        [# Job = "Depositing Ashes" #]
+        //forward sonarmock -m newAsh : newAsh(1)
+        replyTo bringAsh with ashDeposited : ashDeposited(1)
+    }
+    Transition t8 whenMsg goHome -> goHome
+                  whenRequest bringRP -> goWasteIn
+}
+
+
+//--------------------------WIS-----------------------------
+
+QActor wis context ctxwis {
+	[#
+	val DLIMT = 40
+	var wasteStorageWeight=0
+	var ashStorageFull = 0
+	var posX = 0
+	var posY = 0
+	var incinerator = 0
+	var job = ""
+	var RP=0
+	#]
+	
+	
+    State s0 initial {
+        println("[$name] Initializing system") color green
+        
+        subscribeTo incinerator for burnEnd 
+		subscribeTo scalemock for stateScale
+		subscribeTo monitoringdevice for stateSonar
+		//subscribeTo oprobot for position
 		
-		request incenerator -m cmd : on(CMD)
-		
-		forward sonar24 -m sonarstart : sonarstart($DLIMT)//si potrà modificare magari in futuro
-		
-	}
-	Transition t0 whenReply ack -> waitingCondition
+        //le variabili inviate devono essere TUTTE MAIUSCOLE e raggruppare in ricezione con onMsg()
+        forward incinerator -m act : act(2)
+        println("[$name] sent act to incinerator") color green
+        
+		forward monitoringdevice -m sonarstart : sonarstart($DLIMT) 
+        println("[$name] sent sonarstart to monitoringdevice") color green
+        [# incinerator = 2 #]
+    }
+    Goto waitingRP
+
+
+    State waitingRP {
+        println("[$name] waiting for RP") color green
+        forward oprobot -m goHome : goHome(X)
+        println("[$name] inviato goHome ad oprobot.") color green
+    }
+	Transition t0
+		whenEvent stateScale -> verifyCondition
+		whenEvent stateSonar -> verifyCondition
 	
-	State waitingCondition{
-		println("[WIS]Waiting for something") color green
-	}
-	Transition t0 whenEvent updateWS -> verifyCondition
-			      whenEvent updateAS -> verifyCondition
-	
-	State startRoutine{
-		println("[WIS]startRoutine") color green
-		forward oprobot -m goWasteIn : go(X)
-		[# RobotState ="going WasteIn"#]
-		
-	}
-	Transition t0 	whenMsg robotArrived -> startIncenerator
-					whenInterruptEvent updateWS -> handleWasteStorage
-					whenInterruptEvent updateAS -> handleAshStorage
-					whenInterruptEvent updateStateRobot -> handleStateRobot
-	
-	
-	State startIncenerator{
-		[#	INCENERATOR = true	#]
-		println("[WIS]start INCENERATOR") color green
-		forward incenerator -m burn : burn(X)
-		//forward oprobot -m goHome : go(X)		
-	}
-	Transition t0 whenEvent burnEnd -> endIncenerator
-				  whenInterruptEvent updateWS -> handleWasteStorage
-				  whenInterruptEvent updateAS -> handleAshStorage
-				  whenInterruptEvent updateStateRobot -> handleStateRobot
-	
-	State endIncenerator{
-		[#	INCENERATOR = false	#]	
-		//forward warningdevice -m ledOff : ledOff(X)
-		//direttive al robottino per svuotare la cenere
-		println("[WIS]end INCENERATOR") color green
-		forward oprobot -m goBurnOut : go(X)
-	}
-	Transition t0 whenMsg endRoutine -> endRoutine
-				  whenInterruptEvent updateWS -> handleWasteStorage
-				  whenInterruptEvent updateAS -> handleAshStorage
-				  whenInterruptEvent updateStateRobot -> handleStateRobot
-	
-	State endRoutine{
-		println("[WIS]End routine") color green
-	}
-	Goto startRoutine if [#RP>0 && !INCENERATOR && !FULL#] else goHome
-	
-	State goHome{
-		forward oprobot -m goHome : go(X)
-	}
-	Goto waitingCondition
 	
 	State verifyCondition{
 		printCurrentMessage
-		onMsg( updateWS : updateWS(WEIGHT) ){
-			println("[WIS]handle wastestorage") color green
-			[#	WEIGHT = payloadArg(0).toInt() #]
-			[#	RP= WEIGHT/50 #]	
-			println("RP= $RP") color green
+		println("[$name] RP=$RP, incineratorState=$incinerator, ashStorageFull=$ashStorageFull")
+		onMsg( stateSonar : stateSonar(X)){
+			[# ashStorageFull = payloadArg(0).toInt() #]
+			println("[$name] Ash storage level updated: $ashStorageFull") color green
 		}
-		onMsg( updateAS : updateAS(STATE) ){
-			println("[CONDITION]handle ashstorage") color green
-		//	println("$name | weight=${payloadArg(0)}")
-		printCurrentMessage
-			[# FULL = payloadArg(0).toBoolean() #]	
+		onMsg( stateScale : stateScale(X)){
+			[# 	wasteStorageWeight = payloadArg(0).toInt() 
+				 RP = wasteStorageWeight/50 #]
+			println("[$name] RP quantity updated: $RP") color green
 		}
-		println("[WIS]verify condition: $RP, $FULL") color green
 	}
-	Goto startRoutine if [#RP>0 && !INCENERATOR && !FULL#] else waitingCondition
-	
-	State handleWasteStorage{
-		onMsg( updateWS : updateWS(WEIGHT) ){
-		//	println("$name | weight=${payloadArg(0)}")
-			println("[WIS]handle wastestorage") color green
-			[#	WEIGHT = payloadArg(0).toInt() #]
-			[#	RP= WEIGHT/50 #]	
-			println("RP= $RP") color green
-		}
-//			 //printCurrentMessage color black
-//	      if[# WEIGHT > RP*50 #]{
-//	      println("[WIS]$name incremento RP... ") color green
-//	      delay 1000
-//	      [# RP=RP+1 #]
-//	    }
-//	    else{
-//	    	 println("[WIS]$name decremento RP... ") color green
-//	      	 delay 1000
-//	      	 [# RP=RP-1 #]
-//	    }
-	         returnFromInterrupt
-	}	
-	
-	State handleAshStorage{
-		onMsg( updateAS : updateAS(STATE) ){
-		//	println("$name | weight=${payloadArg(0)}")
-			[# FULL = payloadArg(0).toBoolean() #]
-			printCurrentMessage
-			println("[WIS]handle ashstorage: $FULL") color green		
-		}
-	         returnFromInterrupt
-	}
-	
-	State handleStateRobot{
-		onMsg( updateStateRobot:update(POSX,POSY,JOB)){
-	      [# 
-	      	RobotX = payloadArg(0)
-	        RobotY = payloadArg(1)
-	        RobotState = payloadArg(2)
-	      #]
-	      println("[STATE ROBOT]:\t$RobotState\tPosition:$RobotX,$RobotY") color green
-	    }
-	    returnFromInterrupt
-	}
-}
-
-
-QActor scale context ctxwis{ 
-	[#	var WEIGHT= 0	#]  
-	State s0 initial{  
-		println("$name  | ready") color yellow
-		delay 1000 //give time to staty
- 	}
- 	Goto work
-	//Transition t1 whenTime 3000 -> newRP
-	
-	State work{
-		 		
-	}
-	Transition t0 	whenMsg newRP -> newRP
-					whenMsg arrivoRobot -> updateWS
- 	 
-	State updateWS{
-		[#	WEIGHT-= 50 #]
-		println("$name: Weight= $WEIGHT") color yellow
-		//updateResource
-		//updateResource [# "updateWS($name,${RP})" #]
-		emitlocalstream updateWS : updateWS($WEIGHT)	
-	}
-	Goto work
-	
-	State newRP{
-		[# WEIGHT+= 50 #]
-		println("$name: arrived new RP") color yellow
-		println("$name: weight= $WEIGHT") color yellow
-		//updateResource
-		emitlocalstream updateWS : updateWS($WEIGHT)
-		//updateResource [# "updateWS($name,${RP})" #]
-	}
-	Goto work
-	 
-}
-
-
-QActor tester context ctxwis{
-	[# var Cont = 0 #]
-	State s0 initial{
-		println("$name attivo") color magenta
-		//subscribeTo sonarmock for updateAS
-	}
-	Goto waiting
-	
-	State waiting{
-		println("$name aspetta una richiesta") color magenta
-	}
-	Transition t0 whenRequest testASreq -> updateWS
-	
-	State updateWS{
-		printCurrentMessage
-		println("$name arrivata richiesta") color magenta
+	Goto startRoutine if [#RP>0 && incinerator!=1 && ashStorageFull == false #] else waitingRP
 			
-			forward scale -m newRP : newRP(50)
+    
+    
+    
+    State startRoutine{
+    	println("[$name] start routine") color green
+    	request oprobot -m bringRP : bringRP(X)
+    }
+    Transition t0
+    	whenReply atIncinerator -> startIncinerator
+		whenInterruptEvent stateScale -> handleStateScale
+		whenInterruptEvent stateSonar -> handleStateSonar
+		//whenInterruptEvent position -> handleRobotPosition
+		
+    
+    State startIncinerator{
+        println("[$name] Incinerator started") color green
+        forward incinerator -m notifyRp : notifyRp(X)
+        // il robot potrebbe tornare in home da solo senza comando del wis, però se non facessi così tornerebbe ad home istantaneamente, senza scaricare RP (su controllo del WIS)
+        forward oprobot -m goHome : goHome(X)
+        [# incinerator = 1#]
 	}
-	Transition t0 whenMsg endRoutine -> endIteration
+	Transition t0
+		whenEvent burnEnd -> endIncinerator
+		whenInterruptEvent stateScale -> handleStateScale
+		whenInterruptEvent stateSonar -> handleStateSonar
+		//whenInterruptEvent position -> handleRobotPosition
 	
-	State endIteration{
-		[#Cont++#]
-		forward scale -m newRP : newRP(50)
+	State endIncinerator{
+        println("[$name] incinerator is now idle") color green
+        request oprobot -m bringAsh : bringAsh(X)
+    	[# 
+    		incinerator = 2
+    	#]
+
 	}
-	Transition t0 whenEvent updateAS -> endTest
-				  whenMsg endRoutine -> endIteration
-	
-	State endTest{
-		onMsg(updateAS : updateAS(STATE)){
-			replyTo testASreq with testAS : test($Cont)
+	Transition t0
+		whenReply ashDeposited -> verifyCondition
+		whenInterruptEvent stateScale -> handleStateScale
+		//whenInterruptEvent stateSonar -> handleStateSonar
+		//whenInterruptEvent position -> handleRobotPosition
+    
+    
+    //State handleStateIncinerator {
+    //    onMsg( stateIncinerator : stateIncinerator(X)){
+	//		[# incinerator = payloadArg(0).toInt() #]
+	//		println("Incinerator state (Off = 0, On = 1, Idle = 2): $incinerator") color green
+	//	}
+	//	returnFromInterrupt
+    //}
+    
+    State handleStateSonar {
+        onMsg( stateSonar : stateSonar(X)){
+			[# ashStorageFull = payloadArg(0).toInt() #]
+			println("[$name] Ash storage full: $ashStorageFull") color green
 		}
-	}
-	Goto waiting
+		returnFromInterrupt
+    }
+    
+    State handleStateScale {
+        onMsg( stateScale : stateScale(X)){
+			[# 	wasteStorageWeight = payloadArg(0).toInt() 
+				RP = wasteStorageWeight/50 #]
+			println("[$name] RP quantity updated: $RP") color green
+		}
+		returnFromInterrupt
+    }
+    /* 
+    State handleRobotPosition {
+        onMsg( position : position(X,Y)){
+			[# 	posX = payloadArg(0).toInt()
+				posY = payloadArg(1).toInt() 
+				job = payloadArg(2)
+			#]
+			println("[$name] OpRobot   position $posX $posY   routine $job") color green
+		}
+		returnFromInterrupt
+    }
+    */
+    
+    
 }
-
-

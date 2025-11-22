@@ -264,7 +264,7 @@ div.imagedesc{
 					<h4>P2.1 - Come modelliamo il sistema relativo al Monitoring Device?</h4>
 						Il contesto del Monitoring Device (MD) nel suo complesso contiene varie entità attive:
 						<ol>
-						<li><b>MonitoringDevice</b>: è un attore QAK responsabile di essere al corrente sullo stato dell’incinerator per gestire la logica del WarningDevice e comunicare al WIS lo stato logico dell’AshStorage</li>
+						<li><b>MonitoringDevice</b>: è un attore QAK responsabile di comunicare al WIS lo stato logico dell’AshStorage e ricevere da quest'ultimo le direttive sul comportamento del WarningDevice.</li>
 						<li><b>SonarDevice</b>: è un Attore QAK che incapsula la logica del sonar fisico. Incorpora l'oggetto POJO <i>sonar24.py</i> che legge il dato grezzo di distanza. La sua responsabilità principale è monitorare il livello di AshStorage ed inviare le misurazioni fatte al DataCleaner</li>
 						<li><b>DataCleaner</b>: è un attore QAK responsabile di filtrare le misurazioni fatte dal SonarDevice e convertire le distanze filtrate (significative) in uno stato logico (pieno/non pieno) da inviare al Monitoring Device</li>
 						<li><b>WarningDevice</b>: È un Attore QAK che gestisce il LED. La sua responsabilità è ricevere i comandi logici (acceso, spento, lampeggiante) e tradurli nell'interazione con l'hardware LED fisico.

@@ -154,9 +154,9 @@ task dovesiamo {
 
 distributions {
     main {
-        distributionBaseName = 'sprint2'
+        distributionBaseName = 'sonarqak24'
         contents { 
-             from './sprint2.pl'
+             from './sonarqak24.pl'
              from './sysRules.pl'
              from './facadeConfig.json'
         }

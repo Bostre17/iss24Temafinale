@@ -41,8 +41,8 @@ class Sonardevice ( name: String, scope: CoroutineScope, isconfined: Boolean=fal
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t011",targetState="startTheSonar",cond=whenDispatch("sonarstart"))
-					transition(edgeName="t012",targetState="stopTheSonar",cond=whenDispatch("sonarstop"))
+					 transition(edgeName="t09",targetState="startTheSonar",cond=whenDispatch("sonarstart"))
+					transition(edgeName="t010",targetState="stopTheSonar",cond=whenDispatch("sonarstop"))
 				}	 
 				state("stopTheSonar") { //this:State
 					action { //it:State
@@ -52,26 +52,17 @@ class Sonardevice ( name: String, scope: CoroutineScope, isconfined: Boolean=fal
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t013",targetState="startTheSonar",cond=whenDispatch("sonarstart"))
-					transition(edgeName="t014",targetState="stopTheSonar",cond=whenDispatch("sonarstop"))
-					transition(edgeName="t015",targetState="endOfRead",cond=whenDispatchGuarded("doread",{ ! working  
+					 transition(edgeName="t011",targetState="startTheSonar",cond=whenDispatch("sonarstart"))
+					transition(edgeName="t012",targetState="stopTheSonar",cond=whenDispatch("sonarstop"))
+					transition(edgeName="t013",targetState="endOfRead",cond=whenDispatchGuarded("doread",{ ! working  
 					}))
 				}	 
 				state("startTheSonar") { //this:State
 					action { //it:State
 						
 						    	working = true		
-						    	val CurrentDirectory = System.getProperty("user.dir")
-						    	println("cartella corrente: $CurrentDirectory")
-								p       = Runtime.getRuntime().exec("python3 sonar.py")		
-								reader  = java.io.BufferedReader(  java.io.InputStreamReader(p.getInputStream() ))
-								
-								
-						//		// Ottenere il ProcessHandle e stampare il PID
-						//		val handle = p.toHandle()
-						//		println("Processo creato con PID: ${handle.pid()}")
-						//		println("Il processo è attivo? ${handle.isAlive}")	
-						delay(3000) 
+								p       = Runtime.getRuntime().exec("python sonar.py")
+								reader  = java.io.BufferedReader(  java.io.InputStreamReader(p.getInputStream() ))	
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
@@ -82,13 +73,8 @@ class Sonardevice ( name: String, scope: CoroutineScope, isconfined: Boolean=fal
 				state("readSonarData") { //this:State
 					action { //it:State
 						 
-						//		// Verifica se il processo è ancora vivo
-						//		val handle = p.toHandle()
-						//		println("Processo creato con PID: ${handle.pid()}")
-						//		println("Il processo è attivo? ${handle.isAlive}")
-								
 								var data = reader.readLine()
-								//CommUtils.outyellow("$name with python: data = $data"   ) 
+								CommUtils.outyellow("$name with python: data = $data"   ) 
 								if( data != null ){
 								try{ 
 									val vd = data.toFloat()
@@ -111,10 +97,10 @@ class Sonardevice ( name: String, scope: CoroutineScope, isconfined: Boolean=fal
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t016",targetState="stopTheSonar",cond=whenDispatch("sonarstop"))
-					transition(edgeName="t017",targetState="readSonarData",cond=whenDispatchGuarded("doread",{ working    
+					 transition(edgeName="t014",targetState="stopTheSonar",cond=whenDispatch("sonarstop"))
+					transition(edgeName="t015",targetState="readSonarData",cond=whenDispatchGuarded("doread",{ working    
 					}))
-					transition(edgeName="t018",targetState="endOfRead",cond=whenDispatchGuarded("doread",{ ! working  
+					transition(edgeName="t016",targetState="endOfRead",cond=whenDispatchGuarded("doread",{ ! working  
 					}))
 				}	 
 				state("endOfRead") { //this:State
@@ -132,8 +118,8 @@ class Sonardevice ( name: String, scope: CoroutineScope, isconfined: Boolean=fal
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t019",targetState="startTheSonar",cond=whenDispatch("sonarstart"))
-					transition(edgeName="t020",targetState="stopTheSonar",cond=whenDispatch("sonarstop"))
+					 transition(edgeName="t017",targetState="startTheSonar",cond=whenDispatch("sonarstart"))
+					transition(edgeName="t018",targetState="stopTheSonar",cond=whenDispatch("sonarstop"))
 				}	 
 			}
 		}

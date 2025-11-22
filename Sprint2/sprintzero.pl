@@ -35,9 +35,9 @@ context(ctxbasicrobot, "127.0.0.1",  "TCP", "8020").
  static(scalemock).
   qactor( sonarmock, ctxwis, "it.unibo.sonarmock.Sonarmock").
  static(sonarmock).
+  qactor( testobserver, ctxwis, "it.unibo.testobserver.Testobserver").
+ static(testobserver).
   qactor( oprobot, ctxwis, "it.unibo.oprobot.Oprobot").
  static(oprobot).
   qactor( wis, ctxwis, "it.unibo.wis.Wis").
  static(wis).
-  qactor( testobserver, ctxwis, "it.unibo.testobserver.Testobserver").
- static(testobserver).

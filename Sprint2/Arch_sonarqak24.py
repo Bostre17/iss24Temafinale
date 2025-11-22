@@ -25,14 +25,14 @@ with Diagram('sonarqak24Arch', show=False, outformat='png', graph_attr=graphattr
   with Cluster('env'):
      sys = Custom('','./qakicons/system.png')
 ### see https://renenyffenegger.ch/notes/tools/Graphviz/attributes/label/HTML-like/index
-     with Cluster('ctxsonarqak24', graph_attr=nodeattr):
-          sonar24=Custom('sonar24','./qakicons/symActorSmall.png')
+     with Cluster('ctxmd', graph_attr=nodeattr):
+          monitoringdevice=Custom('monitoringdevice','./qakicons/symActorSmall.png')
           datacleaner=Custom('datacleaner','./qakicons/symActorSmall.png')
           sonardevice=Custom('sonardevice','./qakicons/symActorSmall.png')
      with Cluster('ctxwis', graph_attr=nodeattr):
           wis=Custom('wis(ext)','./qakicons/externalQActor.png')
-     datacleaner >> Edge( label='sonardata', **eventedgeattr, decorate='true', fontcolor='red') >> sonar24
-     sonar24 >> Edge( label='updateAS', **eventedgeattr, decorate='true', fontcolor='red') >> sys
+     datacleaner >> Edge( label='sonardata', **eventedgeattr, decorate='true', fontcolor='red') >> monitoringdevice
+     monitoringdevice >> Edge( label='updateAS', **eventedgeattr, decorate='true', fontcolor='red') >> sys
      sonardevice >> Edge( label='sonardata', **eventedgeattr, decorate='true', fontcolor='red') >> datacleaner
-     sonar24 >> Edge(color='blue', style='solid',  decorate='true', label='<sonarstop &nbsp; sonarstart &nbsp; >',  fontcolor='blue') >> sonardevice
+     monitoringdevice >> Edge(color='blue', style='solid',  decorate='true', label='<sonarstop &nbsp; sonarstart &nbsp; >',  fontcolor='blue') >> sonardevice
 diag

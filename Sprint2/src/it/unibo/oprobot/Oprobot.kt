@@ -28,165 +28,164 @@ class Oprobot ( name: String, scope: CoroutineScope, isconfined: Boolean=false  
 	override fun getBody() : (ActorBasicFsm.() -> Unit){
 		//val interruptedStateTransitions = mutableListOf<Transition>()
 		
-			    val Posizioni: MutableMap<String, Array<String>> = mutableMapOf()
-			    Posizioni["Home"] = arrayOf("0", "0")
-			    Posizioni["BurnIn"] = arrayOf("2", "1")
-			    Posizioni["BurnOut"] = arrayOf("4", "3")
-				Posizioni["AshOut"] = arrayOf("5", "4")
-				Posizioni["WasteIn"] = arrayOf("0", "4")
-				var X="0"
-				var Y="0"
+				val pos: MutableMap<String, Array<String>> = mutableMapOf()
+			    pos["home"] = arrayOf("0", "0")
+			    pos["burnin"] = arrayOf("2", "1")
+			    pos["burnout"] = arrayOf("4", "3")
+				pos["ashout"] = arrayOf("5", "4")
+				pos["wastein"] = arrayOf("0", "4")
+		
 				var Job=""
 		return { //this:ActionBasciFsm
 				state("s0") { //this:State
 					action { //it:State
-						delay(100) 
-						CommUtils.outred("Hello i'm $name")
-						request("engage", "engage(name,325)" ,"basicrobot" )  
+						CommUtils.outyellow("[$name] inizializzazione.")
+						request("engage", "engage(name,330)" ,"basicrobot" )  
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t02",targetState="home",cond=whenReply("engagedone"))
+					 transition(edgeName="t015",targetState="standby",cond=whenReply("engagedone"))
 				}	 
-				state("home") { //this:State
+				state("standby") { //this:State
 					action { //it:State
-						CommUtils.outred("$name, i'm in HOME")
-						
-									X= Posizioni["Home"]!!.get(0)
-									Y= Posizioni["Home"]!!.get(1)
-									Job="Waiting_in_HOME"
-						emitLocalStreamEvent("updateStateRobot", "update($X,$Y,$Job)" ) 
+						CommUtils.outyellow("[$name] pronto e in attesa in HOME.")
+						 Job = "Waiting Home"  
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t03",targetState="goemptyincenerator",cond=whenDispatch("goBurnOut"))
-					transition(edgeName="t04",targetState="gowastestorage",cond=whenDispatch("goWasteIn"))
+					 transition(edgeName="t116",targetState="goWasteIn",cond=whenRequest("bringRP"))
+					transition(edgeName="t117",targetState="goBurnOut",cond=whenRequest("bringAsh"))
 				}	 
-				state("gowastestorage") { //this:State
+				state("goWasteIn") { //this:State
 					action { //it:State
-						
-									X= Posizioni["WasteIn"]!!.get(0)
-									Y= Posizioni["WasteIn"]!!.get(1)
+						CommUtils.outyellow("[$name] vado in WasteIn.")
+						 
+						        	val X = pos["wastein"]!!.get(0); 
+						        	val Y = pos["wastein"]!!.get(1)
 						request("moverobot", "moverobot($X,$Y)" ,"basicrobot" )  
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t05",targetState="goburnin",cond=whenReply("moverobotdone"))
-					transition(edgeName="t06",targetState="gohome",cond=whenReply("moverobotfailed"))
+					 transition(edgeName="t218",targetState="goBurnIn",cond=whenReply("moverobotdone"))
+					transition(edgeName="t219",targetState="goHome",cond=whenReply("moverobotfailed"))
 				}	 
-				state("goburnin") { //this:State
+				state("goBurnIn") { //this:State
 					action { //it:State
-						CommUtils.outred("$name: arrivato al WASTEIN")
-						
-									X= Posizioni["WasteIn"]!!.get(0)
-									Y= Posizioni["WasteIn"]!!.get(1)
-									Job="in_WASTEIN"
-						emitLocalStreamEvent("updateStateRobot", "update($X,$Y,$Job)" ) 
-						forward("arrivoRobot", "p(X)" ,"scale" ) 
-						
-									X= Posizioni["BurnIn"]!!.get(0)
-									Y= Posizioni["BurnIn"]!!.get(1)
-						request("moverobot", "moverobot($X,$Y)" ,"basicrobot" )  
-						delay(1500) 
-						//genTimer( actor, state )
-					}
-					//After Lenzi Aug2002
-					sysaction { //it:State
-					}	 	 
-					 transition(edgeName="t07",targetState="arrivedburnin",cond=whenReply("moverobotdone"))
-					transition(edgeName="t08",targetState="gohome",cond=whenReply("moverobotfailed"))
-				}	 
-				state("arrivedburnin") { //this:State
-					action { //it:State
-						CommUtils.outred("$name: arrivato al BURNIN")
-						
-									X= Posizioni["BurnIn"]!!.get(0)
-									Y= Posizioni["BurnIn"]!!.get(1)
-									Job="in_BURNIN"
-						emitLocalStreamEvent("updateStateRobot", "update($X,$Y,$Job)" ) 
-						forward("robotArrived", "robotArrived(X)" ,"wis" ) 
-						delay(1500) 
-						//genTimer( actor, state )
-					}
-					//After Lenzi Aug2002
-					sysaction { //it:State
-					}	 	 
-					 transition( edgeName="goto",targetState="gohome", cond=doswitch() )
-				}	 
-				state("goemptyincenerator") { //this:State
-					action { //it:State
-						
-									X= Posizioni["BurnOut"]!!.get(0)
-									Y= Posizioni["BurnOut"]!!.get(1)
+						CommUtils.outyellow("[$name] arrivato in WasteIn, vado in BurnIn.")
+						 Job = "In WasteIn"  
+						forward("rpTaken", "rpTaken(1)" ,"scalemock" ) 
+						 
+						        	val X = pos["burnin"]!!.get(0); 
+						        	val Y = pos["burnin"]!!.get(1) 
 						request("moverobot", "moverobot($X,$Y)" ,"basicrobot" )  
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t09",targetState="goashout",cond=whenReply("moverobotdone"))
-					transition(edgeName="t010",targetState="gohome",cond=whenReply("moverobotfailed"))
+					 transition(edgeName="t320",targetState="arrivedToIncinerator",cond=whenReply("moverobotdone"))
+					transition(edgeName="t321",targetState="goHome",cond=whenReply("moverobotfailed"))
 				}	 
-				state("goashout") { //this:State
+				state("arrivedToIncinerator") { //this:State
 					action { //it:State
-						CommUtils.outred("$name: arrivato a BURNOUT")
-						
-									X= Posizioni["BurnOut"]!!.get(0)
-									Y= Posizioni["BurnOut"]!!.get(1)
-									Job="withdraw_ash"
-						emitLocalStreamEvent("updateStateRobot", "update($X,$Y,$Job)" ) 
-						delay(1500) 
-						
-									X= Posizioni["AshOut"]!!.get(0)
-									Y= Posizioni["AshOut"]!!.get(1)
+						CommUtils.outyellow("[$name] sono arrivato all'inceneritore e notifico.")
+						 Job = "Waiting in BurnIn"  
+						answer("bringRP", "atIncinerator", "atIncinerator(1)"   )  
+						//genTimer( actor, state )
+					}
+					//After Lenzi Aug2002
+					sysaction { //it:State
+					}	 	 
+					 transition(edgeName="t422",targetState="goHome",cond=whenDispatch("goHome"))
+					transition(edgeName="t423",targetState="goBurnOut",cond=whenRequest("bringAsh"))
+					transition(edgeName="t424",targetState="goWasteIn",cond=whenRequest("bringRP"))
+				}	 
+				state("goHome") { //this:State
+					action { //it:State
+						if(  Job != "Waiting Home" 
+						 ){CommUtils.outyellow("[$name] vado in HOME.")
+						 Job = "Going Home"  
+						 
+						        		val X = pos["home"]!!.get(0); 
+						        		val Y = pos["home"]!!.get(1) 
+						request("moverobot", "moverobot($X,$Y)" ,"basicrobot" )  
+						}
+						else
+						 {CommUtils.outyellow("[$name] sono gia' in HOME.")
+						 }
+						//genTimer( actor, state )
+					}
+					//After Lenzi Aug2002
+					sysaction { //it:State
+					}	 	 
+					 transition( edgeName="goto",targetState="standby", cond=doswitchGuarded({ Job == "Waiting Home"  
+					}) )
+					transition( edgeName="goto",targetState="waitForReply", cond=doswitchGuarded({! ( Job == "Waiting Home"  
+					) }) )
+				}	 
+				state("waitForReply") { //this:State
+					action { //it:State
+						CommUtils.outyellow("[$name] In attesa di arrivare a HOME...")
+						//genTimer( actor, state )
+					}
+					//After Lenzi Aug2002
+					sysaction { //it:State
+					}	 	 
+					 transition(edgeName="t525",targetState="standby",cond=whenReply("moverobotdone"))
+					transition(edgeName="t526",targetState="goHome",cond=whenReply("moverobotfailed"))
+				}	 
+				state("goBurnOut") { //this:State
+					action { //it:State
+						CommUtils.outyellow("[$name] vado a prelevare le ash in BurnOut.")
+						 Job = "Going BurnOut"  
+						 
+						        	val X = pos["burnout"]!!.get(0); 
+						        	val Y = pos["burnout"]!!.get(1) 
 						request("moverobot", "moverobot($X,$Y)" ,"basicrobot" )  
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t011",targetState="waitinginstruction",cond=whenReply("moverobotdone"))
-					transition(edgeName="t012",targetState="gohome",cond=whenReply("moverobotfailed"))
+					 transition(edgeName="t627",targetState="goAshOut",cond=whenReply("moverobotdone"))
+					transition(edgeName="t628",targetState="goHome",cond=whenReply("moverobotfailed"))
 				}	 
-				state("waitinginstruction") { //this:State
+				state("goAshOut") { //this:State
 					action { //it:State
-						delay(2000) 
-						forward("endRoutine", "endRoutine(X)" ,"wis" ) 
-						forward("endRoutine", "endRoutine(X)" ,"tester" ) 
-						CommUtils.outred("$name arrivato a ASHOUT")
-						
-									X= Posizioni["AshOut"]!!.get(0)
-									Y= Posizioni["AshOut"]!!.get(1)
-									Job="ash_dropped"
-						emitLocalStreamEvent("updateStateRobot", "update($X,$Y,$Job)" ) 
-						delay(2000) 
-						//genTimer( actor, state )
-					}
-					//After Lenzi Aug2002
-					sysaction { //it:State
-					}	 	 
-					 transition(edgeName="t013",targetState="gowastestorage",cond=whenDispatch("goWasteIn"))
-					transition(edgeName="t014",targetState="gohome",cond=whenDispatch("goHome"))
-				}	 
-				state("gohome") { //this:State
-					action { //it:State
-						
-									X= Posizioni["Home"]!!.get(0)
-									Y= Posizioni["Home"]!!.get(1)
+						CommUtils.outyellow("[$name] arrivato in BurnOut, vado a depositare in AshOut.")
+						 Job = "In BurnOut"  
+						 
+						        	val X = pos["ashout"]!!.get(0); 
+						        	val Y = pos["ashout"]!!.get(1)
+						        	 
 						request("moverobot", "moverobot($X,$Y)" ,"basicrobot" )  
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t015",targetState="home",cond=whenReply("moverobotdone"))
-					transition(edgeName="t016",targetState="gohome",cond=whenReply("moverobotfailed"))
+					 transition(edgeName="t729",targetState="atAshStorage",cond=whenReply("moverobotdone"))
+					transition(edgeName="t730",targetState="goHome",cond=whenReply("moverobotfailed"))
+				}	 
+				state("atAshStorage") { //this:State
+					action { //it:State
+						CommUtils.outyellow("[$name] arrivato in AshStorage, deposito e notifico.")
+						 Job = "Depositing Ashes"  
+						forward("newAsh", "newAsh(1)" ,"sonarmock" ) 
+						answer("bringAsh", "ashDeposited", "ashDeposited(1)"   )  
+						//genTimer( actor, state )
+					}
+					//After Lenzi Aug2002
+					sysaction { //it:State
+					}	 	 
+					 transition(edgeName="t831",targetState="goHome",cond=whenDispatch("goHome"))
+					transition(edgeName="t832",targetState="goWasteIn",cond=whenRequest("bringRP"))
 				}	 
 			}
 		}

@@ -27,149 +27,120 @@ class Wis ( name: String, scope: CoroutineScope, isconfined: Boolean=false  ) : 
 	}
 	override fun getBody() : (ActorBasicFsm.() -> Unit){
 		//val interruptedStateTransitions = mutableListOf<Transition>()
-			var RP = 0;
-				//var ASHVALUE = 100
-				var FULL= false
-				var INCENERATOR = false
-				var ROUTINE = false
-				val DLIMT = 30
-				var RobotState = "HOME"
-				var WEIGHT=0
-				var RobotX=""
-				var RobotY=""
+		
+			val DLIMT = 40
+			var wasteStorageWeight=0
+			var ashStorageLevel = 0
+			var posX = 0
+			var posY = 0
+			var incinerator = 0
+			var job = ""
+			var RP=0
 		return { //this:ActionBasciFsm
 				state("s0") { //this:State
 					action { //it:State
-						delay(1000) 
-						CommUtils.outgreen("[WIS]$name started")
-						subscribeToLocalActor("incenerator") 
-						subscribeToLocalActor("scale") 
-						subscribeToLocalActor("oprobot") 
-						request("cmd", "on(CMD)" ,"incenerator" )  
-						forward("sonarstart", "sonarstart($DLIMT)" ,"sonar24" ) 
+						CommUtils.outgreen("[$name] Initializing system")
+						subscribeToLocalActor("incinerator") 
+						subscribeToLocalActor("scalemock") 
+						subscribeToLocalActor("sonarmock") 
+						forward("act", "act(2)" ,"incinerator" ) 
+						CommUtils.outgreen("[$name] sent act to incinerator")
+						 incinerator = 2  
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t017",targetState="waitingCondition",cond=whenReply("ack"))
+					 transition( edgeName="goto",targetState="waitingRP", cond=doswitch() )
 				}	 
-				state("waitingCondition") { //this:State
+				state("waitingRP") { //this:State
 					action { //it:State
-						CommUtils.outgreen("[WIS]Waiting for something")
+						CommUtils.outgreen("[$name] waiting for RP")
+						forward("goHome", "goHome(X)" ,"oprobot" ) 
+						CommUtils.outgreen("[$name] inviato goHome ad oprobot.")
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t018",targetState="verifyCondition",cond=whenEvent("updateWS"))
-					transition(edgeName="t019",targetState="verifyCondition",cond=whenEvent("updateAS"))
-				}	 
-				state("startRoutine") { //this:State
-					action { //it:State
-						CommUtils.outgreen("[WIS]startRoutine")
-						forward("goWasteIn", "go(X)" ,"oprobot" ) 
-						 RobotState ="going WasteIn" 
-						//genTimer( actor, state )
-					}
-					//After Lenzi Aug2002
-					sysaction { //it:State
-					}	 	 
-					 transition(edgeName="t020",targetState="startIncenerator",cond=whenDispatch("robotArrived"))
-					interrupthandle(edgeName="t021",targetState="handleWasteStorage",cond=whenEvent("updateWS"),interruptedStateTransitions)
-					interrupthandle(edgeName="t022",targetState="handleAshStorage",cond=whenEvent("updateAS"),interruptedStateTransitions)
-					interrupthandle(edgeName="t023",targetState="handleStateRobot",cond=whenEvent("updateStateRobot"),interruptedStateTransitions)
-				}	 
-				state("startIncenerator") { //this:State
-					action { //it:State
-							INCENERATOR = true	 
-						CommUtils.outgreen("[WIS]start INCENERATOR")
-						forward("burn", "burn(X)" ,"incenerator" ) 
-						//genTimer( actor, state )
-					}
-					//After Lenzi Aug2002
-					sysaction { //it:State
-					}	 	 
-					 transition(edgeName="t024",targetState="endIncenerator",cond=whenEvent("burnEnd"))
-					interrupthandle(edgeName="t025",targetState="handleWasteStorage",cond=whenEvent("updateWS"),interruptedStateTransitions)
-					interrupthandle(edgeName="t026",targetState="handleAshStorage",cond=whenEvent("updateAS"),interruptedStateTransitions)
-					interrupthandle(edgeName="t027",targetState="handleStateRobot",cond=whenEvent("updateStateRobot"),interruptedStateTransitions)
-				}	 
-				state("endIncenerator") { //this:State
-					action { //it:State
-							INCENERATOR = false	 
-						CommUtils.outgreen("[WIS]end INCENERATOR")
-						forward("goBurnOut", "go(X)" ,"oprobot" ) 
-						//genTimer( actor, state )
-					}
-					//After Lenzi Aug2002
-					sysaction { //it:State
-					}	 	 
-					 transition(edgeName="t028",targetState="endRoutine",cond=whenDispatch("endRoutine"))
-					interrupthandle(edgeName="t029",targetState="handleWasteStorage",cond=whenEvent("updateWS"),interruptedStateTransitions)
-					interrupthandle(edgeName="t030",targetState="handleAshStorage",cond=whenEvent("updateAS"),interruptedStateTransitions)
-					interrupthandle(edgeName="t031",targetState="handleStateRobot",cond=whenEvent("updateStateRobot"),interruptedStateTransitions)
-				}	 
-				state("endRoutine") { //this:State
-					action { //it:State
-						CommUtils.outgreen("[WIS]End routine")
-						//genTimer( actor, state )
-					}
-					//After Lenzi Aug2002
-					sysaction { //it:State
-					}	 	 
-					 transition( edgeName="goto",targetState="startRoutine", cond=doswitchGuarded({RP>0 && !INCENERATOR && !FULL 
-					}) )
-					transition( edgeName="goto",targetState="goHome", cond=doswitchGuarded({! (RP>0 && !INCENERATOR && !FULL 
-					) }) )
-				}	 
-				state("goHome") { //this:State
-					action { //it:State
-						forward("goHome", "go(X)" ,"oprobot" ) 
-						//genTimer( actor, state )
-					}
-					//After Lenzi Aug2002
-					sysaction { //it:State
-					}	 	 
-					 transition( edgeName="goto",targetState="waitingCondition", cond=doswitch() )
+					 transition(edgeName="t033",targetState="verifyCondition",cond=whenEvent("stateScale"))
+					transition(edgeName="t034",targetState="verifyCondition",cond=whenEvent("stateSonar"))
 				}	 
 				state("verifyCondition") { //this:State
 					action { //it:State
 						CommUtils.outcyan("$name in ${currentState.stateName} | $currentMsg | ${Thread.currentThread().getName()} n=${Thread.activeCount()}")
 						 	   
-						if( checkMsgContent( Term.createTerm("updateWS(WEIGHT)"), Term.createTerm("updateWS(WEIGHT)"), 
+						CommUtils.outblack("[$name] RP=$RP, incineratorState=$incinerator, ashStorageLevel=$ashStorageLevel")
+						if( checkMsgContent( Term.createTerm("stateSonar(X)"), Term.createTerm("stateSonar(X)"), 
 						                        currentMsg.msgContent()) ) { //set msgArgList
-								CommUtils.outgreen("[WIS]handle wastestorage")
-									WEIGHT = payloadArg(0).toInt()  
-									RP= WEIGHT/50  
-								CommUtils.outgreen("RP= $RP")
+								 ashStorageLevel = payloadArg(0).toInt()  
+								CommUtils.outgreen("[$name] Ash storage level updated: $ashStorageLevel")
 						}
-						if( checkMsgContent( Term.createTerm("updateAS(STATE)"), Term.createTerm("updateAS(STATE)"), 
+						if( checkMsgContent( Term.createTerm("stateScale(X)"), Term.createTerm("stateScale(X)"), 
 						                        currentMsg.msgContent()) ) { //set msgArgList
-								CommUtils.outgreen("[CONDITION]handle ashstorage")
-								CommUtils.outcyan("$name in ${currentState.stateName} | $currentMsg | ${Thread.currentThread().getName()} n=${Thread.activeCount()}")
-								 	   
-								 FULL = payloadArg(0).toBoolean()  
+								 	wasteStorageWeight = payloadArg(0).toInt() 
+												 RP = wasteStorageWeight/50  
+								CommUtils.outgreen("[$name] RP quantity updated: $RP")
 						}
-						CommUtils.outgreen("[WIS]verify condition: $RP, $FULL")
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition( edgeName="goto",targetState="startRoutine", cond=doswitchGuarded({RP>0 && !INCENERATOR && !FULL 
+					 transition( edgeName="goto",targetState="startRoutine", cond=doswitchGuarded({RP>0 && incinerator!=1 && ashStorageLevel > DLIMT 
 					}) )
-					transition( edgeName="goto",targetState="waitingCondition", cond=doswitchGuarded({! (RP>0 && !INCENERATOR && !FULL 
+					transition( edgeName="goto",targetState="waitingRP", cond=doswitchGuarded({! (RP>0 && incinerator!=1 && ashStorageLevel > DLIMT 
 					) }) )
 				}	 
-				state("handleWasteStorage") { //this:State
+				state("startRoutine") { //this:State
 					action { //it:State
-						if( checkMsgContent( Term.createTerm("updateWS(WEIGHT)"), Term.createTerm("updateWS(WEIGHT)"), 
+						CommUtils.outgreen("[$name] start routine")
+						request("bringRP", "bringRP(X)" ,"oprobot" )  
+						//genTimer( actor, state )
+					}
+					//After Lenzi Aug2002
+					sysaction { //it:State
+					}	 	 
+					 transition(edgeName="t035",targetState="startIncinerator",cond=whenReply("atIncinerator"))
+					interrupthandle(edgeName="t036",targetState="handleStateScale",cond=whenEvent("stateScale"),interruptedStateTransitions)
+					interrupthandle(edgeName="t037",targetState="handleStateSonar",cond=whenEvent("stateSonar"),interruptedStateTransitions)
+				}	 
+				state("startIncinerator") { //this:State
+					action { //it:State
+						CommUtils.outgreen("[$name] Incinerator started")
+						forward("notifyRp", "notifyRp(X)" ,"incinerator" ) 
+						forward("goHome", "goHome(X)" ,"oprobot" ) 
+						 incinerator = 1 
+						//genTimer( actor, state )
+					}
+					//After Lenzi Aug2002
+					sysaction { //it:State
+					}	 	 
+					 transition(edgeName="t038",targetState="endIncinerator",cond=whenEvent("burnEnd"))
+					interrupthandle(edgeName="t039",targetState="handleStateScale",cond=whenEvent("stateScale"),interruptedStateTransitions)
+					interrupthandle(edgeName="t040",targetState="handleStateSonar",cond=whenEvent("stateSonar"),interruptedStateTransitions)
+				}	 
+				state("endIncinerator") { //this:State
+					action { //it:State
+						CommUtils.outgreen("[$name] incinerator is now idle")
+						request("bringAsh", "bringAsh(X)" ,"oprobot" )  
+						 
+						    		incinerator = 2
+						//genTimer( actor, state )
+					}
+					//After Lenzi Aug2002
+					sysaction { //it:State
+					}	 	 
+					 transition(edgeName="t041",targetState="verifyCondition",cond=whenReply("ashDeposited"))
+					interrupthandle(edgeName="t042",targetState="handleStateScale",cond=whenEvent("stateScale"),interruptedStateTransitions)
+					interrupthandle(edgeName="t043",targetState="handleStateSonar",cond=whenEvent("stateSonar"),interruptedStateTransitions)
+				}	 
+				state("handleStateSonar") { //this:State
+					action { //it:State
+						if( checkMsgContent( Term.createTerm("stateSonar(X)"), Term.createTerm("stateSonar(X)"), 
 						                        currentMsg.msgContent()) ) { //set msgArgList
-								CommUtils.outgreen("[WIS]handle wastestorage")
-									WEIGHT = payloadArg(0).toInt()  
-									RP= WEIGHT/50  
-								CommUtils.outgreen("RP= $RP")
+								 ashStorageLevel = payloadArg(0).toInt()  
+								CommUtils.outgreen("[$name] Ash storage level updated: $ashStorageLevel")
 						}
 						returnFromInterrupt(interruptedStateTransitions)
 						//genTimer( actor, state )
@@ -178,31 +149,13 @@ class Wis ( name: String, scope: CoroutineScope, isconfined: Boolean=false  ) : 
 					sysaction { //it:State
 					}	 	 
 				}	 
-				state("handleAshStorage") { //this:State
+				state("handleStateScale") { //this:State
 					action { //it:State
-						if( checkMsgContent( Term.createTerm("updateAS(STATE)"), Term.createTerm("updateAS(STATE)"), 
+						if( checkMsgContent( Term.createTerm("stateScale(X)"), Term.createTerm("stateScale(X)"), 
 						                        currentMsg.msgContent()) ) { //set msgArgList
-								 FULL = payloadArg(0).toBoolean()  
-								CommUtils.outcyan("$name in ${currentState.stateName} | $currentMsg | ${Thread.currentThread().getName()} n=${Thread.activeCount()}")
-								 	   
-								CommUtils.outgreen("[WIS]handle ashstorage: $FULL")
-						}
-						returnFromInterrupt(interruptedStateTransitions)
-						//genTimer( actor, state )
-					}
-					//After Lenzi Aug2002
-					sysaction { //it:State
-					}	 	 
-				}	 
-				state("handleStateRobot") { //this:State
-					action { //it:State
-						if( checkMsgContent( Term.createTerm("update(POSX,POSY,JOB)"), Term.createTerm("update(POSX,POSY,JOB)"), 
-						                        currentMsg.msgContent()) ) { //set msgArgList
-								 
-									      	RobotX = payloadArg(0)
-									        RobotY = payloadArg(1)
-									        RobotState = payloadArg(2)
-								CommUtils.outgreen("[STATE ROBOT]:	$RobotState	Position:$RobotX,$RobotY")
+								 	wasteStorageWeight = payloadArg(0).toInt() 
+												RP = wasteStorageWeight/50  
+								CommUtils.outgreen("[$name] RP quantity updated: $RP")
 						}
 						returnFromInterrupt(interruptedStateTransitions)
 						//genTimer( actor, state )
