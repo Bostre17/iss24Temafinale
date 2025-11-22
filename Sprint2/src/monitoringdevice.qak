@@ -1,4 +1,4 @@
-System sonarqak24
+System monitoringdevice
  
 /*
  * Sistema che funziona su RaspberryPi
@@ -25,7 +25,7 @@ QActor monitoringdevice context ctxmd{
 		#]
 	
 	State s0 initial{  
-		println("sonar24 | ready") 
+		println("$name | ready") 
 		//[# subscribeToLocalActor("sonar") #]
 		delay 1000 //give time to create sonardevice
 		//subscribeTo sonardevice for sonardata
@@ -188,6 +188,28 @@ QActor sonardevice context ctxmd{
 	
 }//sonardevice
 
+QActor warningdevice context ctxmd{  
+	// LED_STATE: 0 = OFF, 1 = ON, 2 = BLINK
+	[#	var LED_STATE = 0
+		var runtime = Runtime.getRuntime()
+		#]
+	
+	State off initial{  
+		println("$name | OFF")
+		
+		}
+		
+	State on{  
+		println("$name | ON") 
+		        
+		}
+		
+	State blink{  
+		println("$name | BLINK") 
+		
+		
+		}
+}
 /* 
 QActor sonarusagemock context ctxmd{
 	State s0 initial{

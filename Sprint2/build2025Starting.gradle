@@ -154,9 +154,9 @@ task dovesiamo {
 
 distributions {
     main {
-        distributionBaseName = 'sonarqak24'
+        distributionBaseName = 'monitoringdevice'
         contents { 
-             from './sonarqak24.pl'
+             from './monitoringdevice.pl'
              from './sysRules.pl'
              from './facadeConfig.json'
         }

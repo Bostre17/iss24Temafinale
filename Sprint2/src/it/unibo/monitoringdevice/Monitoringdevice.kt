@@ -33,7 +33,7 @@ class Monitoringdevice ( name: String, scope: CoroutineScope, isconfined: Boolea
 		return { //this:ActionBasciFsm
 				state("s0") { //this:State
 					action { //it:State
-						CommUtils.outblack("sonar24 | ready")
+						CommUtils.outblack("$name | ready")
 						delay(1000) 
 						subscribeToLocalActor("datacleaner") 
 						delegate("sonarstop", "sonardevice") 
