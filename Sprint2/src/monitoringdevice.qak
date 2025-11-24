@@ -46,7 +46,7 @@ QActor monitoringdevice context ctxmd{
 			
 			forward sonardevice -m sonarstart : sonarstart(1)
 		}
-	}
+	}  
 	Transition t0 whenEvent sonardata -> handlesonardata
 	              whenMsg   sonarstop -> endwork
 	              
@@ -101,10 +101,15 @@ QActor datacleaner context ctxmd {
 		 println("$name distance=$DISTANCE") color black	
 		onMsg(sonardata : distance(DISTANCE)) {
 	      	[#  DISTANCE = payloadArg(0).toInt() #]	      	
-	      	 println("$name distance=$DISTANCE") color black
-	      	 [# var DIFF = (DISTANCE - LAST) #]
+	      	println("$name distance=$DISTANCE") color black
+	      	if [# LAST != 0#] {
+	      		[# var DIFF = (DISTANCE - LAST) #]
+	      	}
+	      	else {
+	      		[# var DIFF = TOLERANCE) #]
+	      	}
 	      	if [# DISTANCE < 300 && (DIFF >= TOLERANCE || DIFF <= -TOLERANCE)#]  {
-	      		// update last!!!!
+	      		[# LAST = DISTANCE #]
 	 			emitlocalstream  sonardata : distance($DISTANCE)
 	     	}
      	}

@@ -267,8 +267,8 @@ div.imagedesc{
 						<li><b>MonitoringDevice</b>: è un attore QAK responsabile di comunicare al WIS lo stato logico dell’AshStorage e ricevere da quest'ultimo le direttive sul comportamento del WarningDevice.</li>
 						<li><b>SonarDevice</b>: è un Attore QAK che incapsula la logica del sonar fisico. Incorpora l'oggetto POJO <i>sonar24.py</i> che legge il dato grezzo di distanza. La sua responsabilità principale è monitorare il livello di AshStorage ed inviare le misurazioni fatte al DataCleaner</li>
 						<li><b>DataCleaner</b>: è un attore QAK responsabile di filtrare le misurazioni fatte dal SonarDevice e convertire le distanze filtrate (significative) in uno stato logico (pieno/non pieno) da inviare al Monitoring Device</li>
-						<li><b>WarningDevice</b>: È un Attore QAK che gestisce il LED. La sua responsabilità è ricevere i comandi logici (acceso, spento, lampeggiante) e tradurli nell'interazione con l'hardware LED fisico.
-							Come stabilito nell'analisi, per coerenza e per la natura di output, dovrebbe ricevere istruzioni dal WIS</li>
+						<li><b>WarningDevice</b>: È un Attore QAK che gestisce il LED. La sua responsabilità attuale è gestire i stati logici del led, ricevere i comandi (acceso, spento, lampeggiante) e tradurli (in uno sprint successivo) nell'interazione con l'hardware LED fisico.
+                            Come stabilito nell'analisi, per coerenza e per la natura di output, dovrebbe ricevere istruzioni dal WIS.</li>
 						</ol>
 					
 					
