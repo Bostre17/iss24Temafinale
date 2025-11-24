@@ -112,7 +112,7 @@ private static EventReceiver receiver;
             // Simula distanza > DLIMT (e.g., 30 > 20)
             sendSonarDataEvent(30); 
             Thread.sleep(500);
-            // Non ci dovrebbe essere un stateSonar, sonar24 rimane in workAsEmpty [cite: 3, 4]
+            // Non ci dovrebbe essere un stateSonar, sonar24 rimane in workAsEmpty 
             String initialState = receiver.getLastState();
             assertEquals("UNKNOWN", initialState); 
             
@@ -127,7 +127,7 @@ private static EventReceiver receiver;
             sendSonarDataEvent(15); 
             Thread.sleep(1000); // Wait for transition and event emission
             
-            // Verifica che AshStorage sia diventato PIENO (FULL=true) [cite: 5]
+            // Verifica che AshStorage sia diventato PIENO (FULL=true) 
             assertEquals("true", receiver.getLastState()); 
             CommUtils.outgreen("Ash Storage transition to FULL verified.");
             
@@ -136,7 +136,7 @@ private static EventReceiver receiver;
             // Simula distanza <= DLIMT (e.g., 10 <= 20)
             sendSonarDataEvent(10); 
             Thread.sleep(500);
-            // Non ci dovrebbe essere un stateSonar, sonar24 rimane in workAsFull [cite: 5]
+            // Non ci dovrebbe essere un stateSonar, sonar24 rimane in workAsFull 
             assertEquals("true", receiver.getLastState()); 
 
             // --- SCENARIO 4: PIENO -> VUOTO (startWis) ---
@@ -145,7 +145,7 @@ private static EventReceiver receiver;
             sendSonarDataEvent(40); 
             Thread.sleep(1000); // Wait for transition and event emission
             
-            // Verifica che AshStorage sia diventato VUOTO (FULL=false) [cite: 6]
+            // Verifica che AshStorage sia diventato VUOTO (FULL=false) 
             assertEquals("false", receiver.getLastState()); 
             CommUtils.outgreen("Ash Storage transition to EMPTY verified.");
 
