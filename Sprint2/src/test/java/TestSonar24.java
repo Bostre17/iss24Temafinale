@@ -27,24 +27,24 @@ private static final String HOST = "localhost";
 private static final String PORT = "8128"; // Porta del ctxsonarqak24
 private static final int DLIMT = 20; // 20 cm come Distanza Limite per il test
 
-// Attore fittizio per intercettare gli eventi updateAS emessi da sonar24
+// Attore fittizio per intercettare gli eventi stateSonar emessi da sonar24
 public static class EventReceiver extends ActorBasic {
     private String lastState = "UNKNOWN";
 
     public EventReceiver(String name, String ctxName) {
         super(name, ContextUtils.get
         (ctxName));
-        // Si sottoscrive all'evento updateAS di sonar24
-        ContextUtils.get(ctxName).addListener(this, "updateAS"); 
+        // Si sottoscrive all'evento stateSonar di sonar24
+        ContextUtils.get(ctxName).addListener(this, "stateSonar"); 
     }
 
     @Override
     protected void doJob(IApplMessage msg) throws Exception {
-        if (msg.msgType().equals("event") && msg.msgId().equals("updateAS")) {
-            // Il payload è updateAS(FULL), dove FULL è un booleano
+        if (msg.msgType().equals("event") && msg.msgId().equals("stateSonar")) {
+            // Il payload è stateSonar(FULL), dove FULL è un booleano
             String content = msg.msgContent();
             lastState = content.substring(content.indexOf("(") + 1, content.indexOf(")"));
-            ColorsOut.outappl("EventReceiver received updateAS: " + lastState, ColorsOut.MAGENTA);
+            ColorsOut.outappl("EventReceiver received stateSonar: " + lastState, ColorsOut.MAGENTA);
         }
     }
 
@@ -63,7 +63,7 @@ private static EventReceiver receiver;
         // activateSystemUsingGradle(); 
         CommUtils.outmagenta("Assuming sonar24 system is running on " + HOST + ":" + PORT);
         
-        // Crea l'EventReceiver nello stesso contesto di sonar24 per intercettare updateAS
+        // Crea l'EventReceiver nello stesso contesto di sonar24 per intercettare stateSonar
         receiver = new EventReceiver("testReceiver", "ctxsonarqak24");
         receiver.activate();
 	}
@@ -112,7 +112,7 @@ private static EventReceiver receiver;
             // Simula distanza > DLIMT (e.g., 30 > 20)
             sendSonarDataEvent(30); 
             Thread.sleep(500);
-            // Non ci dovrebbe essere un updateAS, sonar24 rimane in workAsEmpty [cite: 3, 4]
+            // Non ci dovrebbe essere un stateSonar, sonar24 rimane in workAsEmpty [cite: 3, 4]
             String initialState = receiver.getLastState();
             assertEquals("UNKNOWN", initialState); 
             
@@ -136,7 +136,7 @@ private static EventReceiver receiver;
             // Simula distanza <= DLIMT (e.g., 10 <= 20)
             sendSonarDataEvent(10); 
             Thread.sleep(500);
-            // Non ci dovrebbe essere un updateAS, sonar24 rimane in workAsFull [cite: 5]
+            // Non ci dovrebbe essere un stateSonar, sonar24 rimane in workAsFull [cite: 5]
             assertEquals("true", receiver.getLastState()); 
 
             // --- SCENARIO 4: PIENO -> VUOTO (startWis) ---
