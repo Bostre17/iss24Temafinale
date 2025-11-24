@@ -30,7 +30,7 @@ class Wis ( name: String, scope: CoroutineScope, isconfined: Boolean=false  ) : 
 		
 			val DLIMT = 40
 			var wasteStorageWeight=0
-			var ashStorageLevel = 0
+			var ashStorageFull = 0
 			var posX = 0
 			var posY = 0
 			var incinerator = 0
@@ -42,9 +42,10 @@ class Wis ( name: String, scope: CoroutineScope, isconfined: Boolean=false  ) : 
 						CommUtils.outgreen("[$name] Initializing system")
 						subscribeToLocalActor("incinerator") 
 						subscribeToLocalActor("scalemock") 
-						subscribeToLocalActor("sonarmock") 
 						forward("act", "act(2)" ,"incinerator" ) 
 						CommUtils.outgreen("[$name] sent act to incinerator")
+						forward("sonarstart", "sonarstart($DLIMT)" ,"monitoringdevice" ) 
+						CommUtils.outgreen("[$name] sent sonarstart to monitoringdevice")
 						 incinerator = 2  
 						//genTimer( actor, state )
 					}
@@ -63,18 +64,29 @@ class Wis ( name: String, scope: CoroutineScope, isconfined: Boolean=false  ) : 
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t033",targetState="verifyCondition",cond=whenEvent("stateScale"))
-					transition(edgeName="t034",targetState="verifyCondition",cond=whenEvent("stateSonar"))
+					 transition(edgeName="t025",targetState="verifyCondition",cond=whenEvent("stateScale"))
+					transition(edgeName="t026",targetState="verifyCondition",cond=whenEvent("stateSonar"))
 				}	 
 				state("verifyCondition") { //this:State
 					action { //it:State
 						CommUtils.outcyan("$name in ${currentState.stateName} | $currentMsg | ${Thread.currentThread().getName()} n=${Thread.activeCount()}")
 						 	   
-						CommUtils.outblack("[$name] RP=$RP, incineratorState=$incinerator, ashStorageLevel=$ashStorageLevel")
+						CommUtils.outblack("[$name] RP=$RP, incineratorState=$incinerator, ashStorageFull=$ashStorageFull")
 						if( checkMsgContent( Term.createTerm("stateSonar(X)"), Term.createTerm("stateSonar(X)"), 
 						                        currentMsg.msgContent()) ) { //set msgArgList
-								 ashStorageLevel = payloadArg(0).toInt()  
-								CommUtils.outgreen("[$name] Ash storage level updated: $ashStorageLevel")
+								 ashStorageFull = payloadArg(0).toInt()  
+								CommUtils.outgreen("[$name] Ash storage level updated: $ashStorageFull")
+								if(  ashStorageFull == 1  
+								 ){emit("stateLed", "stateLed(2)" ) 
+								}
+								else
+								 {if(  incinerator == 1 
+								  ){emit("stateLed", "stateLed(1)" ) 
+								 }
+								 else
+								  {emit("stateLed", "stateLed(0)" ) 
+								  }
+								 }
 						}
 						if( checkMsgContent( Term.createTerm("stateScale(X)"), Term.createTerm("stateScale(X)"), 
 						                        currentMsg.msgContent()) ) { //set msgArgList
@@ -87,9 +99,9 @@ class Wis ( name: String, scope: CoroutineScope, isconfined: Boolean=false  ) : 
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition( edgeName="goto",targetState="startRoutine", cond=doswitchGuarded({RP>0 && incinerator!=1 && ashStorageLevel > DLIMT 
+					 transition( edgeName="goto",targetState="startRoutine", cond=doswitchGuarded({RP>0 && incinerator!=1 && ashStorageFull == 0  
 					}) )
-					transition( edgeName="goto",targetState="waitingRP", cond=doswitchGuarded({! (RP>0 && incinerator!=1 && ashStorageLevel > DLIMT 
+					transition( edgeName="goto",targetState="waitingRP", cond=doswitchGuarded({! (RP>0 && incinerator!=1 && ashStorageFull == 0  
 					) }) )
 				}	 
 				state("startRoutine") { //this:State
@@ -101,13 +113,14 @@ class Wis ( name: String, scope: CoroutineScope, isconfined: Boolean=false  ) : 
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t035",targetState="startIncinerator",cond=whenReply("atIncinerator"))
-					interrupthandle(edgeName="t036",targetState="handleStateScale",cond=whenEvent("stateScale"),interruptedStateTransitions)
-					interrupthandle(edgeName="t037",targetState="handleStateSonar",cond=whenEvent("stateSonar"),interruptedStateTransitions)
+					 transition(edgeName="t027",targetState="startIncinerator",cond=whenReply("atIncinerator"))
+					interrupthandle(edgeName="t028",targetState="handleStateScale",cond=whenEvent("stateScale"),interruptedStateTransitions)
+					interrupthandle(edgeName="t029",targetState="handleStateSonar",cond=whenEvent("stateSonar"),interruptedStateTransitions)
 				}	 
 				state("startIncinerator") { //this:State
 					action { //it:State
 						CommUtils.outgreen("[$name] Incinerator started")
+						emit("stateLed", "stateLed(1)" ) 
 						forward("notifyRp", "notifyRp(X)" ,"incinerator" ) 
 						forward("goHome", "goHome(X)" ,"oprobot" ) 
 						 incinerator = 1 
@@ -116,13 +129,14 @@ class Wis ( name: String, scope: CoroutineScope, isconfined: Boolean=false  ) : 
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t038",targetState="endIncinerator",cond=whenEvent("burnEnd"))
-					interrupthandle(edgeName="t039",targetState="handleStateScale",cond=whenEvent("stateScale"),interruptedStateTransitions)
-					interrupthandle(edgeName="t040",targetState="handleStateSonar",cond=whenEvent("stateSonar"),interruptedStateTransitions)
+					 transition(edgeName="t030",targetState="endIncinerator",cond=whenEvent("burnEnd"))
+					interrupthandle(edgeName="t031",targetState="handleStateScale",cond=whenEvent("stateScale"),interruptedStateTransitions)
+					interrupthandle(edgeName="t032",targetState="handleStateSonar",cond=whenEvent("stateSonar"),interruptedStateTransitions)
 				}	 
 				state("endIncinerator") { //this:State
 					action { //it:State
 						CommUtils.outgreen("[$name] incinerator is now idle")
+						emit("stateLed", "stateLed(0)" ) 
 						request("bringAsh", "bringAsh(X)" ,"oprobot" )  
 						 
 						    		incinerator = 2
@@ -131,16 +145,15 @@ class Wis ( name: String, scope: CoroutineScope, isconfined: Boolean=false  ) : 
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t041",targetState="verifyCondition",cond=whenReply("ashDeposited"))
-					interrupthandle(edgeName="t042",targetState="handleStateScale",cond=whenEvent("stateScale"),interruptedStateTransitions)
-					interrupthandle(edgeName="t043",targetState="handleStateSonar",cond=whenEvent("stateSonar"),interruptedStateTransitions)
+					 transition(edgeName="t033",targetState="verifyCondition",cond=whenReply("ashDeposited"))
+					interrupthandle(edgeName="t034",targetState="handleStateScale",cond=whenEvent("stateScale"),interruptedStateTransitions)
 				}	 
 				state("handleStateSonar") { //this:State
 					action { //it:State
 						if( checkMsgContent( Term.createTerm("stateSonar(X)"), Term.createTerm("stateSonar(X)"), 
 						                        currentMsg.msgContent()) ) { //set msgArgList
-								 ashStorageLevel = payloadArg(0).toInt()  
-								CommUtils.outgreen("[$name] Ash storage level updated: $ashStorageLevel")
+								 ashStorageFull = payloadArg(0).toInt()  
+								CommUtils.outgreen("[$name] Ash storage full: $ashStorageFull")
 						}
 						returnFromInterrupt(interruptedStateTransitions)
 						//genTimer( actor, state )

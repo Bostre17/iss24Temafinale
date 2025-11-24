@@ -27,9 +27,10 @@ class Datacleaner ( name: String, scope: CoroutineScope, isconfined: Boolean=fal
 	}
 	override fun getBody() : (ActorBasicFsm.() -> Unit){
 		//val interruptedStateTransitions = mutableListOf<Transition>()
-		 	var distance = 0; 
-				var last = 0;
-				var tolerance = 5 
+		 	var DISTANCE = 0; 
+				var LAST = 0;
+				var DIFF = 0;
+				var TOLERANCE = 5 
 		return { //this:ActionBasciFsm
 				state("s0") { //this:State
 					action { //it:State
@@ -45,14 +46,20 @@ class Datacleaner ( name: String, scope: CoroutineScope, isconfined: Boolean=fal
 				}	 
 				state("filter") { //this:State
 					action { //it:State
-						CommUtils.outblack("$name D=$D")
-						if( checkMsgContent( Term.createTerm("distance(D)"), Term.createTerm("distance(D)"), 
+						CommUtils.outblack("$name distance=$DISTANCE")
+						if( checkMsgContent( Term.createTerm("distance(DISTANCE)"), Term.createTerm("distance(DISTANCE)"), 
 						                        currentMsg.msgContent()) ) { //set msgArgList
-								  distance = payloadArg(0).toInt()  
-								CommUtils.outblack("$name D=$D")
-								 var diff = abs(distance - last)  
-								if(  distance < 300 && diff >= tolerance 
-								 ){emitLocalStreamEvent("sonardata", "distance($D)" ) 
+								  DISTANCE = payloadArg(0).toInt()  
+								CommUtils.outblack("$name distance=$DISTANCE")
+								if(  LAST != 0 
+								 ){ DIFF = (DISTANCE - LAST)  
+								}
+								else
+								 { DIFF = TOLERANCE  
+								 }
+								if(  DISTANCE < 300 && ( DIFF >= TOLERANCE || DIFF <= -TOLERANCE )  
+								 ){ LAST = DISTANCE  
+								emitLocalStreamEvent("sonardata", "distance($DISTANCE)" ) 
 								}
 						}
 						//genTimer( actor, state )

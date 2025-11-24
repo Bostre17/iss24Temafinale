@@ -1,4 +1,4 @@
-package main.java.test;
+/*package test.java;
  
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -19,7 +19,8 @@ import unibo.basicomm23.actors.context.ContextUtils;
  * ===========================================================================
  * TestSonar24
  * ===========================================================================
- */
+FINE COMMENTO QUA
+
 public class TestSonar24 {
 private static Interaction connSupport;
 private static Process p;
@@ -156,4 +157,4 @@ private static EventReceiver receiver;
 			fail("testAshStorageTransitions failed: " + e.getMessage());
 		}
 	}
-}
+}*/

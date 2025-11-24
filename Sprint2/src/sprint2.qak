@@ -355,7 +355,7 @@ QActor wis context ctxwis {
 			println("[$name] Ash storage level updated: $ashStorageFull") color green
 			
 			// se ashstorage è pieno allora il led lampeggia.
-			if [# ashStorageFull == true #]
+			if [# ashStorageFull == 1 #]
 			{
         		emit stateLed : stateLed(2)
 			}
@@ -377,7 +377,7 @@ QActor wis context ctxwis {
 			println("[$name] RP quantity updated: $RP") color green
 		}
 	}
-	Goto startRoutine if [#RP>0 && incinerator!=1 && ashStorageFull == false #] else waitingRP
+	Goto startRoutine if [#RP>0 && incinerator!=1 && ashStorageFull == 0 #] else waitingRP
 			
     
     

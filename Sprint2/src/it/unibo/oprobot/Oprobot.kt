@@ -46,7 +46,7 @@ class Oprobot ( name: String, scope: CoroutineScope, isconfined: Boolean=false  
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t015",targetState="standby",cond=whenReply("engagedone"))
+					 transition(edgeName="t07",targetState="standby",cond=whenReply("engagedone"))
 				}	 
 				state("standby") { //this:State
 					action { //it:State
@@ -57,8 +57,8 @@ class Oprobot ( name: String, scope: CoroutineScope, isconfined: Boolean=false  
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t116",targetState="goWasteIn",cond=whenRequest("bringRP"))
-					transition(edgeName="t117",targetState="goBurnOut",cond=whenRequest("bringAsh"))
+					 transition(edgeName="t18",targetState="goWasteIn",cond=whenRequest("bringRP"))
+					transition(edgeName="t19",targetState="goBurnOut",cond=whenRequest("bringAsh"))
 				}	 
 				state("goWasteIn") { //this:State
 					action { //it:State
@@ -72,8 +72,8 @@ class Oprobot ( name: String, scope: CoroutineScope, isconfined: Boolean=false  
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t218",targetState="goBurnIn",cond=whenReply("moverobotdone"))
-					transition(edgeName="t219",targetState="goHome",cond=whenReply("moverobotfailed"))
+					 transition(edgeName="t210",targetState="goBurnIn",cond=whenReply("moverobotdone"))
+					transition(edgeName="t211",targetState="goHome",cond=whenReply("moverobotfailed"))
 				}	 
 				state("goBurnIn") { //this:State
 					action { //it:State
@@ -89,8 +89,8 @@ class Oprobot ( name: String, scope: CoroutineScope, isconfined: Boolean=false  
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t320",targetState="arrivedToIncinerator",cond=whenReply("moverobotdone"))
-					transition(edgeName="t321",targetState="goHome",cond=whenReply("moverobotfailed"))
+					 transition(edgeName="t312",targetState="arrivedToIncinerator",cond=whenReply("moverobotdone"))
+					transition(edgeName="t313",targetState="goHome",cond=whenReply("moverobotfailed"))
 				}	 
 				state("arrivedToIncinerator") { //this:State
 					action { //it:State
@@ -102,9 +102,9 @@ class Oprobot ( name: String, scope: CoroutineScope, isconfined: Boolean=false  
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t422",targetState="goHome",cond=whenDispatch("goHome"))
-					transition(edgeName="t423",targetState="goBurnOut",cond=whenRequest("bringAsh"))
-					transition(edgeName="t424",targetState="goWasteIn",cond=whenRequest("bringRP"))
+					 transition(edgeName="t414",targetState="goHome",cond=whenDispatch("goHome"))
+					transition(edgeName="t415",targetState="goBurnOut",cond=whenRequest("bringAsh"))
+					transition(edgeName="t416",targetState="goWasteIn",cond=whenRequest("bringRP"))
 				}	 
 				state("goHome") { //this:State
 					action { //it:State
@@ -137,8 +137,8 @@ class Oprobot ( name: String, scope: CoroutineScope, isconfined: Boolean=false  
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t525",targetState="standby",cond=whenReply("moverobotdone"))
-					transition(edgeName="t526",targetState="goHome",cond=whenReply("moverobotfailed"))
+					 transition(edgeName="t517",targetState="standby",cond=whenReply("moverobotdone"))
+					transition(edgeName="t518",targetState="goHome",cond=whenReply("moverobotfailed"))
 				}	 
 				state("goBurnOut") { //this:State
 					action { //it:State
@@ -153,8 +153,8 @@ class Oprobot ( name: String, scope: CoroutineScope, isconfined: Boolean=false  
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t627",targetState="goAshOut",cond=whenReply("moverobotdone"))
-					transition(edgeName="t628",targetState="goHome",cond=whenReply("moverobotfailed"))
+					 transition(edgeName="t619",targetState="goAshOut",cond=whenReply("moverobotdone"))
+					transition(edgeName="t620",targetState="goHome",cond=whenReply("moverobotfailed"))
 				}	 
 				state("goAshOut") { //this:State
 					action { //it:State
@@ -170,22 +170,21 @@ class Oprobot ( name: String, scope: CoroutineScope, isconfined: Boolean=false  
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t729",targetState="atAshStorage",cond=whenReply("moverobotdone"))
-					transition(edgeName="t730",targetState="goHome",cond=whenReply("moverobotfailed"))
+					 transition(edgeName="t721",targetState="atAshStorage",cond=whenReply("moverobotdone"))
+					transition(edgeName="t722",targetState="goHome",cond=whenReply("moverobotfailed"))
 				}	 
 				state("atAshStorage") { //this:State
 					action { //it:State
 						CommUtils.outyellow("[$name] arrivato in AshStorage, deposito e notifico.")
 						 Job = "Depositing Ashes"  
-						forward("newAsh", "newAsh(1)" ,"sonarmock" ) 
 						answer("bringAsh", "ashDeposited", "ashDeposited(1)"   )  
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t831",targetState="goHome",cond=whenDispatch("goHome"))
-					transition(edgeName="t832",targetState="goWasteIn",cond=whenRequest("bringRP"))
+					 transition(edgeName="t823",targetState="goHome",cond=whenDispatch("goHome"))
+					transition(edgeName="t824",targetState="goWasteIn",cond=whenRequest("bringRP"))
 				}	 
 			}
 		}

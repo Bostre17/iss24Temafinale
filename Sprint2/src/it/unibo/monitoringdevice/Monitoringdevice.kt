@@ -67,7 +67,7 @@ class Monitoringdevice ( name: String, scope: CoroutineScope, isconfined: Boolea
 					action { //it:State
 						CommUtils.outyellow("$name in ${currentState.stateName} | $currentMsg | ${Thread.currentThread().getName()} n=${Thread.activeCount()}")
 						 	   
-						if( checkMsgContent( Term.createTerm("distance(D)"), Term.createTerm("distance(D)"), 
+						if( checkMsgContent( Term.createTerm("distance(DISTANCE)"), Term.createTerm("distance(DISTANCE)"), 
 						                        currentMsg.msgContent()) ) { //set msgArgList
 								 DISTANCE = payloadArg(0).toInt()  
 								CommUtils.outyellow("All'inizio il sonar misura $DISTANCE")
@@ -79,7 +79,7 @@ class Monitoringdevice ( name: String, scope: CoroutineScope, isconfined: Boolea
 								 {	FULL = false	 
 								 CommUtils.outgreen("$name | EMPTY: $DISTANCE")
 								 }
-								emit("updateAS", "updateAS($FULL)" ) 
+								emit("stateSonar", "stateSonar($FULL)" ) 
 						}
 						//genTimer( actor, state )
 					}

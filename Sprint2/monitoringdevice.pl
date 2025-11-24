@@ -1,8 +1,9 @@
 %====================================================================================
 % monitoringdevice description   
 %====================================================================================
-event( sonardata, distance(D) ).
-event( updateAS, updateAS(D) ).
+event( sonardata, distance(DISTANCE) ).
+event( stateSonar, stateSonar(DISTANCE) ).
+event( stateLed, stateLed(STATE) ).
 dispatch( sonarstart, sonarstart(X) ).
 dispatch( sonarwork, sonarwork(X) ).
 dispatch( sonarstop, sonarstop(X) ).
