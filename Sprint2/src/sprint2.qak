@@ -18,6 +18,8 @@ Dispatch rpTaken : rpTaken(X)			// messaggio per scale
 Event burnEnd : burnEnd(BTIME)
 Event stateScale : stateScale(X) 			// messaggio observable update valore scale
 Event stateSonar : stateSonar(X)			// messaggio observable update valore sonar
+
+Event stateLed : stateLed(X)		
 //Event position : position(X,Y,J)			// messaggio observable posizione oprobot
 
 // messaggi conversazione engage tra OpRobot e BasicRobot
@@ -42,8 +44,10 @@ Context ctxwis ip [host="localhost" port=8001]
 Context ctxbasicrobot ip [host="127.0.0.1" port=8020]
 Context ctxmd ip [host= "192.168.1.15" port= 8128]
 
-ExternalQActor basicrobot context ctxbasicrobot
 ExternalQActor monitoringdevice context ctxmd
+ExternalQActor basicrobot context ctxbasicrobot
+
+
 
 
 //--------------------------Incinerator-----------------------------
@@ -349,6 +353,23 @@ QActor wis context ctxwis {
 		onMsg( stateSonar : stateSonar(X)){
 			[# ashStorageFull = payloadArg(0).toInt() #]
 			println("[$name] Ash storage level updated: $ashStorageFull") color green
+			
+			// se ashstorage è pieno allora il led lampeggia.
+			if [# ashStorageFull == true #]
+			{
+        		emit stateLed : stateLed(2)
+			}
+			else
+			{
+				//si deve controllare se l'ashstorage viene svuotato mentre si sta incenerendo.
+				if [# incinerator == 1#]{
+					emit stateLed : stateLed(1)
+				}
+				else
+				{
+					emit stateLed : stateLed(0)
+				}
+			}
 		}
 		onMsg( stateScale : stateScale(X)){
 			[# 	wasteStorageWeight = payloadArg(0).toInt() 
@@ -374,6 +395,7 @@ QActor wis context ctxwis {
     
     State startIncinerator{
         println("[$name] Incinerator started") color green
+        emit stateLed : stateLed(1)
         forward incinerator -m notifyRp : notifyRp(X)
         // il robot potrebbe tornare in home da solo senza comando del wis, però se non facessi così tornerebbe ad home istantaneamente, senza scaricare RP (su controllo del WIS)
         forward oprobot -m goHome : goHome(X)
@@ -387,6 +409,7 @@ QActor wis context ctxwis {
 	
 	State endIncinerator{
         println("[$name] incinerator is now idle") color green
+        emit stateLed : stateLed(0)
         request oprobot -m bringAsh : bringAsh(X)
     	[# 
     		incinerator = 2

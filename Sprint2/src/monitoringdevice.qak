@@ -4,8 +4,9 @@ System monitoringdevice
  * Sistema che funziona su RaspberryPi
  * Delega i comandi start/stop a sonardevice
  */
-Event sonardata : distance(D)   //emitted  by sonardevice or (better) by datacleaner
-Event updateAS : updateAS(D)
+Event sonardata : distance(DISTANCE)   //emitted  by sonardevice or (better) by datacleaner
+Event stateSonar : stateSonar(DISTANCE)
+Event stateLed : stateLed(STATE)
 
 Dispatch sonarstart : sonarstart(X)
 Dispatch sonarwork : sonarwork(X)
@@ -52,7 +53,7 @@ QActor monitoringdevice context ctxmd{
 	              
 	State handlesonardata{
 		printCurrentMessage color yellow
-		onMsg( sonardata : distance(D) ){
+		onMsg( sonardata : distance(DISTANCE) ){
 			
 				[# DISTANCE = payloadArg(0).toInt() #]
 				println("All'inizio il sonar misura $DISTANCE") color yellow
@@ -67,7 +68,7 @@ QActor monitoringdevice context ctxmd{
 				println("$name | EMPTY: $DISTANCE") color green
 				}
 				
-				emit updateAS : updateAS($FULL)
+				emit stateSonar : stateSonar($FULL)
 		}
 		
 	}
@@ -86,9 +87,9 @@ QActor monitoringdevice context ctxmd{
 
  
 QActor datacleaner context ctxmd {
-	[# 	var distance = 0; 
-		var last = 0;
-		var tolerance = 5#]
+	[# 	var DISTANCE = 0; 
+		var LAST = 0;
+		var TOLERANCE = 5#]
 	State s0 initial {
 		delay 1000
 		subscribeTo sonardevice for sonardata		
@@ -97,13 +98,14 @@ QActor datacleaner context ctxmd {
 	Transition t0 whenEvent sonardata -> filter
 	
 	State filter {
-		 println("$name D=$D") color black	
-		onMsg(sonardata : distance(D)) {
-	      	[#  distance = payloadArg(0).toInt() #]	      	
-	      	 println("$name D=$D") color black
-	      	 [# var diff = abs(distance - last) #]
-	      	if [# distance < 300 && diff >= tolerance#]  {
-	 			emitlocalstream  sonardata : distance($D)
+		 println("$name distance=$DISTANCE") color black	
+		onMsg(sonardata : distance(DISTANCE)) {
+	      	[#  DISTANCE = payloadArg(0).toInt() #]	      	
+	      	 println("$name distance=$DISTANCE") color black
+	      	 [# var DIFF = (DISTANCE - LAST) #]
+	      	if [# DISTANCE < 300 && (DIFF >= TOLERANCE || DIFF <= -TOLERANCE)#]  {
+	      		// update last!!!!
+	 			emitlocalstream  sonardata : distance($DISTANCE)
 	     	}
      	}
 	}	
@@ -190,25 +192,45 @@ QActor sonardevice context ctxmd{
 
 QActor warningdevice context ctxmd{  
 	// LED_STATE: 0 = OFF, 1 = ON, 2 = BLINK
-	[#	var LED_STATE = 0
-		var runtime = Runtime.getRuntime()
+	[#	var STATE = 0
+		//var runtime = Runtime.getRuntime()
 		#]
 	
 	State off initial{  
 		println("$name | OFF")
-		
-		}
+		subscribeTo wis for stateLed
+		//SCRIPT TURN OFF
+	}
+	Transition t0 whenEvent stateLed -> handleLedStateOne
+	
 		
 	State on{  
 		println("$name | ON") 
+		//SCRIPT TURN ON
 		        
-		}
+	}
+	Transition t0 whenEvent stateLed -> handleLedStateOne
 		
 	State blink{  
 		println("$name | BLINK") 
-		
-		
+		//SCRIPT TURN B
+	}
+	Transition t0 whenEvent stateLed -> handleLedStateOne
+	
+	
+	State handleLedStateOne{
+		printCurrentMessage color yellow
+		onMsg( stateLed : stateLed(STATE) ){
+			
+				[# STATE = payloadArg(0).toInt() #]
+				println("$name | New state: $STATE") color yellow	
 		}
+	}
+	Goto blink if [# STATE == 2#] else conditionOnOff
+	
+	State conditionOnOff{
+	}
+	Goto on if [# STATE == 1 #] else off
 }
 /* 
 QActor sonarusagemock context ctxmd{
