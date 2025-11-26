@@ -12,7 +12,7 @@
         <link rel="stylesheet" type="text/css" href="./commons/resources/styles/main.css">
         <link rel="stylesheet" type="text/css" href="./commons/resources/styles/navbar.css">
         <link rel="stylesheet" type="text/css" href="./commons/resources/styles/table.css">
-        <link rel="stylesheet" type="text/css" href="./commons/resources/styles/code.css">
+        <link rel="stylesheet" type="text/css" href="./commons/resources/styles/b.css">
         <link rel="stylesheet" type="text/css" href="./commons/resources/styles/custom.css">
         <!-- <script type="text/javascript" src="./commons/resources/scripts/myScripts.js"></script> -->
 <style type="text/css">
@@ -219,7 +219,7 @@ div.imagedesc{
 
 
    
-<title>WasteIncineratorService Sprint1</title></head>
+<title>WasteIncineratorService Sprint2</title></head>
     
 <!--
 	<body onload="loadNav();">
@@ -340,16 +340,53 @@ div.imagedesc{
 								e le letture che si discostano leggermente da multipli interi, al fine di determinare in modo affidabile il numero intero di RP presenti (e di identificare se il contenitore è "Vuoto", ovvero PesoTotale​≈0).</li>
 						</ul>
 				</ul>
-				<h3>Progettazione</h3>
+	<h3>Progettazione</h3>
+
+<p>La progettazione di questo sprint si è focalizzata sulla modellazione e l'integrazione dei dispositivi esterni, realizzati come attori Qak autonomi, per garantire una gestione asincrona e reattiva delle informazioni di stato da parte del WIS (Waste Incinerator Service). L'architettura si è concentrata sull'uso del paradigma <b>Observer/Event</b> per comunicare i cambiamenti di stato.</p>
+
+
+
+<h4>Sottosistema Monitoring Device (Ash Storage)</h4>
+<p>
+    Il monitoraggio del livello di cenere è gestito da una catena di attori (<b><b>Sonardevice</b> &rarr; <b>Datacleaner</b> &rarr; <b>monitoringdevice</b></b>) per elaborare il dato grezzo prima che raggiunga la logica centrale.
+</p>
+<ul>
+    <li><b>Filtraggio dei Dati:</b> L'attore <b><b>Datacleaner</b></b> è sottoscritto a <b>sonardevice</b>, intercetta l'evento <b>sonardata</b>, applica una logica di <b>filtraggio</b> e invia i dati stabilizzati (anche come <b>Evento Locale in Stream</b> <b>sonardata</b>).</li>
+    <li><b><b>monitoringdevice</b> e Logica di Stato:</b> L'attore <b><b>monitoringdevice</b></b> è sottoscritto al <b>Datacleaner</b>, riceve i dati filtrati ed è l'unico responsabile della determinazione dello stato logico (PIENO/VUOTO) confrontando la distanza con il valore di <b>Distanza Limite (<b>DLIMT</b>)</b>, impostato tramite il comando <b>sonarstart(X)</b>.</li>
+    <li><b>Notifica di Stato:</b> <b>monitoringdevice</b> emette l'<b>Evento</b> <b><b>stateSonar : stateSonar(FULL)</b></b> al WIS <b>ad ogni lettura filtrata</b>, dove il payload <b>FULL</b> rappresenta lo stato logico (1 per PIENO, 0 per VUOTO). Il WIS utilizza questo stato come condizione di guardia per avviare o bloccare le routine.</li>
+</ul>
+
+
+<h4>Sottosistema Warning Device (LED)</h4>
+<p>
+    Il <b>Warning Device</b> è modellato come un attore autonomo (<b><b>warningdevice</b></b>), puramente attuatore, responsabile della gestione fisica dell'hardware LED.
+</p>
+<ul>
+    <li><b>Logica di Controllo:</b> Il <b>WIS</b> mantiene la responsabilità esclusiva sulla logica decisionale. È l'unico attore che coordina lo stato di combustione dell'Incinerator e lo stato di pienezza/vuoto dell'Ash Storage.</li>
+    <li><b>Comunicazione:</b> Pertanto, il WIS <b>emette l'Evento</b> <b><b>stateLed : stateLed(STATE)</b></b>, dove <b>STATE</b> indica lo stato desiderato (0=OFF, 1=ON, 2=BLINK).</li>
+    <li><b>Attuazione:</b> Il <b><b>warningdevice</b></b> è **sottoscritto** all'evento <b>stateLed</b> e transita tra i suoi stati interni (<b>off</b>, <b>on</b>, <b>blink</b>) basandosi sul valore del payload ricevuto, limitandosi ad eseguire l'azione fisica.</li>
+    <li><b>Vantaggio:</b> Questo approccio garantisce che il Warning Device riceva un comando stabile e già deciso dal centro di controllo logico, eliminando il rischio di inconsistenze dovuto a flussi concorrenti di dati non coordinati.</li>
+</ul>
+				<h4>Test Plan</h4>
 					<ul>
-					</ul>
-				<h3>Test Plan</h3>
-					<ul>
-						Il test plan mantiene la suite illustrata nello Sprint1, con l'aggiunta di nuovi test specifici per le funzionalità del MonitoringDevice introdotte in questo sprint:
-						<ul>
-							<li>						testAshStorageTransitions test verifica la logica di sonar24 per la corretta emissione dell'evento updateAS (FULL/NOT_FULL), 
-						assicurando che le transizioni di stato (VUOTO ↔ PIENO) avvengano con precisione quando la distanza misurata (sonardata) 
-						supera o scende sotto il limite critico (DLIMT).</li>
+						Il test plan mantiene la suite illustrata nello Sprint1, con l'aggiunta di nuovi test specifici per le funzionalità del MonitoringDevice e del WarningDevice introdotte in questo sprint:
+						<p>
+							<li>
+    Il test <b><b>TestMonitoringDeviceLogicTCPOnly</b></b> verifica il flusso di lavoro del sensore cenere nel sistema Qak.
+    <br>
+    Il test invia un segnale per inizializzare la soglia di pienezza e avviare il monitoraggio.
+    <br>
+    Simula poi <b>sonardata</b> con distanza < DLIMT per testare lo stato PIENO, aspettandosi l'emissione di <b>stateSonar(true)</b>.
+    <br>
+    Successivamente, simula <b>sonardata</b> con distanza > DLIMT per testare lo stato VUOTO, aspettandosi l'emissione di <b>stateSonar(false)</b>.
+   </li>
+</p>
+						<li><b>testLEDCommandsDispatch</b> verifica l'interfaccia e la funzionalità dell'attore warningdevice assicurando che risponda 
+							ai comandi di controllo del WIS. <br>
+							Il test inietta direttamente i comandi di Dispatch (ledOn, ledOff, ledBlink) nel contesto del WarningDevice.<br> 
+							Il successo del test è determinato dalla corretta esecuzione della sequenza di forward e dall'osservazione (implicita, tramite log) 
+							che l'attore transisca e stampi il messaggio di stato corretto per ciascun comando.
+					    </li>
 						</ul>
 
 					</ul>
