@@ -94,4 +94,38 @@
 //            
 //            // --- SCENARIO 1: Ash Storage PIENO (DISTANCE <= DLIMT) ---
 //            int distanceFull = DLIMT - 5; // Es. 15 <= 20 (Soglia superata)
+//            
+//            // Simula l'evento sonardata. L'attore dovrebbe stampare 'monitoringdevice | FULL: 15' e emettere stateSonar(true)
+//            sendSimulatedSonardata(connTcpSupport, distanceFull); 
+//            Thread.sleep(1000); 
+//            CommUtils.outgreen("Scenario 1 (PIENO) inviato. Verificare il log per l'emissione di stateSonar(true).");
 //
+//
+//            // --- SCENARIO 2: Ash Storage VUOTO (DISTANCE > DLIMT) ---
+//            int distanceEmpty = DLIMT + 20; // Es. 40 > 20 (Soglia non superata)
+//
+//            // Simula l'evento sonardata. L'attore dovrebbe stampare 'monitoringdevice | EMPTY: 40' e emettere stateSonar(false)
+//            sendSimulatedSonardata(connTcpSupport, distanceEmpty); 
+//            Thread.sleep(1000); 
+//            CommUtils.outgreen("Scenario 2 (VUOTO) inviato. Verificare il log per l'emissione di stateSonar(false).");
+//            
+//            
+//            // 3. Inviare sonarstop per terminare il lavoro (handlesonardata -> endwork)
+//            IApplMessage stopReq  = CommUtils.buildDispatch( 
+//                SENDER, 
+//                "sonarstop", 
+//                "sonarstop(1)", 
+//                ACTOR_NAME
+//            );
+//            connTcpSupport.forward(stopReq);
+//            CommUtils.outmagenta("Sent sonarstop. Verificare il log per l'arresto del sonardevice.");
+//            Thread.sleep(1000);
+//
+//
+//		} catch (Exception e) {
+//			CommUtils.outred("testAshStorageLogic ERROR " + e.getMessage());
+//			e.printStackTrace();
+//			fail("testAshStorageLogic failed: " + e.getMessage());
+//		}
+//	}
+//}
