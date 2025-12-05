@@ -105,8 +105,7 @@ QActor incinerator context ctxwis {
 
 
 //--------------------------Scale-----------------------------
-//è fatto per test interni, poi sicuramente va cambiato.
-QActor scalemock context ctxwis {
+QActor scale context ctxwis {
 	[#
 		var WEIGHT = 0	
 	#]
@@ -224,7 +223,7 @@ QActor oprobot context ctxwis {
     State goBurnIn {
         println("[$name] arrivato in WasteIn, vado in BurnIn.") color yellow
         [# Job = "In WasteIn" #]
-        forward scalemock -m rpTaken : rpTaken(1)
+        forward scale -m rpTaken : rpTaken(1)
         [# 
         	val X = pos["burnin"]!!.get(0); 
         	val Y = pos["burnin"]!!.get(1) 
@@ -322,7 +321,7 @@ QActor wis context ctxwis {
         println("[$name] Initializing system") color green
         
         subscribeTo incinerator for burnEnd 
-		subscribeTo scalemock for stateScale
+		subscribeTo scale for stateScale
 		subscribeTo monitoringdevice for stateSonar
 		//subscribeTo oprobot for position
 		

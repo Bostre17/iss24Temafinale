@@ -265,10 +265,10 @@ div.imagedesc{
 						Il contesto del Monitoring Device (MD) nel suo complesso contiene varie entità attive:
 						<ol>
 						<li><b>MonitoringDevice</b>: è un attore QAK responsabile di comunicare al WIS lo stato logico dell’AshStorage.</li>
-						<li><b>SonarDevice</b>: è un Attore QAK che incapsula la logica del sonar fisico. Incorpora l'oggetto POJO <i>sonar24.py</i> che legge il dato grezzo di distanza. La sua responsabilità principale è monitorare il livello di AshStorage ed inviare le misurazioni fatte al DataCleaner</li>
-						<li><b>DataCleaner</b>: è un attore QAK responsabile di filtrare le misurazioni fatte dal SonarDevice e convertire le distanze filtrate (significative) in uno stato logico (pieno/non pieno) da inviare al Monitoring Device</li>
-						<li><b>WarningDevice</b>: È un Attore QAK che gestisce il LED. La sua responsabilità attuale è gestire i stati logici del led, ricevere i comandi (acceso, spento, lampeggiante) e tradurli (in uno sprint successivo) nell'interazione con l'hardware LED fisico.
-                            Come stabilito nell'analisi, per coerenza e per la natura di output, dovrebbe ricevere istruzioni dal WIS.</li>
+						<li><b>SonarDevice</b>: è un attore QAK che incapsula la logica del sonar fisico. Incorpora l'oggetto POJO <i>sonar24.py</i> che legge il dato grezzo di distanza. La sua responsabilità principale è monitorare il livello di AshStorage ed inviare le misurazioni fatte al DataCleaner</li>
+						<li><b>DataCleaner</b>: è un attore QAK responsabile di filtrare le misurazioni fatte dal SonarDevice e convertire le distanze filtrate (significative) in uno stato logico (Pieno/Non Pieno) da inviare al Monitoring Device</li>
+						<li><b>WarningDevice</b>: è un attore QAK che gestisce il LED. La sua responsabilità attuale è gestire i stati logici del led, ricevere i comandi (Off (Spento), On (Acceso), Blink (Lampeggiante)) e tradurli (in uno sprint successivo) nell'interazione con l'hardware LED fisico.
+                            Come stabilito in un'analisi successiva, per coerenza, dovrebbe ricevere istruzioni dal WIS.</li>
 						</ol>
 						<div align="center">
 							<img src="./img/monitoringdevicearch.png" alt="monitoringdevicearch" width="40%" height="40%">
@@ -293,9 +293,9 @@ div.imagedesc{
 						
 						
 					<h4>P2.5 - Lo stato dei componenti gestiti dal WIS è direttamente conosciuto dal Monitoring Device (con interazione diretta con i sotto-componenti) o l’informazione deve passare per il WIS?</h4>
-						L'informazione deve passare per il WIS. L'Attore WarningDevice è l'entità che esegue fisicamente l'azione (ON/OFF/BLINK), ma lo fa esclusivamente su comando diretto (Dispatch) del WIS.
+						L'informazione deve passare per il WIS. L'Attore WarningDevice è l'entità che esegue fisicamente l'azione (Off/On/Blink), ma lo fa esclusivamente su comando diretto (Dispatch) del WIS.
 						<ul>
-							<li>Il WarningDevice mantiene la responsabilità unica di gestire l'hardware LED, mentre il WIS mantiene la responsabilità unica della logica decisionale del Core Business.</li>
+							<li>Il WarningDevice mantiene la responsabilità unica di gestire l'hardware LED, mentre il WIS mantiene la responsabilità unica della logica decisionale del core business.</li>
 							<li>La logica del LED è complessa, richiedendo la combinazione di due stati critici:
 								lo stato di combustione dell'Incinerator (informazione interna al Core Business) e lo stato di pienezza/vuoto dell'AshStorage (informazione fornita al WIS dal MonitoringDevice).</li>
 							<li><b>Solo il WIS riceve e coordina entrambi questi stati.</b>
@@ -307,16 +307,16 @@ div.imagedesc{
 					
 					<h4>P2.6 - Filtraggio e Stabilizzazione delle Misurazioni del Sonar</h4>
 						I sensori fisici, come il Sonar che misura la distanza delle ceneri, generano dati intrinsecamente "rumorosi" (con piccole fluttuazioni dovute a vibrazioni o fattori ambientali) e molto frequenti.
-						Inviare ogni singola misurazione al sistema centrale (WIS) intaserebbe la comunicazione e provocherebbe decisioni instabili (ad esempio, uno stato "Pieno" che oscilla continuamente).
+						Inviare ogni singola misurazione al WIS intaserebbe la comunicazione e provocherebbe decisioni instabili (ad esempio, uno stato <i>Pieno</i> che oscilla continuamente).
 						
 						Per risolvere questo problema, la responsabilità di gestione dei dati grezzi viene divisa tra due attori:
 						<ul>
-							<li>SonarDevice: Come già anticipato in P2.1, legge la misurazione grezza (distanza) e la invia al DataCleaner.</li>
+							<li><b>SonarDevice</b>: Come già anticipato in P2.1, legge la misurazione (distanza) grezza e la invia al DataCleaner.</li>
 
 							<li><b>DataCleaner</b>: Agisce come <b>filtro</b>. La sua unica responsabilità è di ricevere le misurazioni e trasformare i dati instabili in informazione logica stabile.
-								Il DataCleaner deve ignorare le piccole fluttuazioni e applicare un criterio di stabilizzazione (ad esempio, richiedere che una condizione di soglia si mantenga per un certo periodo di tempo o numero di letture).</li>
+								Il DataCleaner deve ignorare le piccole variazioni e applicare una sorta di stabilizzazione (ad esempio, richiedere che una condizione di soglia si mantenga per un certo periodo di tempo o numero di letture).</li>
 						</ul>
-						Il DataCleaner notifica quindi l'Attore MonitoringDevice (che poi notificherà il WIS) solo ed esclusivamente quando viene rilevato un cambio di stato logico stabile (ad esempio, la transizione definitiva da uno stato "Non Pieno" a "Pieno").
+						Il DataCleaner notifica quindi il MonitoringDevice (che poi notificherà il WIS) solo ed esclusivamente quando viene rilevato un cambio di stato logico stabile (ad esempio, la transizione definitiva da uno stato <i>Non Pieno</i> a <i>Pieno</i>).
 					
 					
 					<h4>P2.7 - Come viene comunicato al WIS il peso fornito da SCALE?</h4>
@@ -337,7 +337,7 @@ div.imagedesc{
 							</li>
 							<li><b>Valore Standard</b>: Si adotta il valore di 50 Kg(approssimativo) per il peso di un singolo RP, come fornito dalla richiesta del committente.</li>
 							<li>È necessario implementare una soglia di tolleranza o una logica di arrotondamento all'interno del WIS per gestire le approssimazioni
-								e le letture che si discostano leggermente da multipli interi, al fine di determinare in modo affidabile il numero intero di RP presenti (e di identificare se il contenitore è "Vuoto", ovvero PesoTotale​≈0).</li>
+								e le letture che si discostano leggermente da multipli interi, al fine di determinare in modo affidabile il numero intero di RP presenti (e di identificare se il contenitore è <i>Vuoto</i>, ovvero PesoTotale​≈0).</li>
 						</ul>
 						
 					<div align="center">
@@ -346,7 +346,7 @@ div.imagedesc{
 				</ul>
 	<h3>Progettazione</h3>
 <ul>
-<p>	La progettazione di questo sprint si è focalizzata sulla modellazione e l'integrazione dei dispositivi esterni, realizzati come attori Qak autonomi, per garantire una gestione asincrona e reattiva delle informazioni di stato da parte del WIS.
+<p>	La progettazione di questo Sprint si è focalizzata sulla modellazione e l'integrazione dei dispositivi esterni, realizzati come attori QAK autonomi, per garantire una gestione asincrona e reattiva delle informazioni di stato da parte del WIS.
 	L'architettura si è concentrata sull'uso del paradigma <b>Observer/Event</b> per comunicare i cambiamenti di stato.</p>
 
 
@@ -356,21 +356,21 @@ div.imagedesc{
     Il monitoraggio del livello di cenere è gestito da una catena di attori (<b><b>sonardevice</b> &rarr; <b>datacleaner</b> &rarr; <b>monitoringdevice</b></b>) per elaborare il dato grezzo prima che raggiunga la logica centrale.
 </p>
 <ul>
-    <li><b>Filtraggio dei Dati:</b> L'attore <b><b>datacleaner</b></b> è sottoscritto a <b>sonardevice</b>, intercetta l'evento <b>sonardata</b>, applica una logica di <b>filtraggio</b> e invia i dati stabilizzati (anche come <b>Evento Locale in Stream</b> <b>sonardata</b>).</li>
-    <li><b><b>monitoringdevice</b> e Logica di Stato:</b> L'attore <b><b>monitoringdevice</b></b> è sottoscritto al <b>datacleaner</b>, riceve i dati filtrati ed è l'unico responsabile della determinazione dello stato logico (PIENO/VUOTO) confrontando la distanza con il valore di <b>Distanza Limite (<b>DLIMT</b>)</b>, impostato tramite il comando <b>sonarstart(X)</b>.</li>
-    <li><b>Notifica di Stato:</b> <b>monitoringdevice</b> emette l'<b>Evento</b> <b><b>stateSonar : stateSonar(FULL)</b></b> al WIS <b>ad ogni lettura filtrata</b>, dove il payload <b>FULL</b> rappresenta lo stato logico (1 per PIENO, 0 per VUOTO). Il WIS utilizza questo stato come condizione di guardia per avviare o bloccare le routine.</li>
+    <li><b>Filtraggio dei Dati:</b> L'attore <b><b>datacleaner</b></b> è sottoscritto a <b>sonardevice</b>, intercetta l'evento <b>sonardata</b>, applica una logica di <b>filtraggio</b> e invia i dati stabilizzati (come evento locale in stream <b>sonardata</b>).</li>
+    <li><b>Logica di Stato:</b> L'attore <b><b>monitoringdevice</b></b> è sottoscritto al <b>datacleaner</b>, riceve i dati filtrati ed è l'unico responsabile della determinazione dello stato logico (Pieno/Non Pieno) confrontando la distanza con il valore <b>DLIMT</b>.</li>
+    <li><b>Notifica di Stato:</b> <b>monitoringdevice</b> emette l'<b>evento</b> <b><b>stateSonar : stateSonar(FULL)</b></b> al WIS <b>ad ogni lettura filtrata</b>, dove il payload <b>FULL</b> rappresenta lo stato logico (1 per Pieno, 0 per Non Pieno). Il WIS utilizza questo stato come condizione di guardia per avviare o bloccare le routine.</li>
 </ul>
 
 
 <h4>Sottosistema WarningDevice</h4>
 <p>
-    Il <b>Warning Device</b> è modellato come un attore autonomo (<b><b>warningdevice</b></b>), puramente attuatore, responsabile della gestione fisica dell'hardware LED.
+    Il <b>Warning Device</b> è modellato come un attore autonomo (<b><b>warningdevice</b></b>), responsabile della gestione fisica dell'hardware LED.
 </p>
 <ul>
-    <li><b>Logica di Controllo:</b> Il <b>WIS</b> mantiene la responsabilità esclusiva sulla logica decisionale. È l'unico attore che coordina lo stato di combustione dell'Incinerator e lo stato di pienezza/vuoto dell'Ash Storage.</li>
-    <li><b>Comunicazione:</b> Pertanto, il WIS <b>emette l'Evento</b> <b><b>stateLed : stateLed(STATE)</b></b>, dove <b>STATE</b> indica lo stato desiderato (0=OFF, 1=ON, 2=BLINK).</li>
-    <li><b>Attuazione:</b> Il <b><b>warningdevice</b></b> è **sottoscritto** all'evento <b>stateLed</b> e transita tra i suoi stati interni (<b>off</b>, <b>on</b>, <b>blink</b>) basandosi sul valore del payload ricevuto, limitandosi ad eseguire l'azione fisica.</li>
-    <li><b>Vantaggio:</b> Questo approccio garantisce che il Warning Device riceva un comando stabile e già deciso dal centro di controllo logico, eliminando il rischio di inconsistenze dovuto a flussi concorrenti di dati non coordinati.</li>
+    <li><b>Logica di Controllo:</b> Il <b>WIS</b> mantiene la responsabilità esclusiva sulla logica decisionale. È l'unico attore che conosce sia stato di combustione dell'Incinerator che lo stato <i>Pieno/Non Pieno</i> dell'Ash Storage.</li>
+    <li><b>Comunicazione:</b> Il WIS emette l'evento <b>stateLed : stateLed(STATE)</b>, dove <b>STATE</b> indica lo stato desiderato (0 = Off, 1 = On, 2 = Blink).</li>
+    <li><b>Attuazione:</b> Il <b><b>warningdevice</b></b> è "iscritto" all'evento <b>stateLed</b> e transita tra i suoi stati interni basandosi sul valore del payload ricevuto, limitandosi ad eseguire l'azione fisica.</li>
+    <li><b>Vantaggio:</b> Questo approccio garantisce che il WarningDevice riceva un comando stabile e già deciso dal core business, eliminando il rischio di inconsistenze dovuto a flussi concorrenti di dati non coordinati.</li>
 </ul>
 </ul>
 <h3>Test Plan</h3>

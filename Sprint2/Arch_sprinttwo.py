@@ -27,7 +27,7 @@ with Diagram('sprinttwoArch', show=False, outformat='png', graph_attr=graphattr)
 ### see https://renenyffenegger.ch/notes/tools/Graphviz/attributes/label/HTML-like/index
      with Cluster('ctxwis', graph_attr=nodeattr):
           incinerator=Custom('incinerator','./qakicons/symActorSmall.png')
-          scalemock=Custom('scalemock','./qakicons/symActorSmall.png')
+          scale=Custom('scale','./qakicons/symActorSmall.png')
           oprobot=Custom('oprobot','./qakicons/symActorSmall.png')
           wis=Custom('wis','./qakicons/symActorSmall.png')
      with Cluster('ctxbasicrobot', graph_attr=nodeattr):
@@ -36,7 +36,7 @@ with Diagram('sprinttwoArch', show=False, outformat='png', graph_attr=graphattr)
           monitoringdevice=Custom('monitoringdevice(ext)','./qakicons/externalQActor.png')
      incinerator >> Edge( label='burnEnd', **eventedgeattr, decorate='true', fontcolor='red') >> sys
      incinerator >> Edge( label='burnEnd', **eventedgeattr, decorate='true', fontcolor='red') >> wis
-     scalemock >> Edge( label='stateScale', **eventedgeattr, decorate='true', fontcolor='red') >> wis
+     scale >> Edge( label='stateScale', **eventedgeattr, decorate='true', fontcolor='red') >> wis
      sys >> Edge( label='stateSonar', **evattr, decorate='true', fontcolor='darkgreen') >> wis
      wis >> Edge( label='stateLed', **eventedgeattr, decorate='true', fontcolor='red') >> sys
      sys >> Edge( label='burnEnd', **evattr, decorate='true', fontcolor='darkgreen') >> wis
@@ -44,6 +44,6 @@ with Diagram('sprinttwoArch', show=False, outformat='png', graph_attr=graphattr)
      wis >> Edge(color='magenta', style='solid', decorate='true', label='<bringRP<font color="darkgreen"> atIncinerator</font> &nbsp; bringAsh<font color="darkgreen"> ashDeposited</font> &nbsp; >',  fontcolor='magenta') >> oprobot
      wis >> Edge(color='blue', style='solid',  decorate='true', label='<sonarstart &nbsp; >',  fontcolor='blue') >> monitoringdevice
      wis >> Edge(color='blue', style='solid',  decorate='true', label='<act &nbsp; notifyRp &nbsp; >',  fontcolor='blue') >> incinerator
-     oprobot >> Edge(color='blue', style='solid',  decorate='true', label='<rpTaken &nbsp; >',  fontcolor='blue') >> scalemock
+     oprobot >> Edge(color='blue', style='solid',  decorate='true', label='<rpTaken &nbsp; >',  fontcolor='blue') >> scale
      wis >> Edge(color='blue', style='solid',  decorate='true', label='<goHome &nbsp; >',  fontcolor='blue') >> oprobot
 diag
