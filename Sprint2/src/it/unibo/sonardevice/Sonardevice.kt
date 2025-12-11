@@ -90,7 +90,6 @@ class Sonardevice ( name: String, scope: CoroutineScope, isconfined: Boolean=fal
 						if(  Distance > 0  
 						 ){CommUtils.outyellow("$name with python: data = $data")
 						emitLocalStreamEvent("sonardata", "distance($Distance)" ) 
-						emit("sonardata", "distance($Distance)" ) 
 						}
 						forward("doread", "doread(1)" ,name ) 
 						//genTimer( actor, state )

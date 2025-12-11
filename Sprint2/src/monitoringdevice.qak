@@ -5,24 +5,24 @@ System monitoringdevice
  * Delega i comandi start/stop a sonardevice
  */
 Event sonardata : distance(DISTANCE)   //emitted  by sonardevice or (better) by datacleaner
-Event stateSonar : stateSonar(DISTANCE)
-Event stateLed : stateLed(STATE)
+Event stateSonar : stateSonar(FULL)
 
 Dispatch sonarstart : sonarstart(X)
 Dispatch sonarwork : sonarwork(X)
 Dispatch sonarstop  : sonarstop(X)
 
+Dispatch ledOn : ledOn(X)
+Dispatch ledOff : ledOff(X)
+Dispatch ledBlink : ledBlink(X)
+
 Dispatch doread : doread(X)
 
 Context ctxmd ip [host= "localhost" port=8128]
-Context ctxwis ip [host="127.0.0.1" port=8001]
-
-ExternalQActor wis context ctxwis
   
 QActor monitoringdevice context ctxmd{   
 	[#	var DISTANCE=0
 			var DLIMT= 0	
-			var FULL= false	
+			var FULL= 0	
 		#]
 	
 	State s0 initial{  
@@ -59,12 +59,12 @@ QActor monitoringdevice context ctxmd{
 				println("All'inizio il sonar misura $DISTANCE") color yellow
 				
 				if [# DISTANCE <= DLIMT #]{
-					[#	FULL = true		#]
+					[#	FULL = 1		#]
 				println("$name | FULL: $DISTANCE") color green
 				}
 				else
 				{
-					[#	FULL = false	#]
+					[#	FULL = 0	#]
 				println("$name | EMPTY: $DISTANCE") color green
 				}
 				
@@ -115,7 +115,7 @@ QActor datacleaner context ctxmd {
 	     	}
      	}
 	}	
-	Transition t0 whenEvent sonardata -> filter
+	Transition t0 whenEvent sonardata -> filter 
 }
  
 
@@ -170,7 +170,8 @@ QActor sonardevice context ctxmd{
 		if [# Distance > 0 #] { 
 		    println("$name with python: data = $data"   ) color yellow
 			emitlocalstream sonardata : distance($Distance)
-			emit  sonardata : distance($Distance)
+			// not global stream
+			//emit  sonardata : distance($Distance)
 		}
 		autodispatch doread : doread(1)
 	}
@@ -197,46 +198,34 @@ QActor sonardevice context ctxmd{
 }//sonardevice
 
 QActor warningdevice context ctxmd{  
-	// LED_STATE: 0 = OFF, 1 = ON, 2 = BLINK
 	[#	var STATE = 0
 		//var runtime = Runtime.getRuntime()
 		#]
 	
 	State off initial{  
 		println("$name | OFF")
-		subscribeTo wis for stateLed
 		//SCRIPT TURN OFF
 	}
-	Transition t0 whenEvent stateLed -> handleLedStateOne
-	
-		
+	Transition t0 	whenMsg ledOn -> on
+					whenMsg ledOff -> off
+					whenMsg ledBlink -> blink
+					
 	State on{  
 		println("$name | ON") 
 		//SCRIPT TURN ON
 		        
 	}
-	Transition t0 whenEvent stateLed -> handleLedStateOne
-		
+	Transition t0 	whenMsg ledOn -> on
+					whenMsg ledOff -> off
+					whenMsg ledBlink -> blink
+
 	State blink{  
 		println("$name | BLINK") 
 		//SCRIPT TURN B
 	}
-	Transition t0 whenEvent stateLed -> handleLedStateOne
-	
-	
-	State handleLedStateOne{
-		printCurrentMessage color yellow
-		onMsg( stateLed : stateLed(STATE) ){
-			
-				[# STATE = payloadArg(0).toInt() #]
-				println("$name | New state: $STATE") color yellow	
-		}
-	}
-	Goto blink if [# STATE == 2#] else conditionOnOff
-	
-	State conditionOnOff{
-	}
-	Goto on if [# STATE == 1 #] else off
+	Transition t0 	whenMsg ledOn -> on
+					whenMsg ledOff -> off
+					whenMsg ledBlink -> blink
 }
 /* 
 QActor sonarusagemock context ctxmd{

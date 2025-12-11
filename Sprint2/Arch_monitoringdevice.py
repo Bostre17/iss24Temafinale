@@ -30,12 +30,8 @@ with Diagram('monitoringdeviceArch', show=False, outformat='png', graph_attr=gra
           datacleaner=Custom('datacleaner','./qakicons/symActorSmall.png')
           sonardevice=Custom('sonardevice','./qakicons/symActorSmall.png')
           warningdevice=Custom('warningdevice','./qakicons/symActorSmall.png')
-     with Cluster('ctxwis', graph_attr=nodeattr):
-          wis=Custom('wis(ext)','./qakicons/externalQActor.png')
      datacleaner >> Edge( label='sonardata', **eventedgeattr, decorate='true', fontcolor='red') >> monitoringdevice
      monitoringdevice >> Edge( label='stateSonar', **eventedgeattr, decorate='true', fontcolor='red') >> sys
      sonardevice >> Edge( label='sonardata', **eventedgeattr, decorate='true', fontcolor='red') >> datacleaner
-     sonardevice >> Edge( label='sonardata', **eventedgeattr, decorate='true', fontcolor='red') >> sys
-     sys >> Edge( label='stateLed', **evattr, decorate='true', fontcolor='darkgreen') >> warningdevice
      monitoringdevice >> Edge(color='blue', style='solid',  decorate='true', label='<sonarstop &nbsp; sonarstart &nbsp; >',  fontcolor='blue') >> sonardevice
 diag

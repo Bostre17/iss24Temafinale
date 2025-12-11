@@ -29,7 +29,7 @@ class Monitoringdevice ( name: String, scope: CoroutineScope, isconfined: Boolea
 		//val interruptedStateTransitions = mutableListOf<Transition>()
 			var DISTANCE=0
 					var DLIMT= 0	
-					var FULL= false	
+					var FULL= 0	
 		return { //this:ActionBasciFsm
 				state("s0") { //this:State
 					action { //it:State
@@ -72,11 +72,11 @@ class Monitoringdevice ( name: String, scope: CoroutineScope, isconfined: Boolea
 								 DISTANCE = payloadArg(0).toInt()  
 								CommUtils.outyellow("All'inizio il sonar misura $DISTANCE")
 								if(  DISTANCE <= DLIMT  
-								 ){	FULL = true		 
+								 ){	FULL = 1		 
 								CommUtils.outgreen("$name | FULL: $DISTANCE")
 								}
 								else
-								 {	FULL = false	 
+								 {	FULL = 0	 
 								 CommUtils.outgreen("$name | EMPTY: $DISTANCE")
 								 }
 								emit("stateSonar", "stateSonar($FULL)" ) 

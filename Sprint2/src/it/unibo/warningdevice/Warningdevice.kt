@@ -38,7 +38,9 @@ class Warningdevice ( name: String, scope: CoroutineScope, isconfined: Boolean=f
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t019",targetState="handleLedStateOne",cond=whenEvent("stateLed"))
+					 transition(edgeName="t019",targetState="on",cond=whenDispatch("ledOn"))
+					transition(edgeName="t020",targetState="off",cond=whenDispatch("ledOff"))
+					transition(edgeName="t021",targetState="blink",cond=whenDispatch("ledBlink"))
 				}	 
 				state("on") { //this:State
 					action { //it:State
@@ -48,7 +50,9 @@ class Warningdevice ( name: String, scope: CoroutineScope, isconfined: Boolean=f
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t020",targetState="handleLedStateOne",cond=whenEvent("stateLed"))
+					 transition(edgeName="t022",targetState="on",cond=whenDispatch("ledOn"))
+					transition(edgeName="t023",targetState="off",cond=whenDispatch("ledOff"))
+					transition(edgeName="t024",targetState="blink",cond=whenDispatch("ledBlink"))
 				}	 
 				state("blink") { //this:State
 					action { //it:State
@@ -58,38 +62,9 @@ class Warningdevice ( name: String, scope: CoroutineScope, isconfined: Boolean=f
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t021",targetState="handleLedStateOne",cond=whenEvent("stateLed"))
-				}	 
-				state("handleLedStateOne") { //this:State
-					action { //it:State
-						CommUtils.outyellow("$name in ${currentState.stateName} | $currentMsg | ${Thread.currentThread().getName()} n=${Thread.activeCount()}")
-						 	   
-						if( checkMsgContent( Term.createTerm("stateLed(STATE)"), Term.createTerm("stateLed(STATE)"), 
-						                        currentMsg.msgContent()) ) { //set msgArgList
-								 STATE = payloadArg(0).toInt()  
-								CommUtils.outyellow("$name | New state: $STATE")
-						}
-						//genTimer( actor, state )
-					}
-					//After Lenzi Aug2002
-					sysaction { //it:State
-					}	 	 
-					 transition( edgeName="goto",targetState="blink", cond=doswitchGuarded({ STATE == 2 
-					}) )
-					transition( edgeName="goto",targetState="conditionOnOff", cond=doswitchGuarded({! ( STATE == 2 
-					) }) )
-				}	 
-				state("conditionOnOff") { //this:State
-					action { //it:State
-						//genTimer( actor, state )
-					}
-					//After Lenzi Aug2002
-					sysaction { //it:State
-					}	 	 
-					 transition( edgeName="goto",targetState="on", cond=doswitchGuarded({ STATE == 1  
-					}) )
-					transition( edgeName="goto",targetState="off", cond=doswitchGuarded({! ( STATE == 1  
-					) }) )
+					 transition(edgeName="t025",targetState="on",cond=whenDispatch("ledOn"))
+					transition(edgeName="t026",targetState="off",cond=whenDispatch("ledOff"))
+					transition(edgeName="t027",targetState="blink",cond=whenDispatch("ledBlink"))
 				}	 
 			}
 		}

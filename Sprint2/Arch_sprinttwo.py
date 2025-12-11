@@ -4,7 +4,7 @@ from diagrams.custom import Custom
 import os
 os.environ['PATH'] += os.pathsep + 'C:/Program Files/Graphviz/bin/'
 
-graphattr = {     #https://www.graphviz.org/doc/info/attrs.html
+graphattr = {      #https://www.graphviz.org/doc/info/attrs.html
     'fontsize': '22',
 }
 
@@ -34,6 +34,7 @@ with Diagram('sprinttwoArch', show=False, outformat='png', graph_attr=graphattr)
           basicrobot=Custom('basicrobot(ext)','./qakicons/externalQActor.png')
      with Cluster('ctxmd', graph_attr=nodeattr):
           monitoringdevice=Custom('monitoringdevice(ext)','./qakicons/externalQActor.png')
+          warningdevice=Custom('warningdevice','./qakicons/externalQActor.png')
      incinerator >> Edge( label='burnEnd', **eventedgeattr, decorate='true', fontcolor='red') >> sys
      incinerator >> Edge( label='burnEnd', **eventedgeattr, decorate='true', fontcolor='red') >> wis
      scale >> Edge( label='stateScale', **eventedgeattr, decorate='true', fontcolor='red') >> wis
@@ -46,4 +47,7 @@ with Diagram('sprinttwoArch', show=False, outformat='png', graph_attr=graphattr)
      wis >> Edge(color='blue', style='solid',  decorate='true', label='<act &nbsp; notifyRp &nbsp; >',  fontcolor='blue') >> incinerator
      oprobot >> Edge(color='blue', style='solid',  decorate='true', label='<rpTaken &nbsp; >',  fontcolor='blue') >> scale
      wis >> Edge(color='blue', style='solid',  decorate='true', label='<goHome &nbsp; >',  fontcolor='blue') >> oprobot
+     monitoringdevice >> Edge( label='stateSonar', **eventedgeattr, decorate='true', fontcolor='red') >> wis
+     monitoringdevice >> Edge( label='stateSonar', **eventedgeattr, decorate='true', fontcolor='red') >> sys
+     wis >> Edge(color='blue', style='solid',  decorate='true', label='<ledOn &nbsp; ledOff &nbsp; ledBlink &nbsp; >',  fontcolor='blue') >> warningdevice
 diag
