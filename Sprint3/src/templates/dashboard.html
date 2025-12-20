@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WasteIncinerator Service - Dashboard</title>
+    
+    <!-- Auto-refresh ogni 2 secondi -->
+    <meta http-equiv="refresh" content="2">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            background: white;
+            border-radius: 10px;
+            padding: 20px 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        header h1 {
+            color: #667eea;
+            font-size: 28px;
+        }
+        
+        .timestamp {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .card h2 {
+            color: #333;
+            font-size: 18px;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+        
+        .card-content {
+            text-align: center;
+            padding: 20px 0;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: bold;
+            font-size: 18px;
+            margin: 10px 0;
+        }
+        
+        .status-off {
+            background: #e5e7eb;
+            color: #6b7280;
+        }
+        
+        .status-on {
+            background: #fecaca;
+            color: #dc2626;
+            animation: pulse 2s infinite;
+        }
+        
+        .status-idle {
+            background: #fef08a;
+            color: #ca8a04;
+        }
+        
+        .status-ok {
+            background: #d1fae5;
+            color: #059669;
+        }
+        
+        .status-full {
+            background: #fee2e2;
+            color: #dc2626;
+            font-weight: bold;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+        
+        .counter {
+            font-size: 48px;
+            font-weight: bold;
+            color: #667eea;
+            margin: 15px 0;
+        }
+        
+        .info-text {
+            color: #666;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+        
+        .robot-info {
+            background: #f9fafb;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+        
+        .robot-info p {
+            margin: 8px 0;
+            color: #374151;
+        }
+        
+        .robot-info strong {
+            color: #667eea;
+        }
+        
+        .footer {
+            text-align: center;
+            color: white;
+            margin-top: 30px;
+            padding: 20px;
+        }
+        
+        .footer p {
+            margin: 5px 0;
+        }
+        
+        .refresh-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: #10b981;
+            border-radius: 50%;
+            margin-right: 8px;
+            animation: blink 2s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🏭 WasteIncinerator Service Monitor</h1>
+            <div class="timestamp">
+                <span class="refresh-indicator"></span>
+                Last update: <span th:text="${#dates.format(timestamp, 'HH:mm:ss')}">--:--:--</span>
+            </div>
+        </header>
+        
+        <div class="dashboard">
+            <!-- Card Incinerator -->
+            <div class="card">
+                <h2>🔥 Incinerator</h2>
+                <div class="card-content">
+                    <div th:class="'status-badge ' + ${incineratorClass}" th:text="${incineratorText}">
+                        Idle
+                    </div>
+                    <div class="info-text">Current Status</div>
+                </div>
+            </div>
+            
+            <!-- Card Waste Storage -->
+            <div class="card">
+                <h2>📦 Waste Storage</h2>
+                <div class="card-content">
+                    <div class="counter" th:text="${rpCount}">0</div>
+                    <div class="info-text">RP Units Available</div>
+                </div>
+            </div>
+            
+            <!-- Card Ash Storage -->
+            <div class="card">
+                <h2>🗑️ Ash Storage</h2>
+                <div class="card-content">
+                    <div th:class="'status-badge ' + ${ashClass}" th:text="${ashText}">
+                        Not Full
+                    </div>
+                    <div class="info-text">Storage Capacity</div>
+                    
+                    <!-- Alert se pieno -->
+                    <div th:if="${ashFull}" style="margin-top: 15px; padding: 10px; background: #fee2e2; border-radius: 5px; color: #dc2626; font-size: 14px;">
+                        ⚠️ Storage needs emptying!
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Card Robot -->
+            <div class="card">
+                <h2>🤖 OpRobot</h2>
+                <div class="card-content">
+                    <div class="robot-info">
+                        <p>
+                            <strong>Position:</strong> 
+                            (<span th:text="${robotX}">0</span>, <span th:text="${robotY}">0</span>)
+                        </p>
+                        <p>
+                            <strong>Activity:</strong><br>
+                            <span th:text="${robotJob}" style="font-style: italic;">Waiting Home</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p style="font-size: 18px; font-weight: bold;">WasteIncinerator Service</p>
+            <p>Real-time Monitoring Dashboard</p>
+            <p style="font-size: 14px; margin-top: 10px; opacity: 0.9;">
+                Bostrenghi Matteo & Severini Lorenzo - ISS Project 2024/2025
+            </p>
+            <p style="font-size: 12px; margin-top: 15px; opacity: 0.7;">
+                Auto-refreshing every 2 seconds
+            </p>
+        </div>
+    </div>
+</body>
+</html>

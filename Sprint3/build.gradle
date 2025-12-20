@@ -1,0 +1,183 @@
+/*
+================================================================================
+build2024.gradl
+================================================================================
+*/
+plugins {
+    // Plugin applicazione Java standard
+    id 'application'
+    id 'java'
+    id 'eclipse'
+
+    // Supporto Kotlin
+    id "org.jetbrains.kotlin.jvm" version "1.9.22"
+    
+    // Supporto Spring Boot (versione compatibile con Java 11)
+    id 'org.springframework.boot' version '2.7.16'
+    id 'io.spring.dependency-management' version '1.0.15.RELEASE'
+}
+
+group = 'it.unibo.wis'
+version '1.0'
+
+java {
+    toolchain.languageVersion.set(JavaLanguageVersion.of(11))
+}
+kotlin {
+  jvmToolchain {
+    languageVersion.set(JavaLanguageVersion.of("11"))
+  }
+}
+
+repositories {
+    mavenCentral()
+    flatDir {   dirs '../unibolibs'	 }
+}
+
+dependencies {
+    // --- KOTLIN & BASE ---
+    implementation platform('org.jetbrains.kotlin:kotlin-bom')
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
+    implementation 'com.google.guava:guava:30.1.1-jre'
+    testImplementation 'org.jetbrains.kotlin:kotlin-test'
+    testImplementation "org.jetbrains.kotlin:kotlin-test-junit:1.9.22"
+
+    // --- COROUTINES ---
+    implementation group: 'org.jetbrains.kotlinx', name: 'kotlinx-coroutines-core', version: "$kotlinVersion"
+    implementation group: 'org.jetbrains.kotlinx', name: 'kotlinx-coroutines-core-jvm', version: "$kotlinVersion"
+
+    // --- SOCKET.IO (for WEnv) ---
+    implementation group: 'javax.websocket', name: 'javax.websocket-api', version: '1.1'
+    implementation group: 'org.glassfish.tyrus.bundles', name: 'tyrus-standalone-client', version: '1.9'
+
+    // --- HTTP ---
+    implementation 'org.apache.httpcomponents:httpclient:4.5'
+
+    // --- MQTT ---
+    implementation group: 'org.eclipse.paho', name: 'org.eclipse.paho.client.mqttv3', version: '1.2.5'
+
+    // --- JSON ---
+    implementation 'com.googlecode.json-simple:json-simple:1.1.1'
+    implementation group: 'org.json', name: 'json', version: '20180130'
+
+    // --- COAP ---
+    implementation group: 'org.eclipse.californium', name: 'californium-core', version: '3.5.0'
+    implementation group: 'org.eclipse.californium', name: 'californium-proxy2', version: '3.5.0'
+
+    // --- OKHTTP ---
+    implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.9.3' 
+    // CORREZIONE QUI SOTTO: Commento aggiunto davanti al link
+    // https://mvnrepository.com/artifact/com.squareup.okhttp3/mockwebserver
+    testImplementation group: 'com.squareup.okhttp3', name: 'mockwebserver', version: '4.9.3'
+
+    // --- LOG4J ---    
+    implementation 'ch.qos.logback:logback-classic:1.2.11'
+
+    // --- HTTP UTILS ---
+    implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.13'
+    implementation group: 'commons-io', name: 'commons-io', version: '2.11.0'
+
+    // --- MONGODB ---
+    implementation group: 'org.mongodb', name: 'mongo-java-driver', version: '3.12.14'
+
+    // --- AIMA & PLANNER ---
+    implementation name: 'unibo.planner23-1.0'
+    implementation group: 'com.googlecode.aima-java', name: 'aima-core', version: '3.0.0'
+
+    // --- UNIBO LIBS ---
+    implementation name: 'uniboInterfaces'
+    implementation name: '2p301'
+    implementation name: 'unibo.qakactor23-5.0'
+    implementation name: 'unibo.basicomm23-1.0'
+    
+    // --- SPRING BOOT (Aggiunti per WIS GUI) ---
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+sourceSets {
+    main.java.srcDirs += 'src'
+    main.java.srcDirs += 'src/main/java'
+    main.java.srcDirs += 'src/main/kotlin'
+    main.java.srcDirs += 'src/main/resources'
+    test.java.srcDirs += 'src/main/java/test'
+    test.java.srcDirs += 'src/main/kotlin/test'
+}
+
+eclipse {
+    classpath {
+        sourceSets -= [sourceSets.main, sourceSets.test]	
+    }	
+}
+
+application {
+    mainClassName = 'it.unibo.ctxwis.MainCtxwisKt'
+}
+
+// Disabilita la creazione del JAR "fat" di Spring Boot per non interferire col QAK
+bootJar {
+    enabled = false
+}
+
+jar {
+    println("building jar")
+    duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
+    from sourceSets.main.allSource
+    from('./') {
+      include '*.pl'
+      include '*.json'
+    }
+    manifest {
+        attributes 'Main-Class': "$mainClassName"
+    }
+}
+
+task dovesiamo {
+    println("projectDir= $projectDir")  
+    println("buildDir  = $buildDir")    
+}
+
+distributions {
+    main {
+        distributionBaseName = 'monitoringdevice'
+        contents { 
+             from './monitoringdevice.pl'
+             from './sysRules.pl'
+             from './facadeConfig.json'
+        }
+    }
+} 
+
+// Task originale per avviare MainCtxmdKt
+task run0(type: JavaExec) {
+    group = "Execution"
+    description = "Run the main class with JavaExecTask"
+    classpath = sourceSets.main.runtimeClasspath
+    main = 'it.unibo.ctxmd.MainCtxmdKt'
+}
+
+// Task per avviare il sistema QAK (WIS Core)
+task runWIS(type: JavaExec) {
+    group = 'application'
+    description = 'Avvia il sistema WIS (WIS + GUIBridge + Actors)'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'it.unibo.ctxwis.MainCtxwisKt'
+}
+
+// Task per avviare il sistema QAK (WIS Core)
+task runMD(type: JavaExec) {
+    group = 'application'
+    description = 'Avvia il sistema MonitoringDevice'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'it.unibo.ctxmd.MainCtxmdKt'
+}
+
+
+// Task per avviare la GUI Spring Boot
+task runGUI(type: JavaExec) {
+    group = 'application'
+    description = 'Avvia WISFacade (GUI web Spring Boot)'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'it.unibo.wis.facade.WISFacadeApp'
+}

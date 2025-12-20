@@ -1,0 +1,858 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/foundation-sites@6.7.4/dist/css/foundation.min.css" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/foundation-sites@6.7.4/dist/js/foundation.min.js"crossorigin="anonymous"></script> 
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="./commons/resources/styles/templateISS.css">
+    <link rel="stylesheet" type="text/css" href="./commons/resources/styles/main.css">
+    <link rel="stylesheet" type="text/css" href="./commons/resources/styles/navbar.css">
+    <link rel="stylesheet" type="text/css" href="./commons/resources/styles/table.css">
+    <link rel="stylesheet" type="text/css" href="./commons/resources/styles/b.css">
+    <link rel="stylesheet" type="text/css" href="./commons/resources/styles/custom.css">
+<style type="text/css">
+body
+{
+    margin-left:  50px;
+    margin-right: 50px;
+};
+
+P
+{
+    font-family: Tahoma;
+    font-size: 10pt;
+};
+
+a, a:visited, a:active, a:link, a:hover {
+    text-decoration: underline;
+    color: #545454;
+    background-color: transparent;
+    font-size: 93%;
+}
+
+a:hover {
+    background-color: #cccccc;
+}
+
+hr {
+    clear: both;
+    height: 1px;
+    color: #242424;
+    background-color: transparent;
+}
+
+h1, h2, h3 {
+    color: #242424;
+    clear: left;
+    font: 100% Tahoma, Helvetica, Arial, sans-serif;
+    margin-bottom: 0.5em;
+    padding-top: 0.5em;
+    border-radius: 10px;
+    padding: 5px;
+}
+
+top {
+    width: 100%;
+}
+
+#i {
+    color: #ff1010;
+}
+tt{
+    font-family: "Arial";
+    font-size: 90%;
+    color: #006600;
+}
+em{
+    font-family: "Arial";
+    font-size: 80%;
+    font-weight: bold;
+    border-style:solid;
+    border-color: #abe876;
+    color: #1632cc;
+}
+bc{
+    font-family: "Arial";
+    font-size: 90%;
+    font-weight: bold;
+    color: #990000;
+    background-color: #fcf8c7;
+}
+ks{
+    font-family: "Arial";
+    font-weight: bold;
+    color: #0000CD    ;
+    font-size: 90%;
+}
+kc{
+    font-family: "Arial";
+    font-weight: bold;
+    color: #008000    ;
+    font-size: 90%;
+}
+pre, .formula{
+    font-family: "Consolas";
+    font-size: 85%;
+    background-color: #f5f5f5;
+    border: 1.5px solid silver;
+    padding: 5px;
+}
+m{
+    font-family: "Helvetica";
+    line-height: 100%;
+    font-size: 75%;
+}
+div.body{
+    font-size: 18px;
+}
+k{
+    color: #990000;
+    font-weight: bold;
+    font-size: 90%;
+}
+h1 {
+    font-size: 150%;
+    background-color: #b2c0ff;
+    padding: 10px;
+}
+
+h2 {
+    background-color: #9ed8ff;
+    font-size: 130%;
+}
+
+h3 {
+    background-color: #e6ccff;
+    font-size: 100%;
+}
+h4 {
+    background-color: #ccffcc;
+    font-size: 100%;
+    width: 95%;
+    border-radius: 5px;
+    padding: 2px;
+}
+h5 {
+    background-color: #d5ffb0;
+    font-size: 100%;
+
+}
+div.req{
+    background-color: #d9ffb3;
+    font-size: 18px;
+    width: 700px;
+    border: 3px solid green;
+    padding: 15px;
+    margin: 10px;
+}
+div.remark{
+    background-color: #E3F2FD;
+    border: 1.5px solid #d5f2ed;
+    padding: 15px;
+    margin: 10px;
+    border-radius: 25px;
+}
+table, th, td {
+  border: 1px solid black;
+  border-collapse: collapse;
+}
+
+ol, ul, li {
+  margin: 0;
+  margin-left: 10px;
+  padding: 0;
+  padding-bottom: 5px;
+}
+
+table, th, td {
+    border: 1px solid black;
+}
+
+img {
+    border: 1.5px solid #d5f2ed
+}
+
+a, a:visited, a:active, a:link, a:hover {
+    text-decoration: underline;
+    color: #545454;
+    background-color: transparent;
+}
+
+div.wrapdesc{
+    width: 90%;
+    margin: auto;
+}
+
+div.imagedesc{
+    width: 85%;
+    margin: auto;
+}
+
+.formula {
+    font-family: monospace;
+    font-weight: bold;
+    color: #007bff; 
+    background-color: #cde8ff; 
+    padding: 1px 4px;
+    border-radius: 3px; 
+    display: inline; 
+    line-height: 1;
+}
+</style>
+</head>
+
+<title>WasteIncineratorService Sprint3</title>
+
+<body>
+    <div id="top">
+        <h1>LABORATORIO DI INGEGNERIA DEI SISTEMI SOFTWARE</h1>
+    </div>  
+
+    <div class="body"> 
+        <h2>Introduzione</h2>
+        <p>Lo Sprint 3 rappresenta il completamento del sistema WasteIncineratorService attraverso l'implementazione dello strato di presentazione. In questo sprint si sviluppa la <b>ServiceStatusGUI</b>, un'interfaccia web-based accessibile tramite browser per visualizzare lo stato del sistema.</p>
+        
+        <p>Negli sprint precedenti sono stati implementati:</p>
+        <ul>
+            <li><b>Sprint 1:</b> Core business logic (WIS, OpRobot, Incinerator)</li>
+            <li><b>Sprint 2:</b> Integrazione dispositivi fisici (Sonar, Scale, LED su RaspberryPi)</li>
+        </ul>
+        
+        <p>Questo sprint fornisce agli operatori uno strumento per monitorare:</p>
+        <ul>
+            <li>Stato corrente dell'incineritore (Off/On/Idle)</li>
+            <li>Livello di riempimento del WasteStorage (numero di RP presenti)</li>
+            <li>Stato dell'AshStorage (pieno/non pieno)</li>
+            <li>Posizione e attività corrente dell'OpRobot</li>
+        </ul>
+
+        <h2>Sprint 3 - ServiceStatusGUI</h2>
+        
+        <h3>Goal dello Sprint</h3>
+        <div class="req">
+            <p><b>Obiettivo principale:</b> Implementare un'interfaccia grafica web-based (ServiceStatusGUI) che visualizzi lo stato di tutti i componenti del WasteIncineratorService.</p>
+            
+            <p><b>Requisiti funzionali:</b></p>
+            <ul>
+                <li>Visualizzazione dello stato dell'Incinerator (Off/On/Idle)</li>
+                <li>Visualizzazione del numero di RP presenti nel WasteStorage</li>
+                <li>Visualizzazione dello stato dell'AshStorage (pieno/non pieno)</li>
+                <li>Visualizzazione della posizione corrente dell'OpRobot</li>
+                <li>Visualizzazione dell'attività corrente dell'OpRobot</li>
+                <li>Aggiornamento automatico della GUI</li>
+            </ul>
+            
+            <p><b>Requisiti non funzionali:</b></p>
+            <ul>
+                <li>Coerenza con sprint precedenti: utilizzo di Gradle come build tool</li>
+                <li>Accessibilità: interfaccia utilizzabile da qualsiasi browser moderno</li>
+                <li>Semplicità architetturale: separazione chiara tra business logic e presentation</li>
+            </ul>
+        </div>
+
+        <h3>Requisiti</h3>
+        <p>Come specificato nello Sprint0, la ServiceStatusGUI deve fornire le seguenti informazioni:</p>
+        <ul>
+            <li><b>Stato Incinerator:</b> Visualizzazione se spento (Off), acceso (On), o in attesa (Idle)</li>
+            <li><b>Stato WasteStorage:</b> Numero di RP presenti, calcolato dal peso misurato dalla Scale</li>
+            <li><b>Stato AshStorage:</b> Indicazione se il deposito ceneri è pieno o meno</li>
+            <li><b>Stato OpRobot:</b> Posizione corrente e attività in corso</li>
+        </ul>
+
+        <h3>Analisi del Problema</h3>
+
+        <h4>P1 - Scelta del Build Tool</h4>
+        <p>Gli Sprint 1 e 2 utilizzano <b>Gradle</b> come build tool. Per mantenere coerenza nel progetto, si decide di utilizzare un unico <span class="formula">build.gradle</span> che gestisca sia:</p>
+        <ul>
+            <li>Il sistema QAK (business logic)</li>
+            <li>L'applicazione Spring Boot (presentation layer)</li>
+        </ul>
+        
+        <p><b>Vantaggi di questa scelta:</b></p>
+        <ul>
+            <li>Coerenza: stesso tool utilizzato in tutto il progetto</li>
+            <li>Semplicità: un solo file di configurazione build</li>
+            <li>Flessibilità: task separati per avviare QAK e GUI</li>
+        </ul>
+
+        <h4>P2 - Architettura della GUI</h4>
+        <p>Si valutano diverse opzioni per implementare l'interfaccia web:</p>
+        
+        <div style="margin: 20px; padding: 15px; background-color: #fff5f0; border-radius: 8px;">
+            <h5>Opzione A: HTML Statico con JavaScript Polling</h5>
+            <ul>
+                <li><b>Pro:</b> Massima semplicità, nessuna dipendenza</li>
+                <li><b>Contro:</b> Richiede web server esterno (Python, Node, Nginx)</li>
+            </ul>
+        </div>
+        
+        <div style="margin: 20px; padding: 15px; background-color: #f0fff0; border-radius: 8px;">
+            <h5>Opzione B: Spring Boot con Thymeleaf - <span style="color: green;">SCELTA</span></h5>
+            <ul>
+                <li><b>Pro:</b> Web server integrato, template engine professionale</li>
+                <li><b>Pro:</b> Auto-refresh semplice tramite meta tag HTML</li>
+                <li><b>Pro:</b> Integrabile in un unico <span class="formula">build.gradle</span></li>
+                <li><b>Contro:</b> Richiede dipendenze Spring Boot (gestite automaticamente da Gradle)</li>
+            </ul>
+        </div>
+        
+        <p><b>Decisione:</b> Optiamo per <b>Spring Boot + Thymeleaf</b> perché:</p>
+        <ul>
+            <li>Soluzione completa e auto-contenuta</li>
+            <li>Web server embedded (Tomcat)</li>
+            <li>Template engine per rendering server-side</li>
+            <li>Gestibile con Gradle tramite plugin Spring Boot</li>
+        </ul>
+
+        <h4>P3 - Fonte delle Informazioni</h4>
+        <p>Il WIS mantiene già lo stato completo del sistema, essendo Observer di tutti i componenti. Per rendere accessibili queste informazioni alla GUI, si introduce un componente <b>GUIBridge</b> (attore QAK) che:</p>
+        <ul>
+            <li>Si subscribe agli eventi rilevanti del sistema</li>
+            <li>Mantiene una cache dello stato corrente</li>
+            <li>Espone i dati tramite <span class="formula">updateResource</span> di QAK</li>
+            <li>Rende disponibile lo stato via HTTP su <span class="formula">http://localhost:8001/api/guibridge</span></li>
+        </ul>
+
+        <h4>P4 - Gestione Eventi da Context Esterni</h4>
+        <p>Un problema tecnico emerso durante l'implementazione riguarda la ricezione di eventi da attori in context esterni.</p>
+        
+        <div class="remark">
+            <h5>Problema: Subscribe a MonitoringDevice</h5>
+            <p>Il MonitoringDevice risiede in un context esterno (<span class="formula">ctxmd</span>). Non è possibile fare:</p>
+            <pre>subscribeTo monitoringdevice for stateSonar  // ERRORE!</pre>
+            <p>perché <span class="formula">subscribeTo</span> funziona solo con attori nello stesso context.</p>
+        </div>
+        
+        <div style="margin: 20px; padding: 15px; background-color: #e8f5e9; border-radius: 8px;">
+            <h5>Soluzione: Eventi Globali</h5>
+            <p>In QAK esistono due tipi di eventi:</p>
+            <ul>
+                <li><b>Eventi Locali:</b> <span class="formula">emitlocalstream evento : evento(dati)</span> - solo nel context corrente</li>
+                <li><b>Eventi Globali:</b> <span class="formula">emit evento : evento(dati)</span> - broadcast a tutti i context</li>
+            </ul>
+            
+            <p>Il MonitoringDevice utilizza <span class="formula">emit stateSonar</span> (evento globale), quindi GUIBridge può riceverlo automaticamente senza <span class="formula">subscribeTo</span>:</p>
+            
+            <pre>
+State s0 initial {
+    // Subscribe solo agli attori LOCALI (stesso context)
+    subscribeTo incinerator for burnEnd
+    subscribeTo scale for stateScale
+    
+    // Per stateSonar: NON serve subscribeTo
+    // Viene ricevuto automaticamente nella transition
+}
+Transition t0 whenEvent stateSonar -> updateAshStorage</pre>
+        </div>
+
+        <h4>P5 - Meccanismo di Aggiornamento GUI</h4>
+        <p>La GUI utilizza un meccanismo di <b>auto-refresh HTTP</b>:</p>
+        <ul>
+            <li>Meta tag HTML: <span class="formula">&lt;meta http-equiv="refresh" content="2"&gt;</span></li>
+            <li>Ogni 2 secondi il browser ricarica completamente la pagina</li>
+            <li>Il server (Spring Boot) interroga GUIBridge ad ogni richiesta</li>
+            <li>Il template Thymeleaf viene re-renderizzato con i nuovi dati</li>
+        </ul>
+        
+        <p><b>Vantaggi:</b></p>
+        <ul>
+            <li>Implementazione semplicissima (1 riga HTML)</li>
+            <li>Nessun JavaScript complesso</li>
+            <li>Funziona su qualsiasi browser</li>
+            <li>Affidabile e predicibile</li>
+        </ul>
+
+        <h4>P6 - Architettura Finale</h4>
+        <div style="text-align: center; padding-top: 20px; padding-bottom: 20px;">
+            <pre style="text-align: left; display: inline-block; background-color: #f5f5f5; padding: 15px; border-radius: 8px;">
+┌─────────────────────┐
+│   Browser           │
+│  (auto-refresh 2s)  │
+└──────────┬──────────┘
+           │ HTTP GET ogni 2 secondi
+           │ http://localhost:8080
+           ▼
+┌─────────────────────┐
+│   WISFacade         │ Spring Boot (Gradle task: runGUI)
+│  (Controller)       │ Porta 8080
+│  + Thymeleaf        │
+└──────────┬──────────┘
+           │ HTTP GET
+           │ http://localhost:8001/api/guibridge
+           ▼
+┌─────────────────────┐
+│   GUIBridge         │ QAK Actor (Gradle task: runQAK)
+│  updateResource     │ Porta 8001
+└──────────┬──────────┘
+           │ subscribe eventi (burnEnd, stateScale)
+           │ riceve eventi globali (stateSonar)
+           ▼
+┌─────────────────────┐
+│  WIS + Actors       │ Sistema QAK
+│  Business Logic     │ (Incinerator, Scale, OpRobot)
+└─────────────────────┘
+            </pre>
+        </div>
+
+        <h3>Progettazione</h3>
+
+        <h4>Componente 1: Build Unificato (build.gradle)</h4>
+        <p>Il file <span class="formula">build.gradle</span> configura sia QAK che Spring Boot in un unico progetto:</p>
+        
+        <pre>
+plugins {
+    id 'java'
+    id 'application'
+    id 'org.springframework.boot' version '3.2.0'
+    id 'io.spring.dependency-management' version '1.1.4'
+}
+
+dependencies {
+    // QAK dependencies
+    implementation fileTree(dir: '../unibolibs', include: ['*.jar'])
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.9.0'
+    
+    // Spring Boot dependencies
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+}
+
+// Task per avviare sistema QAK
+task runQAK(type: JavaExec) {
+    mainClass = 'it.unibo.ctxwis.MainCtxwisKt'
+}
+
+// Task per avviare GUI Spring Boot
+task runGUI(type: JavaExec) {
+    mainClass = 'it.unibo.wis.facade.WISFacadeApp'
+}</pre>
+
+        <h4>Componente 2: GUIBridge (QAK Actor)</h4>
+        <p>GUIBridge mantiene lo stato del sistema e lo espone via HTTP:</p>
+        
+        <pre>
+QActor guibridge context ctxwis {
+    [#
+        var incineratorState = 2  // 0=Off, 1=On, 2=Idle
+        var rpCount = 0
+        var ashStorageFull = 0
+        var robotX = 0
+        var robotY = 0
+        var robotJob = "Waiting Home"
+        
+        fun buildStateString(): String {
+            return "incinerator=$incineratorState," +
+                   "rp=$rpCount,ash=$ashStorageFull," +
+                   "x=$robotX,y=$robotY,job=$robotJob"
+        }
+    #]
+    
+    State s0 initial {
+        println("[$name] GUI Bridge ready") color cyan
+        
+        // Subscribe attori LOCALI
+        subscribeTo incinerator for burnEnd
+        subscribeTo scale for stateScale
+        
+        // stateSonar è evento GLOBALE - ricevuto automaticamente
+        
+        updateResource [# buildStateString() #]
+    }
+    Goto ready
+    
+    State ready { }
+    Transition t0 
+        whenEvent stateScale -> updateRpCount
+        whenEvent stateSonar -> updateAshStorage
+        whenEvent burnEnd -> updateIncinerator
+    
+    State updateRpCount {
+        onMsg(stateScale : stateScale(X)) {
+            [# rpCount = payloadArg(0).toInt() / 50 #]
+            updateResource [# buildStateString() #]
+        }
+    }
+    Goto ready
+    
+    // ... altri stati simili
+}</pre>
+
+        <h4>Componente 3: WISFacade (Spring Boot)</h4>
+        <p>Applicazione Spring Boot che serve come ponte tra QAK e browser:</p>
+        
+        <pre>
+@SpringBootApplication
+@Controller
+public class WISFacadeApp {
+    
+    @GetMapping("/")
+    public String dashboard(Model model) {
+        SystemState state = fetchStateFromGUIBridge();
+        
+        model.addAttribute("incineratorState", state.incinerator);
+        model.addAttribute("incineratorText", 
+            getIncineratorText(state.incinerator));
+        model.addAttribute("rpCount", state.rpCount);
+        model.addAttribute("ashFull", state.ashFull);
+        model.addAttribute("robotX", state.robotX);
+        model.addAttribute("robotY", state.robotY);
+        model.addAttribute("robotJob", state.robotJob);
+        model.addAttribute("timestamp", new Date());
+        
+        return "dashboard";
+    }
+    
+    private SystemState fetchStateFromGUIBridge() {
+        RestTemplate restTemplate = new RestTemplate();
+        String response = restTemplate.getForObject(
+            "http://localhost:8001/api/guibridge", String.class);
+        return parseState(response);
+    }
+    
+    private SystemState parseState(String stateString) {
+        // Parse: "incinerator=2,rp=0,ash=0,x=0,y=0,job=..."
+        Map&lt;String, String&gt; data = new HashMap&lt;&gt;();
+        for (String pair : stateString.split(",")) {
+            String[] keyValue = pair.split("=", 2);
+            data.put(keyValue[0], keyValue[1]);
+        }
+        // Popola SystemState...
+    }
+}</pre>
+
+        <h4>Componente 4: Template Thymeleaf</h4>
+        <p>Template HTML con auto-refresh e binding dei dati:</p>
+        
+        <pre>
+&lt;!DOCTYPE html&gt;
+&lt;html xmlns:th="http://www.thymeleaf.org"&gt;
+&lt;head&gt;
+    &lt;meta http-equiv="refresh" content="2"&gt;  &lt;!-- Auto-refresh --&gt;
+    &lt;title&gt;WIS Dashboard&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;WasteIncinerator Service Monitor&lt;/h1&gt;
+    &lt;p&gt;Last update: &lt;span th:text="${timestamp}"&gt;&lt;/span&gt;&lt;/p&gt;
+    
+    &lt;div class="dashboard"&gt;
+        &lt;!-- Card Incinerator --&gt;
+        &lt;div class="card"&gt;
+            &lt;h2&gt;Incinerator&lt;/h2&gt;
+            &lt;div th:text="${incineratorText}"&gt;Idle&lt;/div&gt;
+        &lt;/div&gt;
+        
+        &lt;!-- Card Waste Storage --&gt;
+        &lt;div class="card"&gt;
+            &lt;h2&gt;Waste Storage&lt;/h2&gt;
+            &lt;div th:text="${rpCount}"&gt;0&lt;/div&gt;
+        &lt;/div&gt;
+        
+        &lt;!-- Card Ash Storage --&gt;
+        &lt;div class="card"&gt;
+            &lt;h2&gt;Ash Storage&lt;/h2&gt;
+            &lt;div th:text="${ashFull ? 'FULL' : 'Not Full'}"&gt;Not Full&lt;/div&gt;
+        &lt;/div&gt;
+        
+        &lt;!-- Card Robot --&gt;
+        &lt;div class="card"&gt;
+            &lt;h2&gt;OpRobot&lt;/h2&gt;
+            &lt;p&gt;Position: (&lt;span th:text="${robotX}"&gt;&lt;/span&gt;, 
+                        &lt;span th:text="${robotY}"&gt;&lt;/span&gt;)&lt;/p&gt;
+            &lt;p&gt;Activity: &lt;span th:text="${robotJob}"&gt;&lt;/span&gt;&lt;/p&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;</pre>
+
+        <h3>Test Plan</h3>
+        
+        <h4>T1 - Test Connessione GUIBridge</h4>
+        <p><b>Obiettivo:</b> Verificare che GUIBridge esponga correttamente i dati</p>
+        <p><b>Procedura:</b></p>
+        <ol>
+            <li>Avviare il sistema QAK: <span class="formula">gradlew runQAK</span></li>
+            <li>Testare endpoint: <span class="formula">curl http://localhost:8001/api/guibridge</span></li>
+        </ol>
+        <p><b>Risultato atteso:</b></p>
+        <pre>incinerator=2,rp=0,ash=0,x=0,y=0,job=Waiting Home,ts=1705847123456</pre>
+
+        <h4>T2 - Test GUI Iniziale</h4>
+        <p><b>Obiettivo:</b> Verificare visualizzazione stato iniziale</p>
+        <p><b>Procedura:</b></p>
+        <ol>
+            <li>Avviare sistema QAK: <span class="formula">gradlew runQAK</span></li>
+            <li>Avviare GUI: <span class="formula">gradlew runGUI</span></li>
+            <li>Aprire browser: <span class="formula">http://localhost:8080</span></li>
+        </ol>
+        <p><b>Risultato atteso:</b></p>
+        <ul>
+            <li>Incinerator: "Idle" (badge giallo)</li>
+            <li>RP Count: 0</li>
+            <li>Ash Storage: "Not Full" (badge verde)</li>
+            <li>Robot: (0,0) "Waiting Home"</li>
+            <li>Indicatore verde lampeggiante</li>
+            <li>Timestamp aggiornato</li>
+        </ul>
+
+        <h4>T3 - Test Aggiornamento Automatico</h4>
+        <p><b>Obiettivo:</b> Verificare auto-refresh della GUI</p>
+        <p><b>Procedura:</b></p>
+        <ol>
+            <li>GUI aperta nel browser</li>
+            <li>Nel sistema QAK, aggiungere RP: <span class="formula">forward scale -m newRp : newRp(1)</span></li>
+            <li>Osservare GUI senza intervento manuale</li>
+        </ol>
+        <p><b>Risultato atteso:</b></p>
+        <ul>
+            <li>Entro 2 secondi: RP Count passa da 0 a 2</li>
+            <li>Pagina si ricarica automaticamente</li>
+            <li>Timestamp viene aggiornato</li>
+            <li>Nessun intervento manuale necessario</li>
+        </ul>
+
+        <h4>T4 - Test Ciclo Completo</h4>
+        <p><b>Obiettivo:</b> Verificare tracking di un ciclo di incenerimento completo</p>
+        <p><b>Procedura:</b></p>
+        <ol>
+            <li>Aggiungere 2 RP al sistema</li>
+            <li>Osservare GUI durante tutto il ciclo</li>
+        </ol>
+        <p><b>Risultato atteso:</b></p>
+        <table style="width: 90%; margin: 20px auto;">
+            <tr style="background-color: #e6ccff;">
+                <th style="padding: 8px;">Fase</th>
+                <th style="padding: 8px;">Incinerator</th>
+                <th style="padding: 8px;">RP Count</th>
+                <th style="padding: 8px;">Robot Job</th>
+            </tr>
+            <tr>
+                <td style="padding: 6px;">Iniziale</td>
+                <td style="padding: 6px;">Idle</td>
+                <td style="padding: 6px;">2</td>
+                <td style="padding: 6px;">Waiting Home</td>
+            </tr>
+            <tr>
+                <td style="padding: 6px;">Prelievo RP</td>
+                <td style="padding: 6px;">Idle</td>
+                <td style="padding: 6px;">1</td>
+                <td style="padding: 6px;">Going to WasteIn</td>
+            </tr>
+            <tr>
+                <td style="padding: 6px;">Consegna RP</td>
+                <td style="padding: 6px;">On (Burning)</td>
+                <td style="padding: 6px;">1</td>
+                <td style="padding: 6px;">Going Home</td>
+            </tr>
+            <tr>
+                <td style="padding: 6px;">Fine burn</td>
+                <td style="padding: 6px;">Idle</td>
+                <td style="padding: 6px;">1</td>
+                <td style="padding: 6px;">Going to BurnOut</td>
+            </tr>
+            <tr>
+                <td style="padding: 6px;">Deposito ash</td>
+                <td style="padding: 6px;">Idle</td>
+                <td style="padding: 6px;">1</td>
+                <td style="padding: 6px;">Depositing Ashes</td>
+            </tr>
+        </table>
+
+        <h4>T5 - Test Multi-Browser</h4>
+        <p><b>Obiettivo:</b> Verificare che multiple istanze della GUI funzionino correttamente</p>
+        <p><b>Procedura:</b></p>
+        <ol>
+            <li>Aprire GUI in 3 browser/tab diversi</li>
+            <li>Avviare un ciclo di incenerimento</li>
+            <li>Osservare tutte le GUI</li>
+        </ol>
+        <p><b>Risultato atteso:</b></p>
+        <ul>
+            <li>Tutte le GUI mostrano identico stato</li>
+            <li>Aggiornamenti sincronizzati (±2 secondi)</li>
+            <li>Nessun errore o conflitto</li>
+        </ul>
+
+        <h3>Deployment</h3>
+        
+        <h4>Struttura del Progetto</h4>
+        <pre>
+Sprint3/
+├── build.gradle              # Build unificato QAK + Spring Boot
+├── settings.gradle
+│
+├── src/
+│   └── main/
+│       ├── java/
+│       │   └── it/unibo/wis/facade/
+│       │       └── WISFacadeApp.java
+│       │
+│       └── resources/
+│           ├── sprint3.qak
+│           ├── log4j.properties
+│           ├── application.properties
+│           └── templates/
+│               └── dashboard.html
+│
+└── userDocs/
+    └── docSprint3.html</pre>
+
+        <h4>Procedura di Avvio</h4>
+        
+        <div style="margin: 20px 0; padding: 15px; background-color: #e3f2fd; border-left: 4px solid #2196F3;">
+            <h5>Step 1: Avvio VirtualRobot</h5>
+            <pre>cd it.unibo.virtualRobot2023
+docker compose -f virtualRobot23.yaml up</pre>
+            <p>Attendere: <span class="formula">VirtualRobot23 started on port 8090</span></p>
+        </div>
+        
+        <div style="margin: 20px 0; padding: 15px; background-color: #e3f2fd; border-left: 4px solid #2196F3;">
+            <h5>Step 2: Avvio BasicRobot</h5>
+            <pre>cd unibo.basicrobot24
+gradlew run</pre>
+            <p>Attendere: <span class="formula">basicrobot STARTS</span></p>
+        </div>
+        
+        <div style="margin: 20px 0; padding: 15px; background-color: #e3f2fd; border-left: 4px solid #2196F3;">
+            <h5>Step 3: Compilazione Sprint3</h5>
+            <pre>cd Sprint3
+gradlew build</pre>
+            <p>Compila sia QAK che Spring Boot</p>
+        </div>
+        
+        <div style="margin: 20px 0; padding: 15px; background-color: #e3f2fd; border-left: 4px solid #2196F3;">
+            <h5>Step 4: Avvio Sistema QAK (WIS + GUIBridge)</h5>
+            <pre>cd Sprint3
+gradlew runQAK</pre>
+            <p>Attendere:</p>
+            <pre>[wis] Initializing system
+[guibridge] GUI Bridge ready
+[guibridge] Ready - http://localhost:8001/api/guibridge</pre>
+        </div>
+        
+        <div style="margin: 20px 0; padding: 15px; background-color: #e3f2fd; border-left: 4px solid #2196F3;">
+            <h5>Step 5: Avvio GUI (Spring Boot)</h5>
+            <p><b>In un nuovo terminale:</b></p>
+            <pre>cd Sprint3
+gradlew runGUI</pre>
+            <p>Attendere:</p>
+            <pre>Started WISFacadeApp in X.XXX seconds
+Tomcat started on port(s): 8080 (http)</pre>
+        </div>
+        
+        <div style="margin: 20px 0; padding: 15px; background-color: #e3f2fd; border-left: 4px solid #2196F3;">
+            <h5>Step 6: Accesso alla GUI</h5>
+            <p>Aprire browser: <b>http://localhost:8080</b></p>
+            <p>La pagina si aggiornerà automaticamente ogni 2 secondi</p>
+        </div>
+
+        <h4>Porte Utilizzate</h4>
+        <table style="width:80%; margin: 20px auto;">
+            <tr style="background-color: #e6ccff;">
+                <th style="padding: 10px;">Componente</th>
+                <th style="padding: 10px;">Porta</th>
+                <th style="padding: 10px;">Comando</th>
+            </tr>
+            <tr>
+                <td style="padding: 8px;">VirtualRobot</td>
+                <td style="padding: 8px;">8090</td>
+                <td style="padding: 8px;">docker compose up</td>
+            </tr>
+            <tr>
+                <td style="padding: 8px;">BasicRobot</td>
+                <td style="padding: 8px;">8020</td>
+                <td style="padding: 8px;">gradlew run</td>
+            </tr>
+            <tr>
+                <td style="padding: 8px;">WIS + GUIBridge</td>
+                <td style="padding: 8px;">8001</td>
+                <td style="padding: 8px;">gradlew runQAK</td>
+            </tr>
+            <tr>
+                <td style="padding: 8px;">GUI (Spring Boot)</td>
+                <td style="padding: 8px;">8080</td>
+                <td style="padding: 8px;">gradlew runGUI</td>
+            </tr>
+        </table>
+
+        <h4>Troubleshooting</h4>
+        
+        <div style="margin: 20px 0; padding: 15px; background-color: #ffebee; border-left: 4px solid #f44336;">
+            <h5>Problema: GUI mostra sempre valori 0</h5>
+            <p><b>Causa:</b> GUIBridge non raggiungibile o non in esecuzione</p>
+            <p><b>Soluzione:</b></p>
+            <ol>
+                <li>Verificare che <span class="formula">gradlew runQAK</span> sia in esecuzione</li>
+                <li>Testare endpoint: <span class="formula">curl http://localhost:8001/api/guibridge</span></li>
+                <li>Verificare log per errori di connessione</li>
+            </ol>
+        </div>
+        
+        <div style="margin: 20px 0; padding: 15px; background-color: #ffebee; border-left: 4px solid #f44336;">
+            <h5>Problema: Errore "Port 8080 already in use"</h5>
+            <p><b>Causa:</b> Porta 8080 occupata da altro processo</p>
+            <p><b>Soluzione:</b></p>
+            <p>Modificare <span class="formula">application.properties</span>:</p>
+            <pre>server.port=8081</pre>
+            <p>Poi accedere a <span class="formula">http://localhost:8081</span></p>
+        </div>
+        
+        <div style="margin: 20px 0; padding: 15px; background-color: #ffebee; border-left: 4px solid #f44336;">
+            <h5>Problema: Compilazione fallisce</h5>
+            <p><b>Causa:</b> Java version < 17</p>
+            <p><b>Soluzione:</b></p>
+            <p>Verificare versione Java:</p>
+            <pre>java -version  # Deve essere >= 17</pre>
+            <p>Installare Java 17 se necessario</p>
+        </div>
+
+        <h3>Conclusioni</h3>
+        <p>Lo Sprint 3 completa il WasteIncineratorService con un'interfaccia web professionale mantenendo la coerenza architetturale con gli sprint precedenti.</p>
+        
+        <p><b>Punti di forza della soluzione:</b></p>
+        <ul>
+            <li><b>Gradle Unificato:</b> Un solo <span class="formula">build.gradle</span> gestisce QAK e Spring Boot</li>
+            <li><b>Coerenza:</b> Stesso build tool utilizzato in Sprint 1 e 2</li>
+            <li><b>Semplicità:</b> Auto-refresh tramite meta tag HTML (nessun WebSocket/AJAX complesso)</li>
+            <li><b>Separazione:</b> Business logic (QAK) e Presentation (Spring Boot) ben separati</li>
+            <li><b>Flessibilità:</b> Due task separati (<span class="formula">runQAK</span> e <span class="formula">runGUI</span>)</li>
+            <li><b>Manutenibilità:</b> Template Thymeleaf modificabili senza ricompilare Java</li>
+        </ul>
+        
+        <p><b>Aspetti tecnici risolti:</b></p>
+        <ul>
+            <li>Gestione eventi da context esterni tramite eventi globali</li>
+            <li>Integrazione Spring Boot in progetto Gradle QAK esistente</li>
+            <li>Esposizione stato QAK tramite HTTP (updateResource)</li>
+            <li>Rendering server-side con Thymeleaf</li>
+        </ul>
+        
+        <p>Il sistema risultante fornisce agli operatori uno strumento efficace per monitorare il WasteIncineratorService in tempo reale, accessibile da qualsiasi browser senza necessità di installazione software aggiuntivo.</p>
+    </div>
+
+    <div style="background-color:rgba(86, 56, 253, 0.9); width:100%;text-align:left;color:white;padding: 30px;">
+        <div style="display: flex; justify-content: center; gap: 40px; align-items: center; flex-wrap: wrap;">
+            <div>
+                <p><strong>Bostrenghi Matteo</strong><br>
+                    matteo.bostrenghi@studio.unibo.it</p>
+                
+                <p><strong>Severini Lorenzo</strong><br>
+                    lorenzo.severini5@studio.unibo.it</p>
+            </div>
+            <div>
+                <img src="./img/bostrenghi.png" alt="bostrenghi" style="width:150px; height:auto">
+            </div>
+        
+            <div>
+                <img src="./img/severini.png" alt="severini" style="width:150px; height:auto;">
+            </div>
+
+            <p style="margin-top:20px;">Repository: 
+                <a href="https://github.com/Bostre17/iss24Temafinale" style="color:white;">
+                    https://github.com/Bostre17/iss24Temafinale
+                </a>
+            </p>
+        </div>
+    </div>
+
+</body>
+</html>
