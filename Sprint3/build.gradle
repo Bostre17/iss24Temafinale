@@ -113,7 +113,8 @@ eclipse {
 
 application {
     mainClassName = 'it.unibo.ctxwis.MainCtxwisKt'
-}
+    //mainClassName = 'it.unibo.ctxmd.MainCtxmdKt'
+ }
 
 // Disabilita la creazione del JAR "fat" di Spring Boot per non interferire col QAK
 bootJar {

@@ -26,12 +26,12 @@ with Diagram('monitoringdeviceArch', show=False, outformat='png', graph_attr=gra
      sys = Custom('','./qakicons/system.png')
 ### see https://renenyffenegger.ch/notes/tools/Graphviz/attributes/label/HTML-like/index
      with Cluster('ctxmd', graph_attr=nodeattr):
-          monitoringdevice=Custom('monitoringdevice','./qakicons/symActorSmall.png')
-          datacleaner=Custom('datacleaner','./qakicons/symActorSmall.png')
-          sonardevice=Custom('sonardevice','./qakicons/symActorSmall.png')
+          sonardevicemock=Custom('sonardevicemock','./qakicons/symActorSmall.png')
           warningdevice=Custom('warningdevice','./qakicons/symActorSmall.png')
-     datacleaner >> Edge( label='sonardata', **eventedgeattr, decorate='true', fontcolor='red') >> monitoringdevice
+          datacleaner=Custom('datacleaner','./qakicons/symActorSmall.png')
+          monitoringdevice=Custom('monitoringdevice','./qakicons/symActorSmall.png')
+     sonardevicemock >> Edge( label='sonardevicedata', **eventedgeattr, decorate='true', fontcolor='red') >> datacleaner
+     datacleaner >> Edge( label='sonardatacleaner', **eventedgeattr, decorate='true', fontcolor='red') >> monitoringdevice
      monitoringdevice >> Edge( label='stateSonar', **eventedgeattr, decorate='true', fontcolor='red') >> sys
-     sonardevice >> Edge( label='sonardata', **eventedgeattr, decorate='true', fontcolor='red') >> datacleaner
-     monitoringdevice >> Edge(color='blue', style='solid',  decorate='true', label='<sonarstop &nbsp; sonarstart &nbsp; >',  fontcolor='blue') >> sonardevice
+     monitoringdevice >> Edge(color='blue', style='solid',  decorate='true', label='<sonarstop &nbsp; sonarstart &nbsp; >',  fontcolor='blue') >> sonardevicemock
 diag

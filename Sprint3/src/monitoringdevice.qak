@@ -1,15 +1,23 @@
 System monitoringdevice
- 
+
+mqttBroker "test.mosquitto.org" : 1883 eventTopic "sprint3"
+//mqttBroker "broker.hivemq.com" : 1883 eventTopic "sprint3"
+//mqttBroker "localhost" : 1883 eventTopic "sprint3"
+
 /*
  * Sistema che funziona su RaspberryPi
  * Delega i comandi start/stop a sonardevice
  */
-Event sonardata : distance(DISTANCE)   //emitted  by sonardevice or (better) by datacleaner
-Event stateSonar : stateSonar(FULL)
-
+Event sonardevicedata : sonardevicedata(DISTANCE)   	//emitted  by sonardevice
+Event sonardatacleaner : sonardatacleaner(DISTANCE)		//emitted  by datacleaner
+Event stateSonar : stateSonar(FULL)						//emitted  by monitoringdevice
+		
 Dispatch sonarstart : sonarstart(X)
 Dispatch sonarwork : sonarwork(X)
 Dispatch sonarstop  : sonarstop(X)
+
+Dispatch newAsh : newAsh(X)
+Dispatch emptyAsh : emptyAsh(X)
 
 Dispatch ledOn : ledOn(X)
 Dispatch ledOff : ledOff(X)
@@ -17,8 +25,108 @@ Dispatch ledBlink : ledBlink(X)
 
 Dispatch doread : doread(X)
 
-Context ctxmd ip [host= "localhost" port=8128]
-  
+Context ctxmd ip [host="localhost" port=8128]
+Context ctxwis ip [host="127.0.0.1" port=8001] 
+ 
+ //-------------------------- Mock --------------------------
+QActor sonardevicemock context ctxmd{
+    [#	var DISTANCE=200
+    	 	#]
+    State s0 initial{
+        println("[$name] inizializzazione.") color green		
+    }
+    Transition t0 	whenMsg sonarstart -> start
+
+	State start{
+		println("[$name] sonardata updated: $DISTANCE.") color green
+		emitlocalstream sonardevicedata : sonardevicedata($DISTANCE)
+	}Transition t0	whenMsg newAsh -> handleNewAsh
+                    whenMsg emptyAsh -> handleEmptyAsh
+	
+    State handleNewAsh{
+        [#DISTANCE = DISTANCE - 60#]
+		println("[$name] sonardata updated: $DISTANCE.") color green
+        emitlocalstream sonardevicedata : sonardevicedata($DISTANCE)
+    }
+    Transition t0	whenMsg newAsh -> handleNewAsh
+                    whenMsg emptyAsh -> handleEmptyAsh
+
+    State handleEmptyAsh{
+        [#DISTANCE = 200#]
+		println("[$name] ashes svuotate. sonardata updated: $DISTANCE.") color green
+    }
+    Transition t0	whenMsg newAsh -> handleNewAsh
+                    whenMsg emptyAsh -> handleEmptyAsh
+}
+
+
+QActor warningdevice context ctxmd{  
+	[#	var STATE = 0
+		//var runtime = Runtime.getRuntime()
+		#]
+	
+	State off initial{  
+		println("[$name] OFF")
+		//SCRIPT TURN OFF
+	}
+	Transition t0 	whenMsg ledOn -> on
+					whenMsg ledOff -> off
+					whenMsg ledBlink -> blink
+					
+	State on{  
+		println("[$name] ON") 
+		//SCRIPT TURN ON
+		        
+	}
+	Transition t0 	whenMsg ledOn -> on
+					whenMsg ledOff -> off
+					whenMsg ledBlink -> blink
+
+	State blink{  
+		println("[$name] BLINK") 
+		//SCRIPT TURN B
+	}
+	Transition t0 	whenMsg ledOn -> on
+					whenMsg ledOff -> off
+					whenMsg ledBlink -> blink
+}
+
+
+QActor datacleaner context ctxmd {
+	[# 	var DISTANCE = 0; 
+		var LAST = 0;
+		var DIFF = 0;
+		var TOLERANCE = 5#]
+	State s0 initial {
+		
+		delay 1000
+		//subscribeTo sonardevice for sonardata
+		subscribeTo sonardevicemock for sonardevicedata		
+			
+		println("[$name] subscribed to sonardevice") color green
+	}
+	Transition t0 whenEvent sonardevicedata -> filter
+	
+	State filter {
+		 println("[$name] distance=$DISTANCE") color green	
+		onMsg(sonardevicedata : sonardevicedata(DISTANCE)) {
+	      	[#  DISTANCE = payloadArg(0).toInt() #]	      	
+	      	println("[$name] distance=$DISTANCE") color green
+	      	if [# LAST != 0#] {
+	      		[# DIFF = (DISTANCE - LAST) #]
+	      	}
+	      	else {
+	      		[# DIFF = TOLERANCE #]
+	      	}
+	      	if [# DISTANCE < 300 && ( DIFF >= TOLERANCE || DIFF <= -TOLERANCE ) #]  {
+	      		[# LAST = DISTANCE #]
+	 			emitlocalstream  sonardatacleaner : sonardatacleaner($DISTANCE)
+	     	}
+     	}
+	}	
+	Transition t0 whenEvent sonardevicedata -> filter 
+}
+
 QActor monitoringdevice context ctxmd{   
 	[#	var DISTANCE=0
 			var DLIMT= 0	
@@ -28,97 +136,67 @@ QActor monitoringdevice context ctxmd{
 	State s0 initial{  
 		println("$name | ready") 
 		//[# subscribeToLocalActor("sonar") #]
-		delay 1000 //give time to create sonardevice
+		delay 2000 //give time to create sonardevice
 		//subscribeTo sonardevice for sonardata
-		subscribeTo datacleaner for sonardata
+		subscribeTo datacleaner for sonardatacleaner
 		//println("$name subscribed to datacleaner") color magenta
-		//delegate sonarstart to sonardevice
-		delegate sonarstop  to sonardevice		
+		
+		//delegate sonarstop  to sonardevice
+		delegate sonarstop  to sonardevicemock	
 	}
 	Transition t0 whenMsg	sonarstart -> initializing
-	              whenMsg   sonarstop -> endwork
+	              whenMsg   sonarstop -> endwork 
 	              
 	State initializing{
+		println("[$name] Starting: DLIMT=$DLIMT") color green
 		onMsg( sonarstart : sonarstart(X) ){
 			printCurrentMessage
 			[# DLIMT=payloadArg(0).toInt() #]
-			println("$name Starting: DLIMT=$DLIMT")
 			
-			forward sonardevice -m sonarstart : sonarstart(1)
+			//forward sonardevice -m sonarstart : sonarstart(1)
+			delay 5000
+			forward sonardevicemock -m sonarstart : sonarstart(1)
 		}
 	}  
-	Transition t0 whenEvent sonardata -> handlesonardata
+	Transition t0 whenEvent sonardatacleaner -> handlesonardata
 	              whenMsg   sonarstop -> endwork
 	              
 	              
 	State handlesonardata{
 		printCurrentMessage color yellow
-		onMsg( sonardata : distance(DISTANCE) ){
-			
-				[# DISTANCE = payloadArg(0).toInt() #]
-				println("All'inizio il sonar misura $DISTANCE") color yellow
-				
+		onMsg( sonardatacleaner : sonardatacleaner(DISTANCE) ){
+				[# DISTANCE = payloadArg(0).toInt() #]				
 				if [# DISTANCE <= DLIMT #]{
 					[#	FULL = 1		#]
-				println("$name | FULL: $DISTANCE") color green
+				println("[$name] FULL: $DISTANCE") color green
 				}
 				else
 				{
 					[#	FULL = 0	#]
-				println("$name | EMPTY: $DISTANCE") color green
+				println("[$name] EMPTY: $DISTANCE") color green
 				}
 				
 				emit stateSonar : stateSonar($FULL)
 		}
 		
 	}
-	Transition t0 whenEvent sonardata -> handlesonardata
+	Transition t0 whenEvent sonardatacleaner -> handlesonardata
 	              whenMsg   sonarstop -> endwork
 
 	State endwork{
-		println("$name | Stop working.") color magenta
-		//forward sonar -m sonarstop : sonarstop(1)   
-		forward sonardevice -m sonarstop : sonarstop(1)
+		println("[$name] Stop working.") color magenta 
+		//forward sonardevice -m sonarstop : sonarstop(1)
+		forward sonardevicemock -m sonarstop : sonarstop(1)
 	}
 	Transition t0 whenMsg sonarstart -> initializing
 }   
 
 
 
- 
-QActor datacleaner context ctxmd {
-	[# 	var DISTANCE = 0; 
-		var LAST = 0;
-		var DIFF = 0;
-		var TOLERANCE = 5#]
-	State s0 initial {
-		delay 1000
-		subscribeTo sonardevice for sonardata		
-		println("$name subscribed to sonardevice") color blue
-	}
-	Transition t0 whenEvent sonardata -> filter
-	
-	State filter {
-		 println("$name distance=$DISTANCE") color black	
-		onMsg(sonardata : distance(DISTANCE)) {
-	      	[#  DISTANCE = payloadArg(0).toInt() #]	      	
-	      	println("$name distance=$DISTANCE") color black
-	      	if [# LAST != 0#] {
-	      		[# DIFF = (DISTANCE - LAST) #]
-	      	}
-	      	else {
-	      		[# DIFF = TOLERANCE #]
-	      	}
-	      	if [# DISTANCE < 300 && ( DIFF >= TOLERANCE || DIFF <= -TOLERANCE ) #]  {
-	      		[# LAST = DISTANCE #]
-	 			emitlocalstream  sonardata : distance($DISTANCE)
-	     	}
-     	}
-	}	
-	Transition t0 whenEvent sonardata -> filter 
-}
- 
 
+ 
+ 
+/* 
 QActor sonardevice context ctxmd{
 [# 
 	lateinit var reader : java.io.BufferedReader
@@ -196,37 +274,9 @@ QActor sonardevice context ctxmd{
 		whenMsg sonarstop  -> stopTheSonar    //non dovrebbe arrivare, ma ...
 	
 }//sonardevice
+*/
 
-QActor warningdevice context ctxmd{  
-	[#	var STATE = 0
-		//var runtime = Runtime.getRuntime()
-		#]
-	
-	State off initial{  
-		println("$name | OFF")
-		//SCRIPT TURN OFF
-	}
-	Transition t0 	whenMsg ledOn -> on
-					whenMsg ledOff -> off
-					whenMsg ledBlink -> blink
-					
-	State on{  
-		println("$name | ON") 
-		//SCRIPT TURN ON
-		        
-	}
-	Transition t0 	whenMsg ledOn -> on
-					whenMsg ledOff -> off
-					whenMsg ledBlink -> blink
 
-	State blink{  
-		println("$name | BLINK") 
-		//SCRIPT TURN B
-	}
-	Transition t0 	whenMsg ledOn -> on
-					whenMsg ledOff -> off
-					whenMsg ledBlink -> blink
-}
 /* 
 QActor sonarusagemock context ctxmd{
 	State s0 initial{

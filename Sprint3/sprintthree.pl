@@ -1,11 +1,13 @@
 %====================================================================================
 % sprintthree description   
 %====================================================================================
+mqttBroker("test.mosquitto.org", "1883", "sprint3").
 dispatch( goHome, goHome(X) ).
 request( bringRP, bringRP(X) ).
 request( bringAsh, bringAsh(X) ).
 dispatch( act, act(X) ).
 dispatch( notifyRp, notifyRp(x) ).
+dispatch( ack, ack(X) ).
 reply( atIncinerator, atIncinerator(X) ).  %%for bringRP
 reply( ashDeposited, ashDeposited(X) ).  %%for bringAsh
 dispatch( newRp, newRp(X) ).
@@ -23,12 +25,14 @@ dispatch( disengage, disengage(ARG) ).
 request( moverobot, moverobot(X,Y) ).
 reply( moverobotdone, moverobotdone(X) ).  %%for moverobot
 reply( moverobotfailed, moverobotfailed(X) ).  %%for moverobot
+request( startTest, startTest(PAYLOAD) ).
+reply( testReply, testReply(RESULT) ).  %%for startTest
 dispatch( sonarstart, sonarstart(X) ).
 dispatch( sonarstop, sonarstop(X) ).
 %====================================================================================
 context(ctxwis, "localhost",  "TCP", "8001").
 context(ctxbasicrobot, "127.0.0.1",  "TCP", "8020").
-context(ctxmd, "192.168.1.15",  "TCP", "8128").
+context(ctxmd, "127.0.0.1",  "TCP", "8128").
  qactor( monitoringdevice, ctxmd, "external").
   qactor( warningdevice, ctxmd, "external").
   qactor( basicrobot, ctxbasicrobot, "external").
@@ -40,5 +44,3 @@ context(ctxmd, "192.168.1.15",  "TCP", "8128").
  static(oprobot).
   qactor( wis, ctxwis, "it.unibo.wis.Wis").
  static(wis).
-  qactor( guibridge, ctxwis, "it.unibo.guibridge.Guibridge").
- static(guibridge).

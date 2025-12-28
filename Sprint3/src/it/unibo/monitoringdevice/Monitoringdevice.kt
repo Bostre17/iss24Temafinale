@@ -34,50 +34,50 @@ class Monitoringdevice ( name: String, scope: CoroutineScope, isconfined: Boolea
 				state("s0") { //this:State
 					action { //it:State
 						CommUtils.outblack("$name | ready")
-						delay(1000) 
+						delay(2000) 
 						subscribeToLocalActor("datacleaner") 
-						delegate("sonarstop", "sonardevice") 
+						delegate("sonarstop", "sonardevicemock") 
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t00",targetState="initializing",cond=whenDispatch("sonarstart"))
-					transition(edgeName="t01",targetState="endwork",cond=whenDispatch("sonarstop"))
+					 transition(edgeName="t018",targetState="initializing",cond=whenDispatch("sonarstart"))
+					transition(edgeName="t019",targetState="endwork",cond=whenDispatch("sonarstop"))
 				}	 
 				state("initializing") { //this:State
 					action { //it:State
+						CommUtils.outgreen("[$name] Starting: DLIMT=$DLIMT")
 						if( checkMsgContent( Term.createTerm("sonarstart(X)"), Term.createTerm("sonarstart(X)"), 
 						                        currentMsg.msgContent()) ) { //set msgArgList
 								CommUtils.outcyan("$name in ${currentState.stateName} | $currentMsg | ${Thread.currentThread().getName()} n=${Thread.activeCount()}")
 								 	   
 								 DLIMT=payloadArg(0).toInt()  
-								CommUtils.outblack("$name Starting: DLIMT=$DLIMT")
-								forward("sonarstart", "sonarstart(1)" ,"sonardevice" ) 
+								delay(5000) 
+								forward("sonarstart", "sonarstart(1)" ,"sonardevicemock" ) 
 						}
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t02",targetState="handlesonardata",cond=whenEvent("sonardata"))
-					transition(edgeName="t03",targetState="endwork",cond=whenDispatch("sonarstop"))
+					 transition(edgeName="t020",targetState="handlesonardata",cond=whenEvent("sonardatacleaner"))
+					transition(edgeName="t021",targetState="endwork",cond=whenDispatch("sonarstop"))
 				}	 
 				state("handlesonardata") { //this:State
 					action { //it:State
 						CommUtils.outyellow("$name in ${currentState.stateName} | $currentMsg | ${Thread.currentThread().getName()} n=${Thread.activeCount()}")
 						 	   
-						if( checkMsgContent( Term.createTerm("distance(DISTANCE)"), Term.createTerm("distance(DISTANCE)"), 
+						if( checkMsgContent( Term.createTerm("sonardatacleaner(DISTANCE)"), Term.createTerm("sonardatacleaner(DISTANCE)"), 
 						                        currentMsg.msgContent()) ) { //set msgArgList
 								 DISTANCE = payloadArg(0).toInt()  
-								CommUtils.outyellow("All'inizio il sonar misura $DISTANCE")
 								if(  DISTANCE <= DLIMT  
 								 ){	FULL = 1		 
-								CommUtils.outgreen("$name | FULL: $DISTANCE")
+								CommUtils.outgreen("[$name] FULL: $DISTANCE")
 								}
 								else
 								 {	FULL = 0	 
-								 CommUtils.outgreen("$name | EMPTY: $DISTANCE")
+								 CommUtils.outgreen("[$name] EMPTY: $DISTANCE")
 								 }
 								emit("stateSonar", "stateSonar($FULL)" ) 
 						}
@@ -86,19 +86,19 @@ class Monitoringdevice ( name: String, scope: CoroutineScope, isconfined: Boolea
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t04",targetState="handlesonardata",cond=whenEvent("sonardata"))
-					transition(edgeName="t05",targetState="endwork",cond=whenDispatch("sonarstop"))
+					 transition(edgeName="t022",targetState="handlesonardata",cond=whenEvent("sonardatacleaner"))
+					transition(edgeName="t023",targetState="endwork",cond=whenDispatch("sonarstop"))
 				}	 
 				state("endwork") { //this:State
 					action { //it:State
-						CommUtils.outmagenta("$name | Stop working.")
-						forward("sonarstop", "sonarstop(1)" ,"sonardevice" ) 
+						CommUtils.outmagenta("[$name] Stop working.")
+						forward("sonarstop", "sonarstop(1)" ,"sonardevicemock" ) 
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t06",targetState="initializing",cond=whenDispatch("sonarstart"))
+					 transition(edgeName="t024",targetState="initializing",cond=whenDispatch("sonarstart"))
 				}	 
 			}
 		}

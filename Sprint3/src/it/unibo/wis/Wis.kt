@@ -28,15 +28,19 @@ class Wis ( name: String, scope: CoroutineScope, isconfined: Boolean=false  ) : 
 	override fun getBody() : (ActorBasicFsm.() -> Unit){
 		//val interruptedStateTransitions = mutableListOf<Transition>()
 		
-				val DLIMT = 40
-				var wasteStorageWeight = 0
-				var ashStorageFull = 0
-				var incinerator = 0
-				var RP = 0
+			val DLIMT = 40
+			var wasteStorageWeight=0
+			var ashStorageFull = 1
+			var posX = 0
+			var posY = 0
+			var incinerator = 0
+			var job = ""
+			var RP=0
 		return { //this:ActionBasciFsm
 				state("s0") { //this:State
 					action { //it:State
 						CommUtils.outgreen("[$name] Initializing system")
+						delay(15000) 
 						subscribeToLocalActor("incinerator") 
 						subscribeToLocalActor("scale") 
 						forward("act", "act(2)" ,"incinerator" ) 
@@ -68,27 +72,30 @@ class Wis ( name: String, scope: CoroutineScope, isconfined: Boolean=false  ) : 
 					action { //it:State
 						CommUtils.outcyan("$name in ${currentState.stateName} | $currentMsg | ${Thread.currentThread().getName()} n=${Thread.activeCount()}")
 						 	   
+						CommUtils.outgreen("[$name] RP=$RP, incineratorState=$incinerator, ashStorageFull=$ashStorageFull")
 						if( checkMsgContent( Term.createTerm("stateSonar(X)"), Term.createTerm("stateSonar(X)"), 
 						                        currentMsg.msgContent()) ) { //set msgArgList
 								 ashStorageFull = payloadArg(0).toInt()  
-								CommUtils.outgreen("[$name] Ash storage level: $ashStorageFull")
-								if(  ashStorageFull == 1  
+								CommUtils.outgreen("[$name] nuovo stato ash storage: $ashStorageFull")
+								if(  ashStorageFull == 1 && incinerator == 2 
 								 ){forward("ledBlink", "ledBlink(X)" ,"warningdevice" ) 
+								CommUtils.outgreen("[$name] invio ledBlink a warningdevice")
 								}
 								else
-								 {if(  incinerator == 1  
+								 {if(  incinerator == 1 
 								  ){forward("ledOn", "ledOn(X)" ,"warningdevice" ) 
+								 CommUtils.outgreen("[$name] invio ledOn a warningdevice")
 								 }
 								 else
 								  {forward("ledOff", "ledOff(X)" ,"warningdevice" ) 
+								  CommUtils.outgreen("[$name] invio ledOff a warningdevice")
 								  }
 								 }
 						}
 						if( checkMsgContent( Term.createTerm("stateScale(X)"), Term.createTerm("stateScale(X)"), 
 						                        currentMsg.msgContent()) ) { //set msgArgList
-								 
-												wasteStorageWeight = payloadArg(0).toInt() 
-												RP = wasteStorageWeight / 50
+								 	wasteStorageWeight = payloadArg(0).toInt() 
+												 RP = wasteStorageWeight/50  
 								CommUtils.outgreen("[$name] RP quantity: $RP")
 						}
 						//genTimer( actor, state )
@@ -96,9 +103,9 @@ class Wis ( name: String, scope: CoroutineScope, isconfined: Boolean=false  ) : 
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition( edgeName="goto",targetState="startRoutine", cond=doswitchGuarded({ RP > 0 && incinerator != 1 && ashStorageFull == 0  
+					 transition( edgeName="goto",targetState="startRoutine", cond=doswitchGuarded({RP>0 && incinerator!=1 && ashStorageFull == 0  
 					}) )
-					transition( edgeName="goto",targetState="waitingRP", cond=doswitchGuarded({! ( RP > 0 && incinerator != 1 && ashStorageFull == 0  
+					transition( edgeName="goto",targetState="waitingRP", cond=doswitchGuarded({! (RP>0 && incinerator!=1 && ashStorageFull == 0  
 					) }) )
 				}	 
 				state("startRoutine") { //this:State
@@ -120,7 +127,7 @@ class Wis ( name: String, scope: CoroutineScope, isconfined: Boolean=false  ) : 
 						forward("ledOn", "ledOn(X)" ,"warningdevice" ) 
 						forward("notifyRp", "notifyRp(X)" ,"incinerator" ) 
 						forward("goHome", "goHome(X)" ,"oprobot" ) 
-						 incinerator = 1  
+						 incinerator = 1 
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
@@ -135,7 +142,8 @@ class Wis ( name: String, scope: CoroutineScope, isconfined: Boolean=false  ) : 
 						CommUtils.outgreen("[$name] incinerator is now idle")
 						forward("ledOff", "ledOff(X)" ,"warningdevice" ) 
 						request("bringAsh", "bringAsh(X)" ,"oprobot" )  
-						 incinerator = 2  
+						 
+						    		incinerator = 2
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
@@ -154,7 +162,7 @@ class Wis ( name: String, scope: CoroutineScope, isconfined: Boolean=false  ) : 
 								 ){forward("ledBlink", "ledBlink(X)" ,"warningdevice" ) 
 								}
 								else
-								 {if(  incinerator == 1  
+								 {if(  incinerator == 1 
 								  ){forward("ledOn", "ledOn(X)" ,"warningdevice" ) 
 								 }
 								 else
@@ -173,9 +181,8 @@ class Wis ( name: String, scope: CoroutineScope, isconfined: Boolean=false  ) : 
 					action { //it:State
 						if( checkMsgContent( Term.createTerm("stateScale(X)"), Term.createTerm("stateScale(X)"), 
 						                        currentMsg.msgContent()) ) { //set msgArgList
-								 
-												wasteStorageWeight = payloadArg(0).toInt() 
-												RP = wasteStorageWeight / 50
+								 	wasteStorageWeight = payloadArg(0).toInt() 
+												RP = wasteStorageWeight/50  
 								CommUtils.outgreen("[$name] RP quantity updated: $RP")
 						}
 						returnFromInterrupt(interruptedStateTransitions)

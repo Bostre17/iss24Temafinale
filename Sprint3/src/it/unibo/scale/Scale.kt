@@ -27,13 +27,14 @@ class Scale ( name: String, scope: CoroutineScope, isconfined: Boolean=false  ) 
 	}
 	override fun getBody() : (ActorBasicFsm.() -> Unit){
 		//val interruptedStateTransitions = mutableListOf<Transition>()
-		 var WEIGHT = 0  
+		
+				var WEIGHT = 0	
 		return { //this:ActionBasciFsm
 				state("s0") { //this:State
 					action { //it:State
 						CommUtils.outred("[$name] inizializzazione.")
-						delay(10000) 
-						 WEIGHT = 100  
+						delay(25000) 
+						 WEIGHT = 100 
 						emitLocalStreamEvent("stateScale", "stateScale($WEIGHT)" ) 
 						CommUtils.outred("[$name] stateScale updated a $WEIGHT.")
 						//genTimer( actor, state )
@@ -46,8 +47,8 @@ class Scale ( name: String, scope: CoroutineScope, isconfined: Boolean=false  ) 
 				state("handleRpTaken") { //this:State
 					action { //it:State
 						 WEIGHT -= 50  
-						if(  WEIGHT < 0  
-						 ){ WEIGHT = 0  
+						if(  WEIGHT < 0 
+						 ){ WEIGHT = 0 
 						}
 						emitLocalStreamEvent("stateScale", "stateScale($WEIGHT)" ) 
 						CommUtils.outred("[$name] stateScale updated a $WEIGHT.")
@@ -61,8 +62,7 @@ class Scale ( name: String, scope: CoroutineScope, isconfined: Boolean=false  ) 
 				}	 
 				state("handleNewRp") { //this:State
 					action { //it:State
-						 WEIGHT += 50  
-						emitLocalStreamEvent("stateScale", "stateScale($WEIGHT)" ) 
+						 WEIGHT += 50 
 						CommUtils.outred("[$name] RP aggiunto. stateScale updated a $WEIGHT.")
 						//genTimer( actor, state )
 					}

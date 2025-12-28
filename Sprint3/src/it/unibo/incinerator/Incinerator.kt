@@ -28,8 +28,8 @@ class Incinerator ( name: String, scope: CoroutineScope, isconfined: Boolean=fal
 	override fun getBody() : (ActorBasicFsm.() -> Unit){
 		//val interruptedStateTransitions = mutableListOf<Transition>()
 		
-				val Btime = 10L
-				var state = 0
+		    	val Btime = 10L
+		    	var state = 0
 		return { //this:ActionBasciFsm
 				state("off") { //this:State
 					action { //it:State
@@ -46,7 +46,8 @@ class Incinerator ( name: String, scope: CoroutineScope, isconfined: Boolean=fal
 						if( checkMsgContent( Term.createTerm("act(X)"), Term.createTerm("act(X)"), 
 						                        currentMsg.msgContent()) ) { //set msgArgList
 								CommUtils.outmagenta("[$name] act ricevuto")
-								 state = payloadArg(0).toInt()  
+								 state = payloadArg(0).toInt() 
+								CommUtils.outmagenta("[$name] act letto")
 						}
 						//genTimer( actor, state )
 					}
@@ -67,10 +68,11 @@ class Incinerator ( name: String, scope: CoroutineScope, isconfined: Boolean=fal
 				}	 
 				state("handleRp") { //this:State
 					action { //it:State
-						if( checkMsgContent( Term.createTerm("notifyRp(x)"), Term.createTerm("notifyRp(X)"), 
+						if( checkMsgContent( Term.createTerm("act(X)"), Term.createTerm("act(X)"), 
 						                        currentMsg.msgContent()) ) { //set msgArgList
-								CommUtils.outmagenta("[$name] notifyRp ricevuto, starting burn")
-								 state = 1  
+								CommUtils.outmagenta("[$name] notifyRp ricevuto")
+								 state = payloadArg(0).toInt() 
+								CommUtils.outmagenta("[$name] notifyRp letto")
 						}
 						//genTimer( actor, state )
 					}
@@ -83,10 +85,10 @@ class Incinerator ( name: String, scope: CoroutineScope, isconfined: Boolean=fal
 					action { //it:State
 						CommUtils.outmagenta("[$name] on")
 						
-									delay(Btime * 1000)
+									delay(Btime*1000)
 									state = 2	
 						emit("burnEnd", "burnEnd($Btime)" ) 
-						updateResourceRep( "state($state)"  
+						updateResourceRep( "burnEnd(${Btime})"  
 						)
 						//genTimer( actor, state )
 					}

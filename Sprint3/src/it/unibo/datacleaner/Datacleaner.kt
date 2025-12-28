@@ -35,22 +35,22 @@ class Datacleaner ( name: String, scope: CoroutineScope, isconfined: Boolean=fal
 				state("s0") { //this:State
 					action { //it:State
 						delay(1000) 
-						subscribeToLocalActor("sonardevice") 
-						CommUtils.outblue("$name subscribed to sonardevice")
+						subscribeToLocalActor("sonardevicemock") 
+						CommUtils.outgreen("[$name] subscribed to sonardevice")
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t07",targetState="filter",cond=whenEvent("sonardata"))
+					 transition(edgeName="t016",targetState="filter",cond=whenEvent("sonardevicedata"))
 				}	 
 				state("filter") { //this:State
 					action { //it:State
-						CommUtils.outblack("$name distance=$DISTANCE")
-						if( checkMsgContent( Term.createTerm("distance(DISTANCE)"), Term.createTerm("distance(DISTANCE)"), 
+						CommUtils.outgreen("[$name] distance=$DISTANCE")
+						if( checkMsgContent( Term.createTerm("sonardevicedata(DISTANCE)"), Term.createTerm("sonardevicedata(DISTANCE)"), 
 						                        currentMsg.msgContent()) ) { //set msgArgList
 								  DISTANCE = payloadArg(0).toInt()  
-								CommUtils.outblack("$name distance=$DISTANCE")
+								CommUtils.outgreen("[$name] distance=$DISTANCE")
 								if(  LAST != 0 
 								 ){ DIFF = (DISTANCE - LAST)  
 								}
@@ -59,7 +59,7 @@ class Datacleaner ( name: String, scope: CoroutineScope, isconfined: Boolean=fal
 								 }
 								if(  DISTANCE < 300 && ( DIFF >= TOLERANCE || DIFF <= -TOLERANCE )  
 								 ){ LAST = DISTANCE  
-								emitLocalStreamEvent("sonardata", "distance($DISTANCE)" ) 
+								emitLocalStreamEvent("sonardatacleaner", "sonardatacleaner($DISTANCE)" ) 
 								}
 						}
 						//genTimer( actor, state )
@@ -67,7 +67,7 @@ class Datacleaner ( name: String, scope: CoroutineScope, isconfined: Boolean=fal
 					//After Lenzi Aug2002
 					sysaction { //it:State
 					}	 	 
-					 transition(edgeName="t08",targetState="filter",cond=whenEvent("sonardata"))
+					 transition(edgeName="t017",targetState="filter",cond=whenEvent("sonardevicedata"))
 				}	 
 			}
 		}
