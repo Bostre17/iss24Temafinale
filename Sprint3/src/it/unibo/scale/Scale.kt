@@ -35,7 +35,7 @@ class Scale ( name: String, scope: CoroutineScope, isconfined: Boolean=false  ) 
 						CommUtils.outred("[$name] inizializzazione.")
 						delay(25000) 
 						 WEIGHT = 100 
-						emitLocalStreamEvent("stateScale", "stateScale($WEIGHT)" ) 
+						emit("stateScale", "stateScale($WEIGHT)" ) 
 						CommUtils.outred("[$name] stateScale updated a $WEIGHT.")
 						//genTimer( actor, state )
 					}
@@ -50,7 +50,7 @@ class Scale ( name: String, scope: CoroutineScope, isconfined: Boolean=false  ) 
 						if(  WEIGHT < 0 
 						 ){ WEIGHT = 0 
 						}
-						emitLocalStreamEvent("stateScale", "stateScale($WEIGHT)" ) 
+						emit("stateScale", "stateScale($WEIGHT)" ) 
 						CommUtils.outred("[$name] stateScale updated a $WEIGHT.")
 						//genTimer( actor, state )
 					}

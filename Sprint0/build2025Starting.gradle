@@ -154,9 +154,9 @@ task dovesiamo {
 
 distributions {
     main {
-        distributionBaseName = 'oprobot'
+        distributionBaseName = 'incinerator'
         contents { 
-             from './oprobot.pl'
+             from './incinerator.pl'
              from './sysRules.pl'
              from './facadeConfig.json'
         }

@@ -154,9 +154,9 @@ task dovesiamo {
 
 distributions {
     main {
-        distributionBaseName = 'monitoringdevice'
+        distributionBaseName = 'sprinttwo'
         contents { 
-             from './monitoringdevice.pl'
+             from './sprinttwo.pl'
              from './sysRules.pl'
              from './facadeConfig.json'
         }

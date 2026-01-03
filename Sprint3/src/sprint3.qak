@@ -122,7 +122,7 @@ QActor scale context ctxwis {
 		println("[$name] inizializzazione.") color red
 		delay 25000
 		[# WEIGHT = 100#]
-		emitlocalstream stateScale : stateScale($WEIGHT)
+		emit stateScale : stateScale($WEIGHT)
 		println("[$name] stateScale updated a $WEIGHT.") color red
     }
     Transition t0 whenMsg rpTaken -> handleRpTaken
@@ -133,7 +133,7 @@ QActor scale context ctxwis {
         {
             [# WEIGHT = 0#]
         }
-		emitlocalstream stateScale : stateScale($WEIGHT)
+		emit stateScale : stateScale($WEIGHT)
 		println("[$name] stateScale updated a $WEIGHT.") color red
     }
     Transition t0	whenMsg rpTaken -> handleRpTaken

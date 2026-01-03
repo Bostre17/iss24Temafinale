@@ -1,0 +1,390 @@
+/* ============================================================
+   Waste Incinerator Monitoring System - Dashboard Styles
+   Sprint 3 - MQTT Edition
+   ============================================================ */
+
+/* General Styles */
+body {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    min-height: 100vh;
+}
+
+/* Navigation */
+.navbar-brand {
+    font-size: 1.3rem;
+}
+
+/* Connection Status */
+.connection-status {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 10px;
+}
+
+#mqttStatus, #brokerInfo {
+    font-size: 0.95rem;
+    padding: 8px 12px;
+}
+
+/* Status Cards */
+.status-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    background: white;
+}
+
+.status-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+}
+
+.status-value {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin: 15px 0;
+    transition: color 0.3s ease;
+}
+
+/* Incinerator Status Colors */
+#incineratorStatus.IDLE {
+    color: #6c757d;
+}
+
+#incineratorStatus.BURNING {
+    color: #dc3545;
+    animation: pulse 2s infinite;
+}
+
+#incineratorStatus.OFF {
+    color: #343a40;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+}
+
+/* Ash Storage Colors */
+#ashStorageStatus.EMPTY {
+    color: #28a745;
+}
+
+#ashStorageStatus.FULL {
+    color: #dc3545;
+    animation: shake 0.5s;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+/* LED Indicator Styles */
+.led-indicator {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: white;
+    box-shadow: 0 0 20px rgba(0,0,0,0.3);
+    transition: all 0.3s ease;
+    font-size: 1.1rem;
+}
+
+.led-off {
+    background: linear-gradient(145deg, #8a8a8a, #6c757d);
+    box-shadow: 0 0 10px rgba(108, 117, 125, 0.5);
+}
+
+.led-on {
+    background: linear-gradient(145deg, #2ecc71, #27ae60);
+    box-shadow: 0 0 30px rgba(40, 167, 69, 0.8);
+    animation: glow-green 1.5s ease-in-out infinite;
+}
+
+.led-blink {
+    background: linear-gradient(145deg, #f39c12, #e67e22);
+    animation: blink 1s infinite, glow-orange 1s ease-in-out infinite;
+}
+
+@keyframes blink {
+    0%, 49% { opacity: 1; }
+    50%, 100% { opacity: 0.3; }
+}
+
+@keyframes glow-green {
+    0%, 100% { box-shadow: 0 0 30px rgba(40, 167, 69, 0.8); }
+    50% { box-shadow: 0 0 50px rgba(40, 167, 69, 1); }
+}
+
+@keyframes glow-orange {
+    0%, 100% { box-shadow: 0 0 30px rgba(230, 126, 34, 0.8); }
+    50% { box-shadow: 0 0 50px rgba(230, 126, 34, 1); }
+}
+
+/* System Map */
+.system-map {
+    background-color: #f8f9fa;
+    border: 2px solid #dee2e6;
+    border-radius: 10px;
+    padding: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#mapCanvas {
+    border: 1px solid #ccc;
+    background: linear-gradient(to bottom, #ffffff 0%, #f0f0f0 100%);
+    border-radius: 8px;
+    max-width: 100%;
+    height: auto;
+}
+
+/* Event Log */
+.event-log {
+    max-height: 400px;
+    overflow-y: auto;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+    background: linear-gradient(to bottom, #1e1e1e 0%, #2d2d2d 100%);
+    padding: 15px;
+    color: #f8f9fa;
+}
+
+.log-entry {
+    padding: 8px 0;
+    border-bottom: 1px solid #3a3a3a;
+    animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.log-entry:last-child {
+    border-bottom: none;
+}
+
+.log-timestamp {
+    color: #6c757d;
+    font-weight: bold;
+}
+
+.log-info {
+    color: #5bc0de;
+}
+
+.log-success {
+    color: #5cb85c;
+}
+
+.log-warning {
+    color: #f0ad4e;
+}
+
+.log-error {
+    color: #d9534f;
+}
+
+.log-mqtt {
+    color: #9b59b6;
+}
+
+/* Scrollbar Styling */
+.event-log::-webkit-scrollbar {
+    width: 10px;
+}
+
+.event-log::-webkit-scrollbar-track {
+    background: #1e1e1e;
+    border-radius: 10px;
+}
+
+.event-log::-webkit-scrollbar-thumb {
+    background: #555;
+    border-radius: 10px;
+}
+
+.event-log::-webkit-scrollbar-thumb:hover {
+    background: #777;
+}
+
+/* Cards */
+.card {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.card-header {
+    border-radius: 12px 12px 0 0 !important;
+    font-weight: 600;
+}
+
+/* Badges */
+.badge {
+    padding: 8px 12px;
+    font-weight: 600;
+}
+
+/* Progress Bar */
+#burnProgress {
+    transition: width 0.5s ease;
+}
+
+/* MQTT Statistics */
+.card-body h4 {
+    color: #2c3e50;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+/* Buttons */
+.btn {
+    border-radius: 6px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn:hover {
+    transform: scale(1.05);
+}
+
+/* Tables */
+.table-borderless td,
+.table-borderless th {
+    padding: 10px 5px;
+}
+
+.table-borderless th {
+    color: #6c757d;
+    font-weight: 600;
+}
+
+/* Footer */
+footer {
+    margin-top: auto;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .status-value {
+        font-size: 2rem;
+    }
+    
+    .led-indicator {
+        width: 80px;
+        height: 80px;
+        font-size: 0.9rem;
+    }
+    
+    .navbar-brand {
+        font-size: 1rem;
+    }
+    
+    #mapCanvas {
+        width: 100%;
+        height: auto;
+    }
+    
+    .connection-status {
+        align-items: center;
+    }
+}
+
+@media (max-width: 576px) {
+    .status-value {
+        font-size: 1.5rem;
+    }
+    
+    .card-body {
+        padding: 15px;
+    }
+    
+    h2 {
+        font-size: 1.5rem;
+    }
+    
+    h5 {
+        font-size: 1rem;
+    }
+}
+
+/* Loading Animation */
+.loading {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255,255,255,.3);
+    border-radius: 50%;
+    border-top-color: #fff;
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Utility Classes */
+.text-robot {
+    color: #3498db;
+    font-weight: bold;
+}
+
+.text-incinerator {
+    color: #e74c3c;
+    font-weight: bold;
+}
+
+.text-storage {
+    color: #2ecc71;
+    font-weight: bold;
+}
+
+.text-mqtt {
+    color: #9b59b6;
+    font-weight: bold;
+}
+
+/* Tooltip Custom */
+.tooltip-custom {
+    position: relative;
+    display: inline-block;
+}
+
+.tooltip-custom .tooltiptext {
+    visibility: hidden;
+    background-color: #555;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 10px;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%;
+    left: 50%;
+    margin-left: -60px;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.tooltip-custom:hover .tooltiptext {
+    visibility: visible;
+    opacity: 1;
+}
