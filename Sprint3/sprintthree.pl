@@ -8,6 +8,8 @@ request( bringAsh, bringAsh(X) ).
 dispatch( act, act(X) ).
 dispatch( notifyRp, notifyRp(x) ).
 dispatch( ack, ack(X) ).
+event( incIdle, incIdle(X) ).
+event( incBurn, incBurn(X) ).
 reply( atIncinerator, atIncinerator(X) ).  %%for bringRP
 reply( ashDeposited, ashDeposited(X) ).  %%for bringAsh
 dispatch( newRp, newRp(X) ).

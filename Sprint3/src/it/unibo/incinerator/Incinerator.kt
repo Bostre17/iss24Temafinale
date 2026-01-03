@@ -59,6 +59,7 @@ class Incinerator ( name: String, scope: CoroutineScope, isconfined: Boolean=fal
 				state("idle") { //this:State
 					action { //it:State
 						CommUtils.outmagenta("[$name] idle")
+						emit("incIdle", "incIdle(X)" ) 
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
@@ -84,6 +85,7 @@ class Incinerator ( name: String, scope: CoroutineScope, isconfined: Boolean=fal
 				state("burn") { //this:State
 					action { //it:State
 						CommUtils.outmagenta("[$name] on")
+						emit("incBurn", "incBurn(X)" ) 
 						
 									delay(Btime*1000)
 									state = 2	

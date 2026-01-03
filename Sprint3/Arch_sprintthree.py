@@ -35,6 +35,8 @@ with Diagram('sprintthreeArch', show=False, outformat='png', graph_attr=graphatt
      with Cluster('ctxmd', graph_attr=nodeattr):
           monitoringdevice=Custom('monitoringdevice(ext)','./qakicons/externalQActor.png')
           warningdevice=Custom('warningdevice(ext)','./qakicons/externalQActor.png')
+     incinerator >> Edge( label='incIdle', **eventedgeattr, decorate='true', fontcolor='red') >> sys
+     incinerator >> Edge( label='incBurn', **eventedgeattr, decorate='true', fontcolor='red') >> sys
      incinerator >> Edge( label='burnEnd', **eventedgeattr, decorate='true', fontcolor='red') >> sys
      scale >> Edge( label='stateScale', **eventedgeattr, decorate='true', fontcolor='red') >> sys
      incinerator >> Edge( label='burnEnd', **eventedgeattr, decorate='true', fontcolor='red') >> wis

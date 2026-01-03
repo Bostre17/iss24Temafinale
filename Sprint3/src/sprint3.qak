@@ -7,9 +7,13 @@ mqttBroker "test.mosquitto.org" : 1883 eventTopic "sprint3"
 Dispatch goHome : goHome(X)				// comando da WIS per OpRobot di andare a HOME
 Request bringRP : bringRP(X)			// request da WIS per OpRobot di andare a prendere RP in WASTEIN e portarlo in BURNIN
 Request bringAsh : bringAsh(X)			// comando da WIS per OpRobot di andare a prendere Ash in BURNOUT e portarlo in ASHOUT
-Dispatch act : act(X)					// comando di accensione iniziale dell'incinerator
+
+Dispatch act : act(X)						// comando di accensione iniziale dell'incinerator
 Dispatch notifyRp : notifyRp(x)			// messaggio di notifica presenza RP presso BURNIN
 Dispatch ack : ack(X)					// messaggio di ack
+
+Event incIdle : incIdle(X)
+Event incBurn : incBurn(X)
 
 Reply atIncinerator : atIncinerator(X)for bringRP // messaggio da OpRobot a WIS quando arriva all'incinerator
 Reply ashDeposited : ashDeposited(X) for bringAsh
@@ -84,6 +88,7 @@ QActor incinerator context ctxwis {
 
 	State idle{
 		println("[$name] idle") color magenta
+		emit incIdle: incIdle(X)
 	}
 	Transition t0 whenMsg notifyRp -> handleRp
 			
@@ -100,6 +105,7 @@ QActor incinerator context ctxwis {
 	
 	State burn{
 		println("[$name] on") color magenta
+		emit incBurn: incBurn(X)
 		[#
 			delay(Btime*1000)
 			state = 2	
