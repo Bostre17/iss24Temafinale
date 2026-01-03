@@ -211,34 +211,35 @@ div.imagedesc{
     Updates:
 
     Emissione eventi incIdle e incBurn per informare la gui sullo stato dell'incinerator, senza andare a toccare la logica precedente
-
+    Su OpRobot emit di posizione e job in maniera tale che le informazioni possano essere viste dalla gui
+    
     <div class="body"> 
         <h2>Introduzione</h2>
             <p>
                 Un'azienda intende sviluppare un WasteIncineratorService per il 
                 trattamento dei rifiuti tramite incenerimento e necessita di un servizio
-                di sistema software (WIS) per controllare un robot (chiamato OpRobot) 
+                di sistema software (WIS) per controllare un robot (OpRobot) 
                 per lo spostamento dei rifiuti.
             </p>
 
             <p>
                 Questo documento contiene lo <b>Sprint 3</b> del progetto, che si concentra 
-                sul <b>livello di presentazione</b> e sul <b>monitoraggio remoto</b>, estendendo 
+                sul <b>livello di presentazione</b> e sul deployment del contesto del MonitoringDevice sul Raspberry, estendendo 
                 il lavoro svolto nello <a href="../Sprint2/userDocs/wasteincinerator_sprint2_v1.html">Sprint 2</a>.
             </p> 
 
             <p>
                 L'obiettivo principale è lo sviluppo della <b>ServiceStatusGUI</b>, un'interfaccia 
-                web che permette agli operatori di visualizzare lo stato del sistema in tempo reale, e la conseguente integrazione con il Sonar fisico montato sul Raspberry. 
+                web che permette agli operatori di visualizzare lo stato del sistema in tempo reale,
+                e la conseguente integrazione con il Sonar fisico montato sul Raspberry. 
                 In questa fase viene introdotta un'architettura <b>Event-Driven</b> basata su protocollo 
                 <b>MQTT</b>, finalizzata a disaccoppiare la logica di controllo dalla visualizzazione 
-                e a garantire aggiornamenti reattivi dello stato dei componenti (Incinerator, Scale, 
-                MonitoringDevice e Robot).
+                e a garantire aggiornamenti reattivi dello stato dei componenti.
             </p>
 
-        <h2>Sprint 3 - ServiceStatusGUI</h2>
+        <h2>Sprint 3</h2>
         
-        <h3>Goal dello Sprint</h3>
+        <h3>Goal della ServiceStatusGUI</h3>
         <div class="req">
             <p><b>Obiettivo principale:</b> Implementare un'interfaccia grafica web-based (ServiceStatusGUI) che visualizzi lo stato di tutti i componenti del WasteIncineratorService.</p>
             
@@ -279,7 +280,7 @@ div.imagedesc{
         <ul>
             <li><b>Disaccoppiamento totale:</b> La GUI è indipendente dal ciclo di vita del server Java.</li>
             <li><b>Deployment semplificato:</b> I file statici possono essere ospitati ovunque (GitHub Pages, AWS S3, web server locale) senza configurare application server.</li>
-            <li><b>Leggerezza:</b> Eliminazione dell'overhead di un container servlet (Tomcat) per la sola visualizzazione dati.</li>
+            <li><b>Leggerezza:</b> Eliminazione dell'overhead di un container servlet (es. Tomcat) per la sola visualizzazione dati.</li>
         </ul>
 
         <h4>P2 - Architettura della Comunicazione (Polling vs Event-Driven)</h4>
@@ -297,8 +298,8 @@ div.imagedesc{
             <h5>Opzione B: MQTT over WebSockets - <span style="color: green;">SCELTA</span></h5>
             <ul>
                 <li><b>Meccanismo:</b> Il browser stabilisce una connessione persistente WebSocket con un Broker MQTT.</li>
-                <li><b>Protocollo:</b> MQTT (Message Queuing Telemetry Transport) via WebSockets (wss://).</li>
-                <li><b>Pro:</b> Aggiornamento <b>Real-Time</b> (push), pattern Pub/Sub nativo del sistema QAK, riduzione del traffico di rete.</li>
+                <li><b>Protocollo:</b> MQTT (Message Queuing Telemetry Transport).</li>
+                <li><b>Pro:</b> Aggiornamento <b>Real-Time</b> (push), disaccoppiamento totale tra produttori (Attori) e consumatori (GUI), mappatura naturale degli Eventi QAK su Topic MQTT.</li>
             </ul>
         </div>
 
@@ -306,7 +307,7 @@ div.imagedesc{
         
         <p>Non è più necessario un componente "GUIBridge" che agisca da intermediario HTTP. La GUI diventa un client diretto del sistema di messaggistica:</p>
         <ul>
-            <li>Gli attori QAK (Incinerator, Scale, MonitoringDevice) pubblicano eventi sul topic MQTT <span class="formula">sprint3</span>.</li>
+            <li>Gli attori QAK pubblicano eventi sul topic MQTT <span class="formula">sprint3</span>.</li>
             <li>La GUI (client JavaScript) effettua la <b>subscribe</b> allo stesso topic.</li>
             <li>Il Broker MQTT (es. <span class="formula">test.mosquitto.org</span>) gestisce l'instradamento dei messaggi.</li>
         </ul>
@@ -347,11 +348,11 @@ div.imagedesc{
         <p>La struttura del progetto frontend è composta da file statici puri, eliminando la necessità di compilazione Gradle per la parte GUI:</p>
         <pre>
 WasteIncineratorGUI/
-├── index.html              # Dashboard principale
+├── index.html
 ├── css/
-│   └── dashboard.css       # Stili e animazioni LED
+│   └── dashboard.css
 └── js/
-    └── dashboard-mqtt.js   # Logica client MQTT</pre>
+    └── dashboard-mqtt.js</pre>
 
         <h4>Componente 2: Integrazione MQTT.js</h4>
         <p>La logica di connessione risiede interamente nel browser tramite la libreria <b>MQTT.js</b> caricata via CDN. La configurazione prevede l'uso di WebSocket Secure (wss) per garantire la compatibilità con i moderni browser:</p>
