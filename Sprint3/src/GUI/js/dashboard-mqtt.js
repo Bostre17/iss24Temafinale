@@ -264,24 +264,31 @@ function updateConnectionUI(isConnected, isConnecting) {
  */
 function handleMQTTMessage(message) {
     try {
-        // QAK MQTT event format:
-        // event(eventType, eventName(payload), emitter)
-        // Example: event(stateScale, stateScale(150), scale)
+        // Nuovo formato QAK: msg(MSGID, MSGTYPE, SENDER, RECEIVER, CONTENT, SEQNUM)
+        // Esempio: msg(stateScale,event,scale,none,stateScale(100),26)
         
-        const eventMatch = message.match(/event\((\w+),\s*(\w+)\(([^)]*)\),\s*(\w+)\)/);
+        // Regex spiegata:
+        // 1. (\w+) -> MSGID (es. stateScale)
+        // 2. (\w+) -> MSGTYPE (es. event)
+        // 3. (\w+) -> SENDER/Emitter (es. scale)
+        // 4. (\w+) -> RECEIVER (es. none)
+        // 5. (\w+) -> Nome del contenuto (es. stateScale)
+        // 6. ([^)]*) -> Il valore dentro le parentesi (es. 100 o 0)
+        // 7. (\d+) -> Numero di sequenza (es. 26)
+        const qakMatch = message.match(/msg\((\w+),(\w+),(\w+),(\w+),(\w+)\(([^)]*)\),(\d+)\)/);
         
-        if (eventMatch) {
-            const eventType = eventMatch[1];
-            const eventName = eventMatch[2];
-            const payload = eventMatch[3];
-            const emitter = eventMatch[4];
+        if (qakMatch) {
+            const eventType = qakMatch[1]; // stateScale o stateSonar
+            const msgType   = qakMatch[2]; // event
+            const emitter   = qakMatch[3]; // scale o monitoringdevice
+            const payload   = qakMatch[6]; // il valore (100, 0, ecc.)
             
-            console.log('Parsed event:', { eventType, eventName, payload, emitter });
+            console.log('Parsed QAK message:', { eventType, emitter, payload });
             
             stats.eventsProcessed++;
             updateStatistics();
             
-            // Route to specific handler
+            // Routing basato su eventType (MSGID)
             switch (eventType) {
                 case 'stateScale':
                     handleScaleUpdate(payload, emitter);
@@ -296,10 +303,10 @@ function handleMQTTMessage(message) {
                     break;
                     
                 default:
-                    addLog('Unknown event type: ' + eventType + ' from ' + emitter, 'warning');
+                    addLog('Unknown MSGID: ' + eventType + ' from ' + emitter, 'warning');
             }
         } else {
-            // Try alternative formats or plain text
+            // Se non è un messaggio QAK standard, logga come testo semplice
             addLog('MQTT: ' + message, 'mqtt');
         }
         
