@@ -212,7 +212,7 @@ div.imagedesc{
 
     Emissione eventi incIdle e incBurn per informare la gui sullo stato dell'incinerator, senza andare a toccare la logica precedente
     Su OpRobot emit di posizione e job in maniera tale che le informazioni possano essere viste dalla gui
-    
+
     <div class="body"> 
         <h2>Introduzione</h2>
             <p>
@@ -240,10 +240,10 @@ div.imagedesc{
         <h2>Sprint 3</h2>
         
         <h3>Goal della ServiceStatusGUI</h3>
-        <div class="req">
-            <p><b>Obiettivo principale:</b> Implementare un'interfaccia grafica web-based (ServiceStatusGUI) che visualizzi lo stato di tutti i componenti del WasteIncineratorService.</p>
+            <h4>Obiettivo principale</h4>
+            Implementare un'interfaccia grafica web-based (<b>ServiceStatusGUI</b>) che visualizzi lo stato di tutti i componenti del WasteIncineratorService.</p>
             
-            <p><b>Requisiti funzionali:</b></p>
+            <h4>Requisiti funzionali</h4>
             <ul>
                 <li>Visualizzazione dello stato dell'Incinerator (Off/On/Idle)</li>
                 <li>Visualizzazione del numero di RP presenti nel WasteStorage</li>
@@ -253,13 +253,12 @@ div.imagedesc{
                 <li>Aggiornamento automatico della GUI</li>
             </ul>
             
-            <p><b>Requisiti non funzionali:</b></p>
+            <h4>Requisiti non funzionali</h4>
             <ul>
-                <li>Coerenza con sprint precedenti: utilizzo di Gradle come build tool per il backend QAK</li>
-                <li>Accessibilità: interfaccia utilizzabile da qualsiasi browser moderno</li>
-                <li>Semplicità architetturale: separazione chiara tra business logic e presentation</li>
+                <li><b>Coerenza con sprint precedenti</b>: utilizzo di Gradle come build tool per il backend QAK</li>
+                <li><b>Accessibilità</b>: interfaccia utilizzabile da qualsiasi browser moderno</li>
+                <li><b>Semplicità architetturale</b>: separazione chiara tra business logic e presentation</li>
             </ul>
-        </div>
 
         <h3>Requisiti</h3>
         <p>Come specificato nello Sprint0, la ServiceStatusGUI deve fornire le seguenti informazioni:</p>
@@ -273,23 +272,23 @@ div.imagedesc{
         <h3>Analisi del Problema</h3>
 
         <h4>P1 - Scelta del Build Tool e Tecnologia Frontend</h4>
-        <p>A differenza delle iterazioni precedenti, per questo Sprint si valuta la necessità di un backend dedicato per la GUI. L'analisi dei requisiti evidenzia che l'interfaccia deve essere reattiva e "real-time".</p>
-        <p>Si decide di <b>non utilizzare Spring Boot</b> per questo layer, optando per una soluzione <b>100% statica</b> basata su tecnologie web standard (HTML5, CSS3, JavaScript ES6).</p>
+        <p>A differenza delle iterazioni precedenti, per questo Sprint si valuta la necessità di un backend dedicato per la GUI.<br>
+            L'analisi dei requisiti evidenzia che l'interfaccia deve essere reattiva e "real-time": 
+            si decide di optare dunque per una soluzione <b>100% statica</b> basata su tecnologie web standard (HTML5, CSS3, JavaScript ES6).</p>
         
         <p><b>Vantaggi di questa scelta:</b></p>
         <ul>
             <li><b>Disaccoppiamento totale:</b> La GUI è indipendente dal ciclo di vita del server Java.</li>
-            <li><b>Deployment semplificato:</b> I file statici possono essere ospitati ovunque (GitHub Pages, AWS S3, web server locale) senza configurare application server.</li>
-            <li><b>Leggerezza:</b> Eliminazione dell'overhead di un container servlet (es. Tomcat) per la sola visualizzazione dati.</li>
+            <li><b>Deployment semplificato:</b> I file statici possono essere ospitati ovunque.</li>
         </ul>
 
         <h4>P2 - Architettura della Comunicazione (Polling vs Event-Driven)</h4>
         <p>Si valutano le opzioni per l'aggiornamento dei dati:</p>
         
         <div style="margin: 20px; padding: 15px; background-color: #fff5f0; border-radius: 8px;">
-            <h5>Opzione A: HTTP Polling (Approccio precedente)</h5>
+            <h5>Opzione A: HTTP Polling</h5>
             <ul>
-                <li><b>Meccanismo:</b> Il browser richiede i dati ogni X secondi (es. meta-refresh).</li>
+                <li><b>Meccanismo:</b> Il browser richiede i dati ogni X secondi.</li>
                 <li><b>Contro:</b> Latenza, carico inutile sul server se lo stato non cambia, esperienza utente "a scatti".</li>
             </ul>
         </div>
@@ -298,14 +297,14 @@ div.imagedesc{
             <h5>Opzione B: MQTT over WebSockets - <span style="color: green;">SCELTA</span></h5>
             <ul>
                 <li><b>Meccanismo:</b> Il browser stabilisce una connessione persistente WebSocket con un Broker MQTT.</li>
-                <li><b>Protocollo:</b> MQTT (Message Queuing Telemetry Transport).</li>
-                <li><b>Pro:</b> Aggiornamento <b>Real-Time</b> (push), disaccoppiamento totale tra produttori (Attori) e consumatori (GUI), mappatura naturale degli Eventi QAK su Topic MQTT.</li>
+                <li><b>Protocollo:</b> MQTT.</li>
+                <li><b>Pro:</b> Aggiornamento <b>Real-Time</b> (push), disaccoppiamento totale tra produttori (Attori) e consumatori (GUI).</li>
             </ul>
         </div>
 
         <h4>P3 - Fonte delle Informazioni</h4>
         
-        <p>Non è più necessario un componente "GUIBridge" che agisca da intermediario HTTP. La GUI diventa un client diretto del sistema di messaggistica:</p>
+        <p>Non è necessario introdurre un attore QAK che agisca da intermediario HTTP. La GUI diventa un client diretto del sistema di messaggistica:</p>
         <ul>
             <li>Gli attori QAK pubblicano eventi sul topic MQTT <span class="formula">sprint3</span>.</li>
             <li>La GUI (client JavaScript) effettua la <b>subscribe</b> allo stesso topic.</li>
@@ -316,31 +315,6 @@ div.imagedesc{
         <p>Il sistema QAK emette messaggi nel formato Prolog-like standard: <span class="formula">msg(eventType, event, emitter, receiver, eventType(payload), id)</span>.</p>
         <p>La GUI deve essere in grado di effettuare il parsing di queste stringhe lato client. Si utilizzeranno espressioni regolari (Regex) in JavaScript per estrarre il <i>payload</i> significativo (es. il valore del peso o lo stato del sonar) direttamente dal messaggio grezzo.</p>
 
-        <h4>P5 - Architettura Finale</h4>
-        <div style="text-align: center; padding-top: 20px; padding-bottom: 20px;">
-            <pre style="text-align: left; display: inline-block; background-color: #f5f5f5; padding: 15px; border-radius: 8px;">
-┌─────────────────────┐
-│   Incinerator       │
-│   Scale             │ (QAK Actors)
-│   MonitoringDevice  │
-└──────────┬──────────┘
-           │ PUBLISH (TCP/MQTT)
-           │ Topic: "sprint3"
-           ▼
-┌─────────────────────┐
-│    MQTT BROKER      │ (test.mosquitto.org)
-│   (Porta 1883/8081) │
-└──────────┬──────────┘
-           │ SUBSCRIBE (WebSocket/WSS)
-           │ Topic: "sprint3"
-           ▼
-┌─────────────────────┐
-│   Browser (GUI)     │
-│   index.html        │ (Client Statico)
-│   MQTT.js Library   │
-└─────────────────────┘
-            </pre>
-        </div>
 
         <h3>Progettazione</h3>
 
@@ -348,11 +322,11 @@ div.imagedesc{
         <p>La struttura del progetto frontend è composta da file statici puri, eliminando la necessità di compilazione Gradle per la parte GUI:</p>
         <pre>
 WasteIncineratorGUI/
-├── index.html
-├── css/
-│   └── dashboard.css
-└── js/
-    └── dashboard-mqtt.js</pre>
+    index.html
+    css/
+        dashboard.css
+    js/
+        dashboard-mqtt.js</pre>
 
         <h4>Componente 2: Integrazione MQTT.js</h4>
         <p>La logica di connessione risiede interamente nel browser tramite la libreria <b>MQTT.js</b> caricata via CDN. La configurazione prevede l'uso di WebSocket Secure (wss) per garantire la compatibilità con i moderni browser:</p>
@@ -395,9 +369,9 @@ client.on('message', function (topic, message) {
         <h4>Componente 4: Aggiornamento UI Dinamico</h4>
         <p>L'aggiornamento del DOM avviene via jQuery/Vanilla JS in risposta agli eventi, garantendo un feedback visivo immediato:</p>
         <ul>
-            <li><b>stateScale(V):</b> Aggiorna il contatore RP e la progress bar del WasteStorage.</li>
-            <li><b>stateSonar(V):</b> Modifica lo stato (badge FULL/EMPTY) e attiva l'animazione LED.</li>
-            <li><b>burnEnd(V):</b> Aggiorna lo stato dell'inceneritore da Burning a Idle.</li>
+            <li><b>stateScale(X):</b> Aggiorna il contatore RP e la progress bar del WasteStorage.</li>
+            <li><b>stateSonar(X):</b> Modifica lo stato (badge FULL/EMPTY) e attiva l'animazione LED.</li>
+            <li><b>burnEnd(X):</b> Aggiorna lo stato dell'inceneritore da Burning a Idle.</li>
         </ul>
 
         <h3>Test Plan</h3>

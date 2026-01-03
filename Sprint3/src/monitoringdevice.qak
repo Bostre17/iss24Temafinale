@@ -108,7 +108,7 @@ QActor datacleaner context ctxmd {
 	Transition t0 whenEvent sonardevicedata -> filter
 	
 	State filter {
-		 println("[$name] distance=$DISTANCE") color green	
+		println("[$name] distance=$DISTANCE") color green	
 		onMsg(sonardevicedata : sonardevicedata(DISTANCE)) {
 	      	[#  DISTANCE = payloadArg(0).toInt() #]	      	
 	      	println("[$name] distance=$DISTANCE") color green

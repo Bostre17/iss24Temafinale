@@ -173,12 +173,3 @@ task runMD(type: JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
     mainClass = 'it.unibo.ctxmd.MainCtxmdKt'
 }
-
-
-// Task per avviare la GUI Spring Boot
-task runGUI(type: JavaExec) {
-    group = 'application'
-    description = 'Avvia WISFacade (GUI web Spring Boot)'
-    classpath = sourceSets.main.runtimeClasspath
-    mainClass = 'it.unibo.wis.facade.WISFacadeApp'
-}
