@@ -297,7 +297,18 @@ function handleMQTTMessage(message) {
                 case 'stateSonar':
                     handleSonarUpdate(payload, emitter);
                     break;
-                    
+                case 'incIdle':
+                    // Inceneritore libero -> LED OFF
+                    updateIncineratorStatus('IDLE', 'success');
+                    updateLedStatus('OFF', 'secondary'); 
+                    addLog('Incinerator is IDLE (LED OFF)', 'info');
+                    break;
+                case 'incBurn':
+                    // Inceneritore in funzione -> LED ON
+                    updateIncineratorStatus('BURNING', 'danger');
+                    updateLedStatus('ON (Blinking)', 'warning');
+                    addLog('Incinerator is BURNING (LED Blinking)', 'warning');
+                    break;
                 case 'burnEnd':
                     handleBurnEnd(payload, emitter);
                     break;
@@ -375,6 +386,23 @@ function handleSonarUpdate(payload, emitter) {
     
     // Update LED based on ash storage and incinerator state
     updateLEDState();
+}
+
+function updateIncineratorStatus(status, type) {
+    const el = document.getElementById('incinerator-status');
+    if (el) {
+        el.innerText = status;
+        el.className = 'badge bg-' + type; // Cambia colore (es. bg-success, bg-danger)
+    }
+}
+
+function updateLedStatus(status, type) {
+    const el = document.getElementById('led-status');
+    if (el) {
+        el.innerText = status;
+        // Se hai un'icona o un cerchio colorato per il LED:
+        el.className = 'led-indicator led-' + type; 
+    }
 }
 
 /**
