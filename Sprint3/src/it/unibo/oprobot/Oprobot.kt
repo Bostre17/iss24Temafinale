@@ -34,12 +34,17 @@ class Oprobot ( name: String, scope: CoroutineScope, isconfined: Boolean=false  
 			    pos["burnout"] = arrayOf("4", "3")
 				pos["ashout"] = arrayOf("5", "4")
 				pos["wastein"] = arrayOf("0", "4")
-		
+				
 				var Job=""
+				var X = 0
+				var Y = 0
+				
+				var X_next = 0
+				var Y_next = 0
 		return { //this:ActionBasciFsm
 				state("s0") { //this:State
 					action { //it:State
-						CommUtils.outyellow("[$name] inizializzazione.")
+						CommUtils.outgreen("[$name] inizializzazione.")
 						request("engage", "engage(name,330)" ,"basicrobot" )  
 						//genTimer( actor, state )
 					}
@@ -50,8 +55,12 @@ class Oprobot ( name: String, scope: CoroutineScope, isconfined: Boolean=false  
 				}	 
 				state("standby") { //this:State
 					action { //it:State
-						CommUtils.outyellow("[$name] pronto e in attesa in HOME.")
-						 Job = "Waiting Home"  
+						CommUtils.outgreen("[$name] pronto e in attesa in HOME.")
+						 
+						        	Job = "waitingHome" 
+						        	X = pos["home"]!!.get(0).toInt()
+						        	Y = pos["home"]!!.get(0).toInt()
+						emit("position", "position($X,$Y,$Job)" ) 
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
@@ -62,11 +71,13 @@ class Oprobot ( name: String, scope: CoroutineScope, isconfined: Boolean=false  
 				}	 
 				state("goWasteIn") { //this:State
 					action { //it:State
-						CommUtils.outyellow("[$name] vado in WasteIn.")
+						CommUtils.outgreen("[$name] vado in WasteIn.")
 						 
-						        	val X = pos["wastein"]!!.get(0); 
-						        	val Y = pos["wastein"]!!.get(1)
-						request("moverobot", "moverobot($X,$Y)" ,"basicrobot" )  
+						        	X_next = pos["wastein"]!!.get(0).toInt()
+						        	Y_next = pos["wastein"]!!.get(1).toInt()
+						        	Job = "goWasteIn" 
+						emit("position", "position($X,$Y,$Job)" ) 
+						request("moverobot", "moverobot($X_next,$Y_next)" ,"basicrobot" )  
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
@@ -77,13 +88,17 @@ class Oprobot ( name: String, scope: CoroutineScope, isconfined: Boolean=false  
 				}	 
 				state("goBurnIn") { //this:State
 					action { //it:State
-						CommUtils.outyellow("[$name] arrivato in WasteIn, vado in BurnIn.")
-						 Job = "In WasteIn"  
+						CommUtils.outgreen("[$name] arrivato in WasteIn, vado in BurnIn.")
+						 
+						        	X = X_next
+						        	Y = Y_next
+						        	Job = "goBurnIn"
+						emit("position", "position($X,$Y,$Job)" ) 
 						forward("rpTaken", "rpTaken(1)" ,"scale" ) 
 						 
-						        	val X = pos["burnin"]!!.get(0); 
-						        	val Y = pos["burnin"]!!.get(1) 
-						request("moverobot", "moverobot($X,$Y)" ,"basicrobot" )  
+						        	X_next = pos["burnin"]!!.get(0).toInt()
+						        	Y_next = pos["burnin"]!!.get(1).toInt()
+						request("moverobot", "moverobot($X_next,$Y_next)" ,"basicrobot" )  
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
@@ -94,8 +109,12 @@ class Oprobot ( name: String, scope: CoroutineScope, isconfined: Boolean=false  
 				}	 
 				state("arrivedToIncinerator") { //this:State
 					action { //it:State
-						CommUtils.outyellow("[$name] sono arrivato all'inceneritore e notifico.")
-						 Job = "Waiting in BurnIn"  
+						CommUtils.outgreen("[$name] sono arrivato all'inceneritore e notifico.")
+						 
+						        	X = X_next
+						        	Y = Y_next
+						        	Job = "arrivedToIncinerator" 
+						emit("position", "position($X,$Y,$Job)" ) 
 						answer("bringRP", "atIncinerator", "atIncinerator(1)"   )  
 						//genTimer( actor, state )
 					}
@@ -108,16 +127,20 @@ class Oprobot ( name: String, scope: CoroutineScope, isconfined: Boolean=false  
 				}	 
 				state("goHome") { //this:State
 					action { //it:State
-						if(  Job != "Waiting Home" 
-						 ){CommUtils.outyellow("[$name] vado in HOME.")
-						 Job = "Going Home"  
+						if(  Job != "waitingHome" 
+						 ){CommUtils.outgreen("[$name] vado in HOME.")
 						 
-						        		val X = pos["home"]!!.get(0); 
-						        		val Y = pos["home"]!!.get(1) 
-						request("moverobot", "moverobot($X,$Y)" ,"basicrobot" )  
+						        		X = X_next
+						        		Y = Y_next
+						        		Job = "goHome"
+						        		
+						        		X_next = pos["home"]!!.get(0).toInt()
+						        		Y_next = pos["home"]!!.get(1).toInt() 
+						emit("position", "position($X,$Y,$Job)" ) 
+						request("moverobot", "moverobot($X_next,$Y_next)" ,"basicrobot" )  
 						}
 						else
-						 {CommUtils.outyellow("[$name] sono gia' in HOME.")
+						 {CommUtils.outgreen("[$name] sono gia' in HOME.")
 						 }
 						//genTimer( actor, state )
 					}
@@ -131,7 +154,7 @@ class Oprobot ( name: String, scope: CoroutineScope, isconfined: Boolean=false  
 				}	 
 				state("waitForReply") { //this:State
 					action { //it:State
-						CommUtils.outyellow("[$name] In attesa di arrivare a HOME...")
+						CommUtils.outgreen("[$name] In attesa di arrivare a HOME...")
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
@@ -142,12 +165,16 @@ class Oprobot ( name: String, scope: CoroutineScope, isconfined: Boolean=false  
 				}	 
 				state("goBurnOut") { //this:State
 					action { //it:State
-						CommUtils.outyellow("[$name] vado a prelevare le ash in BurnOut.")
-						 Job = "Going BurnOut"  
+						CommUtils.outgreen("[$name] vado a prelevare le ash in BurnOut.")
 						 
-						        	val X = pos["burnout"]!!.get(0); 
-						        	val Y = pos["burnout"]!!.get(1) 
-						request("moverobot", "moverobot($X,$Y)" ,"basicrobot" )  
+						        	X = X_next
+						        	Y = Y_next
+						        	Job = "goBurnOut" 
+						        	
+						        	X_next = pos["burnout"]!!.get(0).toInt() 
+						        	Y_next = pos["burnout"]!!.get(1).toInt() 
+						emit("position", "position($X,$Y,$Job)" ) 
+						request("moverobot", "moverobot($X_next,$Y_next)" ,"basicrobot" )  
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
@@ -158,13 +185,17 @@ class Oprobot ( name: String, scope: CoroutineScope, isconfined: Boolean=false  
 				}	 
 				state("goAshOut") { //this:State
 					action { //it:State
-						CommUtils.outyellow("[$name] arrivato in BurnOut, vado a depositare in AshOut.")
-						 Job = "In BurnOut"  
+						CommUtils.outgreen("[$name] arrivato in BurnOut, vado a depositare in AshOut.")
 						 
-						        	val X = pos["ashout"]!!.get(0); 
-						        	val Y = pos["ashout"]!!.get(1)
+						        	X = X_next
+						        	Y = Y_next
+						        	Job = "goAshOut"
+						        	
+						        	X_next = pos["ashout"]!!.get(0).toInt() 
+						        	Y_next = pos["ashout"]!!.get(1).toInt()
 						        	 
-						request("moverobot", "moverobot($X,$Y)" ,"basicrobot" )  
+						emit("position", "position($X,$Y,$Job)" ) 
+						request("moverobot", "moverobot($X_next,$Y_next)" ,"basicrobot" )  
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
@@ -175,8 +206,12 @@ class Oprobot ( name: String, scope: CoroutineScope, isconfined: Boolean=false  
 				}	 
 				state("atAshStorage") { //this:State
 					action { //it:State
-						CommUtils.outyellow("[$name] arrivato in AshStorage, deposito e notifico.")
-						 Job = "Depositing Ashes"  
+						CommUtils.outgreen("[$name] arrivato in AshStorage, deposito e notifico.")
+						 
+						        	X = X_next 
+						        	X = Y_next
+						        	Job = "atAshStorage"
+						emit("position", "position($X,$Y,$Job)" ) 
 						answer("bringAsh", "ashDeposited", "ashDeposited(1)"   )  
 						//genTimer( actor, state )
 					}

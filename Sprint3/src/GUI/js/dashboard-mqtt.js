@@ -297,6 +297,9 @@ function handleMQTTMessage(message) {
                 case 'stateSonar':
                     handleSonarUpdate(payload, emitter);
                     break;
+                case 'position':
+                    handleRobotPosition(payload, emitter);
+                    break;
                 case 'incIdle':
                     // Inceneritore libero -> LED OFF
                     updateIncineratorStatus('IDLE', 'success');
@@ -386,6 +389,59 @@ function handleSonarUpdate(payload, emitter) {
     
     // Update LED based on ash storage and incinerator state
     updateLEDState();
+}
+
+
+function handleRobotPosition(payload, emitter) {
+    // Il payload arriva come stringa: "0, 4, go_waste_in"
+    const parts = payload.split(',');
+
+    if (parts.length < 3) {
+        addLog('Invalid robot position format: ' + payload, 'error');
+        return;
+    }
+
+    // Parsing X, Y
+    const x = parseInt(parts[0].trim());
+    const y = parseInt(parts[1].trim());
+    
+    // Parsing Job: unisce le parti restanti, rimuove spazi, apici e SOSTITUISCE _ CON SPAZI
+    let job = parts.slice(2).join(',').trim();
+    job = job.replace(/^['"]|['"]$/g, '');  // Rimuove apici a inizio/fine
+
+    if (isNaN(x) || isNaN(y)) {
+        addLog('Invalid coordinates received: ' + payload, 'error');
+        return;
+    }
+
+    // 1. Aggiorna lo stato globale
+    systemState.robotPosition = { x: x, y: y };
+    systemState.robotJob = job;
+
+    // 2. Aggiorna la UI testuale
+    $('#robotPosition').text(`GRID (${x}, ${y})`);
+    
+    // Capitalize della prima lettera per estetica (opzionale, ma sta bene)
+    const formattedJob = job.charAt(0).toUpperCase() + job.slice(1);
+    $('#robotJob').text(formattedJob);
+    
+    // Aggiorna timestamp
+    const now = new Date().toLocaleTimeString();
+    $('#robotLastUpdate').text(now);
+
+    // Cambia badge status
+    const statusBadge = $('#robotStatus');
+    if (job.toLowerCase().includes('wait') || job.toLowerCase().includes('home')) {
+        statusBadge.text('STANDBY').removeClass('bg-primary bg-warning').addClass('bg-success');
+    } else {
+        statusBadge.text('MOVING').removeClass('bg-success bg-warning').addClass('bg-primary');
+    }
+
+    // 3. Log dell'evento
+    addLog(`🤖 Robot moved to (${x}, ${y}) - Action: ${formattedJob}`, 'info');
+
+    // 4. Ridisegna la mappa
+    drawMap();
 }
 
 function updateIncineratorStatus(status, type) {

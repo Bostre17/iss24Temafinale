@@ -39,6 +39,7 @@ with Diagram('sprintthreeArch', show=False, outformat='png', graph_attr=graphatt
      incinerator >> Edge( label='incBurn', **eventedgeattr, decorate='true', fontcolor='red') >> sys
      incinerator >> Edge( label='burnEnd', **eventedgeattr, decorate='true', fontcolor='red') >> sys
      scale >> Edge( label='stateScale', **eventedgeattr, decorate='true', fontcolor='red') >> sys
+     oprobot >> Edge( label='position', **eventedgeattr, decorate='true', fontcolor='red') >> sys
      incinerator >> Edge( label='burnEnd', **eventedgeattr, decorate='true', fontcolor='red') >> wis
      scale >> Edge( label='stateScale', **eventedgeattr, decorate='true', fontcolor='red') >> wis
      sys >> Edge( label='stateSonar', **evattr, decorate='true', fontcolor='darkgreen') >> wis

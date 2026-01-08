@@ -20,6 +20,7 @@ event( stateSonar, stateSonar(X) ).
 dispatch( ledOn, ledOn(X) ).
 dispatch( ledOff, ledOff(X) ).
 dispatch( ledBlink, ledBlink(X) ).
+event( position, position(X,Y,J) ).
 request( engage, engage(OWNER,STEPTIME) ).
 reply( engagedone, engagedone(ARG) ).  %%for engage
 reply( engagerefused, engagerefused(ARG) ).  %%for engage
