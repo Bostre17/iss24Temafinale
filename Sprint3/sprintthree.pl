@@ -35,9 +35,8 @@ dispatch( sonarstop, sonarstop(X) ).
 %====================================================================================
 context(ctxwis, "localhost",  "TCP", "8001").
 context(ctxbasicrobot, "127.0.0.1",  "TCP", "8020").
-context(ctxmd, "127.0.0.1",  "TCP", "8128").
+context(ctxmd, "192.168.1.10",  "TCP", "8128").
  qactor( monitoringdevice, ctxmd, "external").
-  qactor( warningdevice, ctxmd, "external").
   qactor( basicrobot, ctxbasicrobot, "external").
   qactor( incinerator, ctxwis, "it.unibo.incinerator.Incinerator").
  static(incinerator).

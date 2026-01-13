@@ -239,239 +239,285 @@ div.imagedesc{
 
         <h2>Sprint 3</h2>
         
-        <h3>Goal della ServiceStatusGUI</h3>
-            <h4>Obiettivo principale</h4>
+        <h3>Obiettivo principale</h4>
             Implementare un'interfaccia grafica web-based (<b>ServiceStatusGUI</b>) che visualizzi lo stato di tutti i componenti del WasteIncineratorService.</p>
-            
-            <h4>Requisiti funzionali</h4>
-            <ul>
-                <li>Visualizzazione dello stato dell'Incinerator (Off/On/Idle)</li>
-                <li>Visualizzazione del numero di RP presenti nel WasteStorage</li>
-                <li>Visualizzazione dello stato dell'AshStorage (pieno/non pieno)</li>
-                <li>Visualizzazione della posizione corrente dell'OpRobot</li>
-                <li>Visualizzazione dell'attività corrente dell'OpRobot</li>
-                <li>Aggiornamento automatico della GUI</li>
-            </ul>
-            
-            <h4>Requisiti non funzionali</h4>
-            <ul>
-                <li><b>Coerenza con sprint precedenti</b>: utilizzo di Gradle come build tool per il backend QAK</li>
-                <li><b>Accessibilità</b>: interfaccia utilizzabile da qualsiasi browser moderno</li>
-                <li><b>Semplicità architetturale</b>: separazione chiara tra business logic e presentation</li>
-            </ul>
-
-        <h3>Requisiti</h3>
-        <p>Come specificato nello Sprint0, la ServiceStatusGUI deve fornire le seguenti informazioni:</p>
+        <h3>Requisiti Funzionali</h3>
+        Come specificato dai requisiti, la ServiceStatusGUI deve fornire le seguenti informazioni:
         <ul>
-            <li><b>Stato Incinerator:</b> Visualizzazione se spento (Off), acceso (On), o in attesa (Idle)</li>
-            <li><b>Stato WasteStorage:</b> Numero di RP presenti, calcolato dal peso misurato dalla Scale</li>
-            <li><b>Stato AshStorage:</b> Indicazione se il deposito ceneri è pieno o meno</li>
-            <li><b>Stato OpRobot:</b> Posizione corrente e attività in corso</li>
+            <li><b>RF3.1 - Stato Incinerator:</b> Visualizzazione se spento (Off), acceso (On), o in attesa (Idle);</li>
+            <li><b>RF3.2 - Stato WasteStorage:</b> Numero di RP presenti, calcolato dal peso misurato dalla Scale;</li>
+            <li><b>RF3.3 - Stato AshStorage:</b> Indicazione se il deposito ceneri è pieno o meno;</li>
+            <li><b>RF3.4 - Stato OpRobot:</b> Posizione corrente e attività in corso.</li>
         </ul>
+            
+        <h3>Requisiti non funzionali</h4>
+        <ul>
+            <li><b>RNF3.1 - Coerenza con sprint precedenti</b>: utilizzo di Gradle come build tool per il backend QAK;</li>
+            <li><b>RNF3.2 - Accessibilità</b>: interfaccia utilizzabile da qualsiasi browser moderno;</li>
+            <li><b>RNF3.3 - Semplicità architetturale</b>: separazione chiara tra business logic e presentation;</li>
+            <li><b>RNF3.4 - Reattività</b>: interfaccia real-time.</li>
+        </ul>
+
+        
 
         <h3>Analisi del Problema</h3>
-
-        <h4>P1 - Scelta del Build Tool e Tecnologia Frontend</h4>
-        <p>A differenza delle iterazioni precedenti, per questo Sprint si valuta la necessità di un backend dedicato per la GUI.<br>
-            L'analisi dei requisiti evidenzia che l'interfaccia deve essere reattiva e "real-time": 
-            si decide di optare dunque per una soluzione <b>100% statica</b> basata su tecnologie web standard (HTML5, CSS3, JavaScript ES6).</p>
-        
-        <p><b>Vantaggi di questa scelta:</b></p>
         <ul>
-            <li><b>Disaccoppiamento totale:</b> La GUI è indipendente dal ciclo di vita del server Java.</li>
-            <li><b>Deployment semplificato:</b> I file statici possono essere ospitati ovunque.</li>
+            <h4>P3.1 - Consolidamento dell'Infrastruttura Distribuita</h4>
+
+                    Durante la fase di validazione dello Sprint 2, sono emerse criticità nella gestione della comunicazione diretta tra il nodo <b>WIS</b> (PC) e il <b>Monitoring Device</b> (Raspberry Pi).
+                    La gestione punto-punto (TCP) tra i due contesti ha evidenziato rigidità nella configurazione di rete (necessità di conoscere a priori gli IP esatti) e fragilità in caso di disconnessioni temporanee.
+                    Per garantire la robustezza del sistema distribuito, si decide di evolvere l'architettura di comunicazione introducendo formalmente un <b>Broker MQTT</b> come mediatore (Message Bus) tra i nodi computazionali.
+                <p><b>Vantaggi dell'introduzione del Broker nel Backend:</b></p>
+                <ul>
+                    <li><b>Disaccoppiamento Spaziale:</b> <span class="formula">ctxWIS</span> e <span class="formula">ctxMD</span> non devono più conoscersi reciprocamente tramite IP diretto. Entrambi devono conoscere solo l'indirizzo del Broker (es. <code>test.mosquitto.org</code>).</li>
+                    <li><b>Gestione Eventi Globali:</b> Gli eventi emessi dal Sonar (es. <span class="formula">stateSonar</span>) vengono pubblicati sul broker e distribuiti automaticamente a tutti gli attori interessati (WIS, e successivamente la GUI).</li>
+                    <li><b>Resilienza:</b> Il protocollo MQTT gestisce meglio le micro-disconnessioni tipiche delle reti WiFi (su cui opera il Raspberry Pi) rispetto a socket TCP crudi.</li>
+                </ul>
+
+            <h4>P3.2 - Revisione Gestione Warning Device</h4>
+
+                <p>Rispetto alle iterazioni precedenti, viene modificata la catena di controllo per la gestione degli allarmi.
+                Il <b>WIS</b> mantiene la logica di emissione dei comandi (<code>ledOn</code>, <code>ledOff</code>, <code>ledBlink</code>), ma li indirizza al <b>MonitoringDevice</b> invece che direttamente al <b>WarningDevice</b>.</p>
+
+                <p>Questa scelta architetturale apporta significativi vantaggi in termini di manutenibilità:</p>
+                <ul>
+                    <li><b>Disaccoppiamento:</b> 
+                        Il <i>WIS</i> non possiede più alcun riferimento al componente fisico di allarme (WarningDevice). Esso interagisce esclusivamente con il MonitoringDevice, che agisce da intermediario.
+                        Questo garantisce che il <i>WIS</i> rimanga "agnostico" rispetto alla natura reale del WarningDevice (che in futuro potrebbe essere, ad esempio, una sirena o un display invece che led).
+                    </li>
+                    <li><b>Localizzazione delle Modifiche:</b> 
+                        In caso di sostituzione dell'hardware utilizzato per il WarningDevice (es. da led a sirena), l'impatto della modifica ricadrà esclusivamente sul MonitoringDevice (che dovrà mappare i messaggi ricevuti sul nuovo device). Il codice del <i>WIS</i> rimarrà invariato, poiché continuerà a inviare i medesimi messaggi al suo unico interlocutore noto.
+                    </li>
+                    <li><b>Pattern di Delega:</b> 
+                        Il MonitoringDevice riceve i comandi operativi dal WIS e li delega al dispositivo concreto configurato al suo interno (<code>delegate ledOn to warningdevice</code>).
+                    </li>
+                </ul>
+
+                <p>Il sistema continuerà a mantenere la stessa logica operativa; comuqnue, la rimozione di questa dipendenza diretta ottimizza l'architettura, aumentando significativamente la riusabilità del codice del componente WIS.
+
+            <h4>P3.3 - Strategia Interfaccia</h4>
+
+                Per soddisfare il requisito di un'interfaccia utente flessibile e reattiva, l'analisi suggerisce l'adozione di una <b>WebApp Statica</b> (basata su HTML, CSS, JavaScript), evitando l'introduzione di un server backend dedicato (come Spring Boot) per la gestione della vista.
+
+                <p>Questa scelta architetturale è motivata da tre fattori principali:</p>
+                <ul>
+                    <li><b>Separazione delle Responsabilità:</b> 
+                        Si mantiene una netta distinzione tra la logica di controllo (WIS/MonitoringDevice) e la logica di visualizzazione. Rimuovendo il backend della GUI, l'interfaccia diventa un componente esterno e indipendente il cui ciclo di vita non interferisce con quello del sistema.
+                    </li>
+                    <li><b>Elaborazione Client-Side:</b> 
+                        Spostando la logica di aggiornamento direttamente nel browser (tramite JavaScript), si riduce il carico computazionale sui nodi del sistema (PC e Raspberry Pi), che devono solo preoccuparsi di emettere i dati.
+                    </li>
+                    <li><b>Predisposizione al "Real-Time":</b> 
+                        Una soluzione basata su JavaScript permette di gestire in modo efficiente aggiornamenti asincroni e immediati dello stato, superando i limiti delle classiche pagine web che richiedono ricaricamenti continui.
+                    </li>
+                </ul>
+
+
+            <h4>P3.4 - Architettura della Comunicazione (Polling vs Event-Driven)</h4>
+
+                Per abilitare l'aggiornamento dinamico dei dati sulla GUI, sono state analizzate due strategie di comunicazione:
+
+                <h5>Opzione A: HTTP Polling (Scartata)</h5>
+                <ul>
+                    <li><b>Meccanismo:</b> Il browser invia richieste periodiche al server (es. ogni secondo) per verificare la presenza di nuovi dati.</li>
+                    <li><b>Criticità:</b> Approccio inefficiente che genera traffico di rete inutile quando il sistema è in attesa (idle).
+                        Inoltre, forza un paradigma <i>Request-Response</i> sincrono che mal si adatta alla natura asincrona e guidata principalmente da eventi.</li>
+                </ul>
+
+                <h5>Opzione B: MQTT over WebSockets - <span style="color: green;">SCELTA</span></h5>
+                <ul>
+                    <li><b>Meccanismo:</b> La WebApp apre una connessione persistente (WebSocket) verso il Broker MQTT, sottoscrivendosi ai topic di interesse.</li>
+                    <li><b>Vantaggi Architetturali:</b>
+                        <ul>
+                            <li><b>Reattività (Push):</b> L'aggiornamento è istantaneo ed avviene solo all'effettivo cambio di stato (Event-Driven).</li>
+                            <li><b>Coerenza Distribuita:</b> 
+                                Poiché i componenti <i>ctxWIS</i> e <i>ctxMD</i> operano su nodi computazionali distinti (PC e Raspberry Pi), la presenza di un Broker MQTT è <b>già un requisito infrastrutturale indispensabile</b> per permettere la visibilità degli eventi globali tra i contesti.
+                                Di conseguenza, estendere l'uso di MQTT alla GUI è una scelta naturale che massimizza il riuso dell'infrastruttura esistente senza introdurre nuovi protocolli.
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+
+
+            <h4>P3.5 - Topologia dell'Informazione</h4>
+                L'architettura non prevede server intermedi per l'adattamento dei dati. La GUI si configura come un <b>client MQTT puro</b>, partecipando allo stesso livello degli attori del sistema.
+                L'intero scambio informativo (eventi di stato, comandi) converge sul topic MQTT <span class="formula">sprint3</span>, come definito nei modelli QAK.
+                <br><b>Ruolo del Broker:</b> Il Broker (es. <span class="formula">test.mosquitto.org</span>) agisce come unico punto di verità e instradamento, garantendo che la vista (GUI) sia sempre coerente con lo stato del sistema.
+
+
+            <h4>P3.6 - Parsing dei dati</h4>
+                Poiché non esiste un backend intermedio di traduzione, la GUI deve gestire il disallineamento tra il formato nativo degli attori e il mondo Web. Il sistema QAK emette stringhe strutturate in stile Prolog: <br>
+                <div align="center"><span class="formula">msg(MSGID, MSGTYPE, SENDER, RECEIVER, CONTENT, SEQNUM)</span></div><br>
+                Tramite espressioni regolari (Regex) in JavaScript, estrarrà dal messaggio grezzo il payload significativo (es. <span class="formula">stateSonar(40)</span> o <span class="formula">position(X,Y)</span>) per aggiornare il documento.
         </ul>
 
-        <h4>P2 - Architettura della Comunicazione (Polling vs Event-Driven)</h4>
-        <p>Si valutano le opzioni per l'aggiornamento dei dati:</p>
-        
-        <div style="margin: 20px; padding: 15px; background-color: #fff5f0; border-radius: 8px;">
-            <h5>Opzione A: HTTP Polling</h5>
-            <ul>
-                <li><b>Meccanismo:</b> Il browser richiede i dati ogni X secondi.</li>
-                <li><b>Contro:</b> Latenza, carico inutile sul server se lo stato non cambia, esperienza utente "a scatti".</li>
-            </ul>
-        </div>
-        
-        <div style="margin: 20px; padding: 15px; background-color: #f0fff0; border-radius: 8px;">
-            <h5>Opzione B: MQTT over WebSockets - <span style="color: green;">SCELTA</span></h5>
-            <ul>
-                <li><b>Meccanismo:</b> Il browser stabilisce una connessione persistente WebSocket con un Broker MQTT.</li>
-                <li><b>Protocollo:</b> MQTT.</li>
-                <li><b>Pro:</b> Aggiornamento <b>Real-Time</b> (push), disaccoppiamento totale tra produttori (Attori) e consumatori (GUI).</li>
-            </ul>
-        </div>
-
-        <h4>P3 - Fonte delle Informazioni</h4>
-        
-        <p>Non è necessario introdurre un attore QAK che agisca da intermediario HTTP. La GUI diventa un client diretto del sistema di messaggistica:</p>
-        <ul>
-            <li>Gli attori QAK pubblicano eventi sul topic MQTT <span class="formula">sprint3</span>.</li>
-            <li>La GUI (client JavaScript) effettua la <b>subscribe</b> allo stesso topic.</li>
-            <li>Il Broker MQTT (es. <span class="formula">test.mosquitto.org</span>) gestisce l'instradamento dei messaggi.</li>
-        </ul>
-
-        <h4>P4 - Formato dei Dati</h4>
-        <p>Il sistema QAK emette messaggi nel formato Prolog-like standard: <span class="formula">msg(eventType, event, emitter, receiver, eventType(payload), id)</span>.</p>
-        <p>La GUI deve essere in grado di effettuare il parsing di queste stringhe lato client. Si utilizzeranno espressioni regolari (Regex) in JavaScript per estrarre il <i>payload</i> significativo (es. il valore del peso o lo stato del sonar) direttamente dal messaggio grezzo.</p>
-
-
+        <h3>WIS - Architettura Logica</h3>
+        <div align="center">
+                <img src="./img/sprintthreearch.png" alt="sprintthreearch" width="60%" height="60%">
+            </div><br>
+             <div align="center">
+                <img src="./img/monitoringdevicearch.png" alt="monitoringdevicearch" width="60%" height="60%">
+            </div><br>
         <h3>Progettazione</h3>
-
-        <h4>Componente 1: Frontend Statico</h4>
-        <p>La struttura del progetto frontend è composta da file statici puri, eliminando la necessità di compilazione Gradle per la parte GUI:</p>
-        <pre>
-WasteIncineratorGUI/
-    index.html
-    css/
-        dashboard.css
-    js/
-        dashboard-mqtt.js</pre>
-
-        <h4>Componente 2: Integrazione MQTT.js</h4>
-        <p>La logica di connessione risiede interamente nel browser tramite la libreria <b>MQTT.js</b> caricata via CDN. La configurazione prevede l'uso di WebSocket Secure (wss) per garantire la compatibilità con i moderni browser:</p>
-
-        <pre>
-// Configurazione Broker
-const mqttOptions = {
-    clean: true,
-    connectTimeout: 4000,
-    clientId: 'wis_gui_' + Math.random().toString(16).substr(2, 8),
-};
-const brokerUrl = 'wss://test.mosquitto.org:8081'; // MQTT over WebSocket
-
-// Connessione
-const client = mqtt.connect(brokerUrl, mqttOptions);
-
-client.on('connect', function () {
-    console.log('Connected to MQTT Broker');
-    client.subscribe('sprint3', function (err) { ... });
-});</pre>
-
-        <h4>Componente 3: Parsing degli Eventi QAK</h4>
-        <p>La GUI riceve i messaggi grezzi dal broker e li interpreta. Il parsing avviene tramite Regex per supportare il formato standard QAK <span class="formula">msg(...)</span>:</p>
-
-        <pre>
-client.on('message', function (topic, message) {
-    const msgStr = message.toString();
-    
-    // Regex per estrarre: EventType, Emitter, Payload
-    const qakMatch = msgStr.match(/msg\((\w+),\s*event,\s*(\w+),\s*\w+,\s*\w+\(([^)]*)\)/);
-    
-    if (qakMatch) {
-        const eventType = qakMatch[1]; // es. stateScale
-        const payload = qakMatch[3];   // es. 150
-        
-        updateInterface(eventType, payload);
-    }
-});</pre>
-
-        <h4>Componente 4: Aggiornamento UI Dinamico</h4>
-        <p>L'aggiornamento del DOM avviene via jQuery/Vanilla JS in risposta agli eventi, garantendo un feedback visivo immediato:</p>
         <ul>
-            <li><b>stateScale(X):</b> Aggiorna il contatore RP e la progress bar del WasteStorage.</li>
-            <li><b>stateSonar(X):</b> Modifica lo stato (badge FULL/EMPTY) e attiva l'animazione LED.</li>
-            <li><b>burnEnd(X):</b> Aggiorna lo stato dell'inceneritore da Burning a Idle.</li>
-        </ul>
-
-        <h3>Test Plan</h3>
-        
-        <h4>T1 - Verifica Flusso MQTT</h4>
-        <p><b>Obiettivo:</b> Verificare che i messaggi QAK arrivino correttamente al broker.</p>
-        <p><b>Strumento:</b> MQTT Explorer o <span class="formula">mosquitto_sub</span>.</p>
-        <pre>mosquitto_sub -h test.mosquitto.org -p 1883 -t "sprint3" -v</pre>
-        <p><b>Risultato atteso:</b> Visualizzazione dei messaggi <span class="formula">msg(stateScale, ...)</span> quando il sistema è attivo.</p>
-
-        <h4>T2 - Test GUI Standalone (Mocking)</h4>
-        <p><b>Obiettivo:</b> Verificare la GUI senza avviare il backend QAK.</p>
-        <p><b>Procedura:</b> Utilizzare la console del browser per simulare l'arrivo di messaggi o usare uno script di pubblicazione manuale.</p>
-        <pre>
-// Nella console del browser
-handleMessage("sprint3", "msg(stateScale, event, scale, none, stateScale(200), 1)");</pre>
-        <p><b>Risultato atteso:</b> L'indicatore "Waste Storage" deve aggiornarsi istantaneamente a 4 RP (200kg).</p>
-
-        <h4>T3 - Test End-to-End Real-Time</h4>
-        <p><b>Obiettivo:</b> Verificare la sincronizzazione tra Robot fisico/virtuale e GUI.</p>
-        <p><b>Procedura:</b> Avviare il sistema QAK completo e aprire <span class="formula">index.html</span>.</p>
-        <p><b>Risultato atteso:</b> Quando il robot deposita un RP (evento fisico), la GUI deve aggiornarsi entro pochi millisecondi grazie al push MQTT, mostrando l'animazione sulla mappa e l'aggiornamento dei contatori.</p>
-
-        <h3>Deployment</h3>
-
-        <h4>Struttura Aggiornata</h4>
-        <pre>
-Sprint3/
-├── build.gradle              # Solo per sistema QAK
-├── src/                      # Codice attori Kotlin
-│
-└── WasteIncineratorGUI/      # Nuova cartella separata
-    ├── index.html
-    ├── css/
-    └── js/</pre>
-<br>
-        <h4>Procedura di Avvio</h4>
-        
-        <div style="margin: 20px 0; padding: 15px; background-color: #e3f2fd; border-left: 4px solid #2196F3;">
-            <h5>Step 1: Avvio VirtualRobot</h5>
-            <pre>cd it.unibo.virtualRobot2023
-docker compose -f .\virtualRobot23.yaml up</pre>
-        </div>
-        
-        <div style="margin: 20px 0; padding: 15px; background-color: #e3f2fd; border-left: 4px solid #2196F3;">
-            <h5>Step 2: Avvio BasicRobot</h5>
-            <pre>cd unibo.basicrobot24
-gradlew run</pre>
-        </div>
-
-        <div style="margin: 20px 0; padding: 15px; background-color: #e3f2fd; border-left: 4px solid #2196F3;">
-            <h5>Step 3: Avvio Backend QAK</h5>
-            <pre>cd Sprint3
-gradlew runMD
-gradlew runWIS</pre>
-        </div>
-        
-        <div style="margin: 20px 0; padding: 15px; background-color: #e3f2fd; border-left: 4px solid #2196F3;">
-            <h5>Step 4: Avvio GUI</h5>
-            <p>Non è richiesto alcun comando particolare per l'avvio della GUI. È sufficiente aprire il file:</p>
-            <pre>WasteIncineratorGUI/index.html</pre>
-        </div>
-
-        <h3>Conclusioni</h3>
-        <p>Lo Sprint 3 completa il WasteIncineratorService con un'interfaccia web moderna e altamente reattiva, sfruttando un'architettura <b>Event-Driven</b>.</p>
-        
-        <p><b>Punti di forza della soluzione:</b></p>
-        <ul>
-            <li><b>Zero-Backend UI:</b> Eliminata la complessità di Spring Boot per la parte di visualizzazione.</li>
-            <li><b>Real-Time nativo:</b> L'uso di MQTT over WebSockets garantisce latenze minime rispetto al polling HTTP.</li>
-            <li><b>Scalabilità:</b> Il broker MQTT disaccoppia i produttori di dati (Robot/Sensori) dai consumatori (Browser), permettendo a molteplici dashboard di connettersi simultaneamente senza impattare sul WIS.</li>
-            <li><b>Portabilità:</b> L'intera GUI è costituita da file statici, facilmente distribuibili su qualsiasi hosting web.</li>
-        </ul>
-        
-        <p>Il passaggio a un'architettura basata su messaggi non solo semplifica il deployment, ma allinea il sistema agli standard IoT moderni, dove la comunicazione asincrona e il disaccoppiamento sono requisiti fondamentali.</p>
-    </div>
-
-    <div style="background-color:rgba(86, 56, 253, 0.9); width:100%;text-align:left;color:white;padding: 30px;">
-        <div style="display: flex; justify-content: center; gap: 40px; align-items: center; flex-wrap: wrap;">
-            <div>
-                <p><strong>Bostrenghi Matteo</strong><br>
-                    matteo.bostrenghi@studio.unibo.it</p>
-                
-                <p><strong>Severini Lorenzo</strong><br>
-                    lorenzo.severini5@studio.unibo.it</p>
-            </div>
-            <div>
-                <img src="./img/bostrenghi.png" alt="bostrenghi" style="width:150px; height:auto">
-            </div>
-        
-            <div>
-                <img src="./img/severini.png" alt="severini" style="width:150px; height:auto;">
-            </div>
-
-            <p style="margin-top:20px;">Repository: 
-                <a href="https://github.com/Bostre17/iss24Temafinale" style="color:white;">
-                    https://github.com/Bostre17/iss24Temafinale
-                </a>
+            <h4>Architettura Logica della WebApp (Client-Side MVC)</h4>
+                <p>
+                    Sulla base dell'analisi, la progettazione del frontend si concretizza in una <b>Single Page Application (SPA)</b> priva di backend, che agisce come un client MQTT puro.
+                    Per garantire ordine e manutenibilità, l'applicazione implementa il pattern <b>Model-View-Controller (MVC)</b>:
+                </p>
+                <ul>
+                    <li>
+                        <b>Model (Stato dei Dati):</b>
+                        È isolato nell'oggetto globale JavaScript <code>systemState</code>, che funge da, appunto, stato attuale del sistema.
+                        Esso mantiene in memoria i valori del sistema (come <code>wasteStorageWeight</code>, <code>ashStorageFull</code> o le coordinate <code>robotPosition</code>) indipendentemente da come vengono visualizzati a schermo.
+                    </li>
+                    <li>
+                        <b>View (Interfaccia Grafica):</b>
+                        Si compone della struttura statica definita in <code>index.html</code> e della logica di stile in <code>dashboard.css</code>.
+                        La vista è priva di logica di controllo per natura architettonica: si limita a riflettere lo stato, ad esempio applicando classi CSS dinamiche come <code>.led-blink</code> o <code>.led-on</code> in base ai comandi ricevuti.
+                    </li>
+                    <li>
+                        <b>Controller (Gestione Logica):</b>
+                        Implementato nel file <code>dashboard-mqtt.js</code>, funge da orchestratore.
+                        Il cuore del controller è la funzione <code>handleMQTTMessage</code>, che riceve i messaggi grezzi dal Broker, li decodifica tramite <b>Espressioni Regolari (Regex)</b> e aggiorna il Model. Successivamente, invoca le funzioni di aggiornamento della UI (come <code>drawMap()</code> o <code>updateLED()</code>) per allineare la vista al nuovo stato.
+                    </li>
+                </ul>
+            <h4>Gestione della Comunicazione (WebSockets)</h4>
+            <p>
+                Per superare il limite dei browser che non supportano socket TCP crudi, si utilizza il protocollo <b>MQTT over WebSockets</b>.
+                Il client JavaScript utilizza la libreria <code>mqtt.js</code> per stabilire una connessione verso la porta <b>8080</b> del broker (es. <code>test.mosquitto.org</code>).
             </p>
-        </div>
+            <pre>
+            const MQTT_CONFIG = {
+                broker: 'ws://test.mosquitto.org:8080',
+                topic: 'sprint3',
+                options: {
+                    keepalive: 60,      // Heartbeat ogni 60s
+                    clean: true,        // Sessione pulita ad ogni avvio
+                    reconnectPeriod: 5000 // Tentativo di riconnessione automatico
+                }
+            };
+            </pre>
+            <br>
+            <h4>Strategia di Parsing (Il problema dell'Impedance Mismatch)</h4>
+            <p>
+                Una delle sfide progettuali principali è interpretare i messaggi QActor (formato Prolog-like) in un ambiente JavaScript (formato JSON/Oggetti).
+                Come appena anticipato, si è progettato un parser basato su <b>Espressioni Regolari (Regex)</b>.
+            </p>
+            <p>
+                La funzione <code>handleMQTTMessage</code> intercetta ogni stringa in arrivo e applica il pattern:
+                <br>
+                <span class="formula">msg\((\w+),(\w+),(\w+),(\w+),(\w+)\(([^)]*)\),(\d+)\)</span>
+            </p>
+            <p>Questo permette di estrarre in modo robusto:</p>
+            <ul>
+                <li><b>MSGID (Evento):</b> Es. <code>stateScale</code>, <code>position</code>.</li>
+                <li><b>Payload (Contenuto):</b> Es. il valore numerico del peso o le coordinate del robot.</li>
+            </ul>
+
+            <h4>Gestione dello Stato e Visualizzazione</h4>
+            <p>
+                L'aggiornamento dell'interfaccia non avviene manipolando direttamente il documento alla ricezione del messaggio, ma passa attraverso un aggiornamento dello stato del sistema.
+            </p>
+            <ul>
+                <li><b>Aggiornamento Dati:</b> Eventi come <code>stateSonar</code> aggiornano variabili, calcolano valori derivati (es. numero di RP = peso / 50) e modificano il testo.</li>
+                <li><b>Mappa Dinamica (Canvas):</b> Per la visualizzazione della posizione del robot, si è scelto di utilizzare l'elemento HTML <code>&lt;canvas&gt;</code>. Ad ogni evento <code>position(X,Y)</code>, la mappa viene ridisegnata completamente (clear & redraw) per rappresentare la griglia e la posizione corrente dell'agente mobile.</li>
+                <li><b>Feedback Visivo (CSS):</b> Gli stati del WarningDevice sono mappati su classi CSS specifiche (<code>led-on</code>, <code>led-off</code>, <code>led-blink</code>) per delegare al browser il carico del rendering grafico delle animazioni.</li>
+            </ul>
+
+            <div align="center">
+                <img src="./img/wis-gui.png" alt="wis-gui" width="70%" height="70%">
+            </div><br>
+
+       <h3>Test Plan (GUI)</h3>
+        <ul>
+            <p>
+                La strategia di testing per l'interfaccia utente adotta un approccio <b>Mock-Based</b>, finalizzato a validare la logica di presentazione in totale isolamento dai componenti fisici (Deployment Environment).
+                Poiché la GUI è stata progettata come un osservatore passivo disaccoppiato dal sistema, il piano di test non mira a verificare il funzionamento dei sensori remoti, ma si concentra sulla correttezza dell'interpretazione dei dati e sulla sua reattività.
+            </p>
+
+            <h4>Verifica della Resilienza del Canale di Comunicazione</h4>
+            <p>
+                Il primo livello di validazione riguarda la robustezza dell'infrastruttura della GUI.
+                I test sono volti a certificare che il client JavaScript gestisca autonomamente il ciclo di vita della connessione, recuperando correttamente lo stato operativo a seguito di disconnessioni temporanee del Broker o cadute di rete simulate.
+            </p>
+
+            <h4>Parsing e Coerenza dei Dati</h4>
+            <p>
+                Un aspetto critico riguarda la verifica della logica di "spacchettamenteo" dei messaggi.
+                Dato il disallineamento tra il protocollo QAK (Prolog-style) e il formato oggetti JavaScript, la validazione si concentra sulla correttezza delle Regular Expressions (Regex) implementate nel Controller.
+                Attraverso l'invio di messaggi direttamente nella console del browser, si verifica che il sistema sia in grado di estrarre correttamente i payload significativi (valori numerici, stringhe di stato) e di scartare messaggi malformati senza causare eccezioni nell'applicazione.
+            </p>
+
+            <h4>Verifica della Logica Combinatoria (State Aggregation)</h4>
+            <p>
+                Poiché alcuni elementi visuali (come il LED di allarme) dipendono dalla combinazione di più stati distinti (es. <i>Livello Cenere</i> AND <i>Stato Inceneritore</i>), i test verificano che la GUI mantenga uno stato coerente con la logica del WIS.
+                Si simula la ricezione di sequenze di eventi per accertare che l'interfaccia assuma sempre verso lo stato visivo corretto (es. transizione da LED Spento a Lampeggiante), evitando condizioni di incoerenza.
+            </p>
+        </ul>
+        <h3>Istruzioni di Avvio</h3>
+            <ul>
+                <div style="margin: 20px 0; padding: 15px; background-color: #e3f2fd; border-left: 4px solid #2196F3;">
+                    <h4><i class="fa fa-desktop"></i> Nodo PC (Master)</h4>
+                    <p>Posizionandosi sulla directory del progetto, eseguire i seguenti passaggi sul computer principale:</p>
+                    
+                    <h5>Step 1: Avvio Ambiente Virtuale</h5>
+                    <p>Assicurarsi che Docker sia attivo, quindi avviare la simulazione:</p>
+                    <pre>cd it.unibo.virtualRobot2023
+            docker compose -f .\virtualRobot23.yaml up</pre>
+
+                    <h5>Step 2: Avvio BasicRobot</h5>
+                    <pre>cd unibo.basicrobot24
+            gradlew run</pre>
+
+                    <h5>Step 3: Avvio Backend (WIS)</h5>
+                    <pre>cd Sprint3
+            gradlew runWIS</pre>
+                </div>
+
+                <div style="margin: 20px 0; padding: 15px; background-color: #ffebee; border-left: 4px solid #f44336;">
+                    <h4><i class="fa fa-microchip"></i> Nodo Raspberry Pi (Edge)</h4>
+                    <p>Sul Raspberry Pi, assicurarsi di avere il file `.jar` trasferito ed eseguire:</p>
+                    
+                    <h5>Step 4: Avvio Rilevamento (MD)</h5>
+                    <pre>java -jar runMD.jar</pre>
+                    <small>Nota: Assicurarsi che il Raspberry sia connesso alla stessa rete.</small>
+                </div>
+
+                <div style="margin: 20px 0; padding: 15px; background-color: #e8f5e9; border-left: 4px solid #4caf50;">
+                    <h4><i class="fa fa-window-maximize"></i> Interfaccia Utente (GUI)</h4>
+                    <p>La GUI è un client web statico. Può essere avviata da qualsiasi dispositivo connesso alla rete aprendo il file nel browser:</p>
+                    <pre>Sprint3/src/GUI/index.html</pre>
+                        È possibile aprire più istanze della GUI contemporaneamente per monitorare i dati (via MQTT). 
+                        Tuttavia, la vista dell'<strong>OpRobot</strong> potrebbero non essere disponibili nelle istanze successive alla prima, in quanto il Virtual Environment (WEnv) potrebbe risultare già <b>engaged</b> (impegnato) dalla prima connessione attiva.
+                    <p><strong>Nota:</strong> Configurare l'IP del Broker all'interno del file JS se la GUI viene aperta da un dispositivo diverso dal PC host.</p>
+                </div>
+            </ul>
+
+            <div style="background-color:rgba(86, 56, 253, 0.9); width:100%;text-align:left;color:white;padding: 30px;">
+                <div style="display: flex; justify-content: center; gap: 40px; align-items: center; flex-wrap: wrap;">
+                    <div>
+                        <p><strong>Bostrenghi Matteo</strong><br>
+                            matteo.bostrenghi@studio.unibo.it</p>
+                        
+                        <p><strong>Severini Lorenzo</strong><br>
+                            lorenzo.severini5@studio.unibo.it</p>
+                    </div>
+                    <div>
+                        <img src="./img/bostrenghi.png" alt="bostrenghi" style="width:150px; height:auto">
+                    </div>
+                
+                    <div>
+                        <img src="./img/severini.png" alt="severini" style="width:150px; height:auto;">
+                    </div>
+
+                    <p style="margin-top:20px;">Repository: 
+                        <a href="https://github.com/Bostre17/iss24Temafinale" style="color:white;">
+                            https://github.com/Bostre17/iss24Temafinale
+                        </a>
+                    </p>
+                </div>
+            </div>
     </div>
 
 </body>

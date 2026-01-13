@@ -26,8 +26,12 @@ Dispatch ledBlink : ledBlink(X)
 Dispatch doread : doread(X)
 
 Context ctxmd ip [host="localhost" port=8128]
-Context ctxwis ip [host="127.0.0.1" port=8001] 
- 
+Context ctxwis ip [host="192.168.1.10" port=8001] 
+
+/*
+ * Context ctxmd ip [host="localhost" port=8128]
+ * Context ctxwis ip [host="127.0.0.1" port=8001] 
+ */
  //-------------------------- Mock --------------------------
 QActor sonardevicemock context ctxmd{
     [#	var DISTANCE=200
@@ -142,7 +146,11 @@ QActor monitoringdevice context ctxmd{
 		//println("$name subscribed to datacleaner") color magenta
 		
 		//delegate sonarstop  to sonardevice
-		delegate sonarstop  to sonardevicemock	
+		delegate sonarstop to sonardevicemock
+		
+		delegate ledOn to warningdevice
+		delegate ledOff to warningdevice
+		delegate ledBlink to warningdevice
 	}
 	Transition t0 whenMsg	sonarstart -> initializing
 	              whenMsg   sonarstop -> endwork 

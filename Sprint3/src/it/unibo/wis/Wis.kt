@@ -78,17 +78,17 @@ class Wis ( name: String, scope: CoroutineScope, isconfined: Boolean=false  ) : 
 								 ashStorageFull = payloadArg(0).toInt()  
 								CommUtils.outgreen("[$name] nuovo stato ash storage: $ashStorageFull")
 								if(  ashStorageFull == 1 && incinerator == 2 
-								 ){forward("ledBlink", "ledBlink(X)" ,"warningdevice" ) 
-								CommUtils.outgreen("[$name] invio ledBlink a warningdevice")
+								 ){forward("ledBlink", "ledBlink(X)" ,"monitoringdevice" ) 
+								CommUtils.outgreen("[$name] invio ledBlink a monitoringdevice")
 								}
 								else
 								 {if(  incinerator == 1 
-								  ){forward("ledOn", "ledOn(X)" ,"warningdevice" ) 
-								 CommUtils.outgreen("[$name] invio ledOn a warningdevice")
+								  ){forward("ledOn", "ledOn(X)" ,"monitoringdevice" ) 
+								 CommUtils.outgreen("[$name] invio ledOn a monitoringdevice")
 								 }
 								 else
-								  {forward("ledOff", "ledOff(X)" ,"warningdevice" ) 
-								  CommUtils.outgreen("[$name] invio ledOff a warningdevice")
+								  {forward("ledOff", "ledOff(X)" ,"monitoringdevice" ) 
+								  CommUtils.outgreen("[$name] invio ledOff a monitoringdevice")
 								  }
 								 }
 						}
@@ -124,7 +124,7 @@ class Wis ( name: String, scope: CoroutineScope, isconfined: Boolean=false  ) : 
 				state("startIncinerator") { //this:State
 					action { //it:State
 						CommUtils.outgreen("[$name] Incinerator started")
-						forward("ledOn", "ledOn(X)" ,"warningdevice" ) 
+						forward("ledOn", "ledOn(X)" ,"monitoringdevice" ) 
 						forward("notifyRp", "notifyRp(X)" ,"incinerator" ) 
 						forward("goHome", "goHome(X)" ,"oprobot" ) 
 						 incinerator = 1 
@@ -140,7 +140,7 @@ class Wis ( name: String, scope: CoroutineScope, isconfined: Boolean=false  ) : 
 				state("endIncinerator") { //this:State
 					action { //it:State
 						CommUtils.outgreen("[$name] incinerator is now idle")
-						forward("ledOff", "ledOff(X)" ,"warningdevice" ) 
+						forward("ledOff", "ledOff(X)" ,"monitoringdevice" ) 
 						request("bringAsh", "bringAsh(X)" ,"oprobot" )  
 						 
 						    		incinerator = 2
@@ -159,14 +159,14 @@ class Wis ( name: String, scope: CoroutineScope, isconfined: Boolean=false  ) : 
 								 ashStorageFull = payloadArg(0).toInt()  
 								CommUtils.outgreen("[$name] Ash storage level: $ashStorageFull")
 								if(  ashStorageFull == 1  
-								 ){forward("ledBlink", "ledBlink(X)" ,"warningdevice" ) 
+								 ){forward("ledBlink", "ledBlink(X)" ,"monitoringdevice" ) 
 								}
 								else
 								 {if(  incinerator == 1 
-								  ){forward("ledOn", "ledOn(X)" ,"warningdevice" ) 
+								  ){forward("ledOn", "ledOn(X)" ,"monitoringdevice" ) 
 								 }
 								 else
-								  {forward("ledOff", "ledOff(X)" ,"warningdevice" ) 
+								  {forward("ledOff", "ledOff(X)" ,"monitoringdevice" ) 
 								  }
 								 }
 						}

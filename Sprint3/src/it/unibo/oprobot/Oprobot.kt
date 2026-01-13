@@ -77,6 +77,7 @@ class Oprobot ( name: String, scope: CoroutineScope, isconfined: Boolean=false  
 						        	Y_next = pos["wastein"]!!.get(1).toInt()
 						        	Job = "goWasteIn" 
 						emit("position", "position($X,$Y,$Job)" ) 
+						delay(1000) 
 						request("moverobot", "moverobot($X_next,$Y_next)" ,"basicrobot" )  
 						//genTimer( actor, state )
 					}
@@ -94,6 +95,7 @@ class Oprobot ( name: String, scope: CoroutineScope, isconfined: Boolean=false  
 						        	Y = Y_next
 						        	Job = "goBurnIn"
 						emit("position", "position($X,$Y,$Job)" ) 
+						delay(1000) 
 						forward("rpTaken", "rpTaken(1)" ,"scale" ) 
 						 
 						        	X_next = pos["burnin"]!!.get(0).toInt()
@@ -115,6 +117,7 @@ class Oprobot ( name: String, scope: CoroutineScope, isconfined: Boolean=false  
 						        	Y = Y_next
 						        	Job = "arrivedToIncinerator" 
 						emit("position", "position($X,$Y,$Job)" ) 
+						delay(1000) 
 						answer("bringRP", "atIncinerator", "atIncinerator(1)"   )  
 						//genTimer( actor, state )
 					}
@@ -137,6 +140,7 @@ class Oprobot ( name: String, scope: CoroutineScope, isconfined: Boolean=false  
 						        		X_next = pos["home"]!!.get(0).toInt()
 						        		Y_next = pos["home"]!!.get(1).toInt() 
 						emit("position", "position($X,$Y,$Job)" ) 
+						delay(1000) 
 						request("moverobot", "moverobot($X_next,$Y_next)" ,"basicrobot" )  
 						}
 						else
@@ -174,6 +178,7 @@ class Oprobot ( name: String, scope: CoroutineScope, isconfined: Boolean=false  
 						        	X_next = pos["burnout"]!!.get(0).toInt() 
 						        	Y_next = pos["burnout"]!!.get(1).toInt() 
 						emit("position", "position($X,$Y,$Job)" ) 
+						delay(1000) 
 						request("moverobot", "moverobot($X_next,$Y_next)" ,"basicrobot" )  
 						//genTimer( actor, state )
 					}
@@ -195,6 +200,7 @@ class Oprobot ( name: String, scope: CoroutineScope, isconfined: Boolean=false  
 						        	Y_next = pos["ashout"]!!.get(1).toInt()
 						        	 
 						emit("position", "position($X,$Y,$Job)" ) 
+						delay(1000) 
 						request("moverobot", "moverobot($X_next,$Y_next)" ,"basicrobot" )  
 						//genTimer( actor, state )
 					}
@@ -212,6 +218,7 @@ class Oprobot ( name: String, scope: CoroutineScope, isconfined: Boolean=false  
 						        	X = Y_next
 						        	Job = "atAshStorage"
 						emit("position", "position($X,$Y,$Job)" ) 
+						delay(1000) 
 						answer("bringAsh", "ashDeposited", "ashDeposited(1)"   )  
 						//genTimer( actor, state )
 					}

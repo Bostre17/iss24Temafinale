@@ -16,7 +16,7 @@ dispatch( ledBlink, ledBlink(X) ).
 dispatch( doread, doread(X) ).
 %====================================================================================
 context(ctxmd, "localhost",  "TCP", "8128").
-context(ctxwis, "127.0.0.1",  "TCP", "8001").
+context(ctxwis, "192.168.1.10",  "TCP", "8001").
  qactor( sonardevicemock, ctxmd, "it.unibo.sonardevicemock.Sonardevicemock").
  static(sonardevicemock).
   qactor( warningdevice, ctxmd, "it.unibo.warningdevice.Warningdevice").

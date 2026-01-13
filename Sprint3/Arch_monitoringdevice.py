@@ -33,5 +33,6 @@ with Diagram('monitoringdeviceArch', show=False, outformat='png', graph_attr=gra
      sonardevicemock >> Edge( label='sonardevicedata', **eventedgeattr, decorate='true', fontcolor='red') >> datacleaner
      datacleaner >> Edge( label='sonardatacleaner', **eventedgeattr, decorate='true', fontcolor='red') >> monitoringdevice
      monitoringdevice >> Edge( label='stateSonar', **eventedgeattr, decorate='true', fontcolor='red') >> sys
+     monitoringdevice >> Edge(color='blue', style='solid',  decorate='true', label='<ledOn &nbsp; ledOff &nbsp; ledBlink &nbsp; >',  fontcolor='blue') >> warningdevice
      monitoringdevice >> Edge(color='blue', style='solid',  decorate='true', label='<sonarstop &nbsp; sonarstart &nbsp; >',  fontcolor='blue') >> sonardevicemock
 diag

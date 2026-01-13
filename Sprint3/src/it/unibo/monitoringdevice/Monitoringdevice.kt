@@ -37,6 +37,9 @@ class Monitoringdevice ( name: String, scope: CoroutineScope, isconfined: Boolea
 						delay(2000) 
 						subscribeToLocalActor("datacleaner") 
 						delegate("sonarstop", "sonardevicemock") 
+						delegate("ledOn", "warningdevice") 
+						delegate("ledOff", "warningdevice") 
+						delegate("ledBlink", "warningdevice") 
 						//genTimer( actor, state )
 					}
 					//After Lenzi Aug2002
