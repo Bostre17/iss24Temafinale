@@ -26,7 +26,7 @@ Dispatch ledBlink : ledBlink(X)
 Dispatch doread : doread(X)
 
 Context ctxmd ip [host="localhost" port=8128]
-Context ctxwis ip [host="192.168.1.10" port=8001] 
+Context ctxwis ip [host="192.168.1.7" port=8001] 
 
 /*
  * Context ctxmd ip [host="localhost" port=8128]
@@ -67,11 +67,15 @@ QActor sonardevicemock context ctxmd{
 QActor warningdevice context ctxmd{  
 	[#	var STATE = 0
 		//var runtime = Runtime.getRuntime()
+		var lastProcess : Process? = null
 		#]
 	
 	State off initial{  
 		println("[$name] OFF")
 		//SCRIPT TURN OFF
+		[# lastProcess?.destroy() #]
+	    [# lastProcess = Runtime.getRuntime().exec("./led_off.sh") #]
+		
 	}
 	Transition t0 	whenMsg ledOn -> on
 					whenMsg ledOff -> off
@@ -80,6 +84,9 @@ QActor warningdevice context ctxmd{
 	State on{  
 		println("[$name] ON") 
 		//SCRIPT TURN ON
+		[# lastProcess?.destroy() #]
+	    [# lastProcess = Runtime.getRuntime().exec("./led_on.sh") #]
+		
 		        
 	}
 	Transition t0 	whenMsg ledOn -> on
@@ -89,6 +96,9 @@ QActor warningdevice context ctxmd{
 	State blink{  
 		println("[$name] BLINK") 
 		//SCRIPT TURN B
+		[# lastProcess?.destroy() #]
+	    [# lastProcess = Runtime.getRuntime().exec("./led_blink.sh") #]
+		
 	}
 	Transition t0 	whenMsg ledOn -> on
 					whenMsg ledOff -> off

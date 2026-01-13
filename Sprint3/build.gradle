@@ -173,3 +173,31 @@ task runMD(type: JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
     mainClass = 'it.unibo.ctxmd.MainCtxmdKt'
 }
+
+task fatJarMD(type: Jar) {
+    group = 'build'
+    description = 'Crea JAR eseguibile MonitoringDevice'
+    
+    archiveBaseName = 'MonitoringDevice'
+    archiveVersion = version
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    
+    manifest {
+        attributes 'Main-Class': 'it.unibo.ctxmd.MainCtxmdKt'
+    }
+    
+    from sourceSets.main.output
+    
+    from {
+        configurations.runtimeClasspath.collect { 
+            it.isDirectory() ? it : zipTree(it) 
+        }
+    }
+    
+    from('./') {
+        include '*.pl', '*.json', '*.qak'
+    }
+    
+    exclude 'META-INF/*.RSA', 'META-INF/*.SF', 'META-INF/*.DSA'
+}
+
